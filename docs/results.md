@@ -103,14 +103,65 @@ After the larger-board NumPy preview was installed, the same player reported a
 That is one encouraging informal human result, alongside the earlier 9–7 win
 over bootstrap; it does not establish strength against high-level human players.
 
+The same player subsequently beat this preview **16–9 on 5×5**, again using
+Deep thinking. The [saved terminal board](data/human-preview-5x5-final.json)
+confirms 25 boxes, the human playing
+first, and that score. Only the final position was retrieved; individual move
+mistakes cannot be established from it. This larger-board loss motivated a
+three-hour follow-up with deeper self-play search, rather than a strength claim
+based on the earlier 4×4 win.
+
 ## Larger-board preview
 
 The broader campaign warm-starts bootstrap weights with a new optimizer and
 replay, training seed 43, and uniformly mixed 3×3, 4×4, 3×5, and 5×5 boards.
 The currently playable snapshot is iteration 80: 1,280 additional games and
 51,540 new positions, using 64 search simulations and exact root decisions
-with at most 12 remaining edges. The bounded campaign is still running; this
-preview is not its final checkpoint selection.
+with at most 12 remaining edges. The bounded campaign finished at iteration
+239 after 4,818.67 seconds, with 3,824 new games and 153,630 new positions.
+The UI still serves the iteration-80 preview while fresh candidate tests run.
+Its weights therefore differ from the last training checkpoint.
+
+The complete run used four CPU workers, batches of 128, 32 updates per
+16-game iteration, learning rate 0.00015, and a 60,000-position replay buffer.
+Median iteration time was 19.94 seconds; peak PyTorch allocation was 278.85
+MiB with a 4 GiB cap and 15% update pacing. Counters are for this new phase;
+the bootstrap ancestor contributed another 1,280 games and 19,426 positions.
+Full metrics are in [the CSV](data/training-larger-20261009.csv).
+
+![Larger-board training losses](assets/larger-training.svg)
+
+Checkpoint selection used seed 3030 and 20 games per board/opponent, with
+128 simulations and the agent's exact aid disabled. The opponents were
+tactical endgame, chain control, and the original bootstrap. The checkpoint
+duels used six randomized opening moves and equal search budgets. Scores below
+average the three opponents; the selection criterion averages both boards.
+
+| Warm-start iteration | 4×4 mean score | 5×5 mean score | Joint mean |
+| -------------------- | -------------: | -------------: | ---------: |
+| Bootstrap baseline   |          70.0% |          70.0% |      70.0% |
+| 40                   |          83.3% |          90.0% |      86.7% |
+| 80 (UI preview)      |          86.7% |          88.3% |      87.5% |
+| 120                  |          90.0% |          90.0% |      90.0% |
+| 160                  |          89.2% |          95.0% |      92.1% |
+| **200 (selected)**   |      **90.0%** |      **95.0%** |  **92.5%** |
+| 239 (last)           |          85.0% |          93.3% |      89.2% |
+
+The [selection receipt](data/larger-selection.json) records per-opponent
+scores and hashes; raw [4×4](data/larger-selection/4x4) and
+[5×5](data/larger-selection/5x5) receipts retain individual outcomes and duel
+move lists. Differences near the top are small and the sample is
+limited; selecting iteration 200 is a heuristic, not proof of superiority.
+Fresh NumPy tests use seed 3033, including direct comparisons against the
+preview, a 4×4 Deep check, rectangular transfer, and held-out 6×6 play.
+
+The subsequent three-hour run warm-starts iteration 200 with seed 44,
+256 simulations, eight workers, batch size 1,024, eight updates per 32 new
+games, and 200,000 replay positions. Five-by-five is sampled twice as often
+as each of 3×3, 4×4, and 3×5. The allocator cap is 8 GiB and update pacing
+25%. This run is in progress; no outcome or expert strength is claimed yet.
+
+### Preview deployment checks
 
 NumPy deployment tests use seed 3032, 20 games per opponent, alternating seats,
 512 simulations, and the UI's 12-edge endgame aid. The checkpoint duel uses six

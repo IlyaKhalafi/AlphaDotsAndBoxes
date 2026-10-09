@@ -20,7 +20,10 @@ on 3×3, 4×4, 3×5, and 5×5 boards. It uses 64 search simulations and exact
 12-edge root endgames during self-play, with a new optimizer and replay. This
 snapshot beat bootstrap 18–2 in a separate 4×4 NumPy match at 512 simulations
 with the UI's endgame aid. This is a small checkpoint comparison, not evidence
-of expert-human strength. The bounded campaign and final selection are ongoing.
+of expert-human strength. The 80-minute campaign finished at iteration 239;
+iteration 200 was selected for fresh validation. The playable files remain
+the preview while those checks run. A separate three-hour phase now starts
+from iteration 200 with deeper self-play search.
 
 Before larger-board training, bootstrap was retained because it scored slightly
 higher against the stronger endgame opponent averaged across 3×3 and 4×4 in the

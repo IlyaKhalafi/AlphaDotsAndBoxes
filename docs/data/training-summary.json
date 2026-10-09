@@ -56,6 +56,8 @@
       "last_iteration": 80,
       "games_total": 1280,
       "positions_total": 19426,
+      "initialization": {},
+      "stop_reason": null,
       "elapsed_seconds": 693.6266620600363,
       "median_iteration_seconds": 8.549513504491188,
       "peak_allocated_mb": 148.47021484375,
@@ -110,11 +112,74 @@
       "last_iteration": 160,
       "games_total": 2560,
       "positions_total": 38810,
+      "initialization": {},
+      "stop_reason": null,
       "elapsed_seconds": 701.3084805370308,
       "median_iteration_seconds": 8.624250235006912,
       "peak_allocated_mb": 148.49560546875,
       "last10_mean_policy_loss": 1.4634202599525452,
       "last10_mean_value_loss": 0.29103430211544035
+    },
+    {
+      "label": "larger-20261009",
+      "config": {
+        "sizes": [
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            5,
+            5
+          ]
+        ],
+        "iterations": 10000,
+        "games_per_iteration": 16,
+        "workers": 4,
+        "updates_per_iteration": 32,
+        "batch_size": 128,
+        "replay_capacity": 60000,
+        "learning_rate": 0.00015,
+        "width": 96,
+        "depth": 6,
+        "seed": 43,
+        "temperature_moves": 12,
+        "device": "cuda",
+        "gpu_memory_gb": 4.0,
+        "gpu_duty_cycle": 0.15,
+        "checkpoint_every": 10,
+        "max_seconds": 4800,
+        "search": {
+          "simulations": 64,
+          "cpuct": 1.5,
+          "noise_fraction": 0.25,
+          "dirichlet_alpha": 0.3,
+          "exact_threshold": 12
+        }
+      },
+      "first_iteration": 1,
+      "last_iteration": 239,
+      "games_total": 3824,
+      "positions_total": 153630,
+      "initialization": {
+        "checkpoint_sha256": "8f6d35978e9b3ff98594ef7b412dfe9db1542d0351f783c19a3b262be8416bc9",
+        "training_games": 1280,
+        "training_positions": 19426
+      },
+      "stop_reason": "time_budget",
+      "elapsed_seconds": 4818.669680082006,
+      "median_iteration_seconds": 19.943735435022973,
+      "peak_allocated_mb": 278.849609375,
+      "last10_mean_policy_loss": 2.0157874584198,
+      "last10_mean_value_loss": 0.5980596244335175
     }
   ]
 }

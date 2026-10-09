@@ -1,0 +1,146 @@
+{
+  "seed": 3030,
+  "games_per_opponent_per_board": 20,
+  "simulations": 128,
+  "agent_exact_threshold": 0,
+  "criterion": "Mean of six score rates: 4x4 and 5x5 versus tactical_endgame, chain_control, bootstrap checkpoint",
+  "leaderboard": [
+    {
+      "label": "agent-00200",
+      "checkpoint_sha256": "4aa5558673f9a10061724301cff13ad240e97271c4aa11f350b19540a45ac930",
+      "score_by_board": {
+        "4x4": {
+          "tactical_endgame": 0.975,
+          "chain_control": 0.8,
+          "released_agent": 0.925
+        },
+        "5x5": {
+          "tactical_endgame": 0.95,
+          "chain_control": 0.9,
+          "released_agent": 1.0
+        }
+      },
+      "mean_score": 0.925
+    },
+    {
+      "label": "agent-00160",
+      "checkpoint_sha256": "199b3052c193a553cd20ae2e9f35c0b9f8bdf62360ad26de05b18d032f68deeb",
+      "score_by_board": {
+        "4x4": {
+          "tactical_endgame": 0.95,
+          "chain_control": 0.9,
+          "released_agent": 0.825
+        },
+        "5x5": {
+          "tactical_endgame": 1.0,
+          "chain_control": 1.0,
+          "released_agent": 0.85
+        }
+      },
+      "mean_score": 0.9208333333333334
+    },
+    {
+      "label": "agent-00120",
+      "checkpoint_sha256": "3139dc3a94224626090c768750a086bfc0f10bb27bee8673b0695fc1cd49b548",
+      "score_by_board": {
+        "4x4": {
+          "tactical_endgame": 0.95,
+          "chain_control": 0.925,
+          "released_agent": 0.825
+        },
+        "5x5": {
+          "tactical_endgame": 0.95,
+          "chain_control": 0.8,
+          "released_agent": 0.95
+        }
+      },
+      "mean_score": 0.9
+    },
+    {
+      "label": "agent-00239",
+      "checkpoint_sha256": "d0e8aa4d57d4e8e384478d4f9a321192c53815b4b2cc2fbb9d27a7658a62e8b1",
+      "score_by_board": {
+        "4x4": {
+          "tactical_endgame": 0.9,
+          "chain_control": 0.875,
+          "released_agent": 0.775
+        },
+        "5x5": {
+          "tactical_endgame": 1.0,
+          "chain_control": 0.95,
+          "released_agent": 0.85
+        }
+      },
+      "mean_score": 0.8916666666666666
+    },
+    {
+      "label": "agent-00080",
+      "checkpoint_sha256": "38dec4370afa9ea5913de0fcce3b8be745cb33a9478603cb85e8318b8bc98ddb",
+      "score_by_board": {
+        "4x4": {
+          "tactical_endgame": 0.95,
+          "chain_control": 0.825,
+          "released_agent": 0.825
+        },
+        "5x5": {
+          "tactical_endgame": 1.0,
+          "chain_control": 0.95,
+          "released_agent": 0.7
+        }
+      },
+      "mean_score": 0.875
+    },
+    {
+      "label": "agent-00040",
+      "checkpoint_sha256": "9cc1ecc27ddfe352e470fcae4ff298899f7ad97ab1e157d3c3f31927d257fcc6",
+      "score_by_board": {
+        "4x4": {
+          "tactical_endgame": 0.925,
+          "chain_control": 0.85,
+          "released_agent": 0.725
+        },
+        "5x5": {
+          "tactical_endgame": 1.0,
+          "chain_control": 0.95,
+          "released_agent": 0.75
+        }
+      },
+      "mean_score": 0.8666666666666667
+    },
+    {
+      "label": "baseline",
+      "checkpoint_sha256": "8f6d35978e9b3ff98594ef7b412dfe9db1542d0351f783c19a3b262be8416bc9",
+      "score_by_board": {
+        "4x4": {
+          "tactical_endgame": 0.8,
+          "chain_control": 0.7,
+          "released_agent": 0.6
+        },
+        "5x5": {
+          "tactical_endgame": 0.9,
+          "chain_control": 0.75,
+          "released_agent": 0.45
+        }
+      },
+      "mean_score": 0.7000000000000001
+    }
+  ],
+  "selected": {
+    "label": "agent-00200",
+    "checkpoint_sha256": "4aa5558673f9a10061724301cff13ad240e97271c4aa11f350b19540a45ac930",
+    "score_by_board": {
+      "4x4": {
+        "tactical_endgame": 0.975,
+        "chain_control": 0.8,
+        "released_agent": 0.925
+      },
+      "5x5": {
+        "tactical_endgame": 0.95,
+        "chain_control": 0.9,
+        "released_agent": 1.0
+      }
+    },
+    "mean_score": 0.925
+  },
+  "fresh_validation_seed": 3033
+}
