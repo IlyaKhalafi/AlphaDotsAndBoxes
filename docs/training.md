@@ -169,6 +169,18 @@ keeps the baseline on an exact selection-score tie. This is checkpoint selection
 not a final strength claim. Test the selected weights on a fresh seed and verify
 smaller-board retention before replacing a playable checkpoint.
 
+Export completed runs and draw a separate chart for a warm-start phase whose
+iteration counter begins again at one:
+
+```bash
+python scripts/report.py --run runs/bootstrap --run runs/refined --run runs/larger
+python scripts/plot_training.py --input docs/data/training-larger.csv \
+  --output docs/assets/larger-training.svg --title 'Larger-board refinement'
+```
+
+The summary retains the initialization checkpoint hash and its earlier training
+counts. Warm-start game and position counters describe the new phase alone.
+
 For a serious strength claim, evaluate multiple training seeds, unseen sizes and
 rectangles, independent chain-aware opponents, and a balanced series of matches
 against experienced human players. Report fixed search budgets and solver use.

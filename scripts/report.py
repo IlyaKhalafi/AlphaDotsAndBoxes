@@ -61,6 +61,8 @@ def main():
             "last_iteration": rows[-1]["iteration"],
             "games_total": rows[-1]["games_total"],
             "positions_total": rows[-1]["positions_total"],
+            "initialization": rows[-1].get("initialization", {}),
+            "stop_reason": rows[-1].get("stop_reason"),
             "elapsed_seconds": rows[-1]["elapsed_seconds"],
             "median_iteration_seconds": statistics.median(row["iteration_seconds"] for row in rows),
             "peak_allocated_mb": max(row["gpu_peak_mb"] for row in rows),

@@ -20,6 +20,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, nargs="+", required=True)
     parser.add_argument("--output", type=Path, default=Path("docs/assets/training.svg"))
+    parser.add_argument("--title", help="Override the figure title")
     args = parser.parse_args()
     plt.rcParams.update(
         {
@@ -66,7 +67,12 @@ def main():
         ax.set_ylabel("Loss (final minibatch each iteration)")
         ax.grid(axis="y", alpha=0.15)
         ax.legend(frameon=False, fontsize=9)
-    figure.suptitle("Self-play learning · shaded region: solver-guided refinement", fontsize=13)
+    title = args.title or (
+        "Self-play learning · shaded region: solver-guided refinement"
+        if len(args.input) > 1
+        else "Self-play learning"
+    )
+    figure.suptitle(title, fontsize=13)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(args.output, metadata={"Date": None})
     plt.close(figure)
