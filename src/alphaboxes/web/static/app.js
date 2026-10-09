@@ -63,7 +63,13 @@ function drawBoard() {
       class: "box-mark" + (owner === game.human_player ? "" : " agent"),
     });
     text.textContent =
-      owner === game.human_player ? (game.demo ? "A" : "Y") : "α";
+      owner === game.human_player
+        ? game.demo
+          ? "A"
+          : "Y"
+        : game.demo
+          ? "B"
+          : "α";
     root.append(text);
   });
   const interactive =
@@ -149,7 +155,7 @@ function drawBoard() {
       );
   root.setAttribute(
     "aria-label",
-    `${game.rows} by ${game.cols} board. ${game.scores[game.human_player]} boxes for you, ${game.scores[1 - game.human_player]} for the agent.`,
+    `${game.rows} by ${game.cols} board. ${game.scores[game.human_player]} boxes for ${game.demo ? "Agent A" : "you"}, ${game.scores[1 - game.human_player]} for ${game.demo ? "Agent B" : "the agent"}.`,
   );
 }
 function render() {
@@ -157,6 +163,8 @@ function render() {
   const humanScore = game.scores[game.human_player],
     agentScore = game.scores[1 - game.human_player];
   const humanTurn = game.player === game.human_player;
+  $("seat-controls").hidden = game.demo;
+  $("watch-controls").hidden = !game.demo;
   $("human-score").textContent = humanScore;
   $("agent-score").textContent = agentScore;
   $("human-track").style.width =
@@ -179,7 +187,7 @@ function render() {
     ? '<span aria-hidden="true">Ⅱ</span> Pause'
     : game.demo && !game.terminal
       ? '<span aria-hidden="true">▷</span> Resume'
-      : '<span aria-hidden="true">▷</span> Watch game';
+      : '<span aria-hidden="true">▷</span> Replay';
   const pill = $("live-pill");
   pill.className = "live-pill";
   if (game.terminal) {
@@ -224,7 +232,7 @@ function render() {
   }
   drawBoard();
 }
-async function startGame(demo = false) {
+async function startGame(demo = $("mode").value === "watch") {
   const token = ++generation;
   busy = true;
   watching = demo;
@@ -235,7 +243,7 @@ async function startGame(demo = false) {
     const next = await api("/api/games", {
       rows: Number($("rows").value),
       cols: Number($("cols").value),
-      human_player: Number($("seat").value),
+      human_player: demo ? 0 : Number($("seat").value),
       demo,
     });
     if (token !== generation) {
@@ -258,11 +266,16 @@ async function agentTurns(token) {
     !game.terminal &&
     (watching || (!game.demo && game.player !== game.human_player))
   ) {
-    busy = true;
-    render();
     try {
-      if (watching) await delay(430);
-      if (token !== generation || (game.demo && !watching)) break;
+      await delay(Number($("pace").value));
+      if (
+        token !== generation ||
+        game.terminal ||
+        !(watching || (!game.demo && game.player !== game.human_player))
+      )
+        break;
+      busy = true;
+      render();
       const next = await api(`/api/games/${gameId}/agent`, {
         simulations: Number($("budget").value),
         revision: game.revision,
@@ -273,7 +286,6 @@ async function agentTurns(token) {
       busy = false;
       if (game.terminal) watching = false;
       render();
-      await delay(watching ? 200 : 120);
     } catch (error) {
       showError(error, token);
       return;
@@ -313,7 +325,8 @@ function showError(error, token) {
   $("status").textContent =
     error.message || "Connection lost. Start a new game.";
 }
-$("new-game").addEventListener("click", () => startGame(false));
+$("new-game").addEventListener("click", () => startGame());
+$("mode").addEventListener("change", () => startGame());
 $("watch").addEventListener("click", async () => {
   if (watching) {
     watching = false;
@@ -344,7 +357,7 @@ $("hint").addEventListener("click", async () => {
 });
 $("undo").addEventListener("click", async () => {
   if (busy) return;
-  const token = generation;
+  const token = ++generation;
   busy = true;
   render();
   try {

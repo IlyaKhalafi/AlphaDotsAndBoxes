@@ -33,6 +33,13 @@
       <section class="play-layout" aria-label="Game">
         <aside class="controls panel">
           <h2 class="panel-heading">Game</h2>
+          <div class="setting-field players-field">
+            <label class="field-label" for="mode">Players</label>
+            <select id="mode">
+              <option value="play">You vs Agent</option>
+              <option value="watch">Agent vs Agent</option>
+            </select>
+          </div>
           <div class="field-label">Board size <span>boxes</span></div>
           <div class="presets" role="group" aria-label="Board size">
             <button data-size="2" type="button" aria-pressed="false">
@@ -70,21 +77,35 @@
               /></label>
             </div>
           </details>
-          <label class="field-label" for="budget">Thinking time</label>
-          <select id="budget">
-            <option value="32">Quick</option>
-            <option value="128" selected>Standard</option>
-            <option value="512">Deep</option>
-          </select>
-          <label class="field-label" for="seat">First move</label>
-          <select id="seat">
-            <option value="0">You</option>
-            <option value="1">Agent</option>
-          </select>
-          <div class="control-divider"></div>
-          <button id="watch" type="button" class="watch-button">
-            <span aria-hidden="true">▷</span> Watch game
-          </button>
+          <div class="setting-field">
+            <label class="field-label" for="budget">Thinking time</label>
+            <select id="budget">
+              <option value="32">Quick</option>
+              <option value="128" selected>Standard</option>
+              <option value="512">Deep</option>
+            </select>
+          </div>
+          <div class="setting-field">
+            <label class="field-label" for="pace">Move delay</label>
+            <select id="pace">
+              <option value="500">0.5 seconds</option>
+              <option value="1000" selected>1 second</option>
+              <option value="2000">2 seconds</option>
+            </select>
+          </div>
+          <div class="setting-field seat-field" id="seat-controls">
+            <label class="field-label" for="seat">First move</label>
+            <select id="seat">
+              <option value="0">You</option>
+              <option value="1">Agent</option>
+            </select>
+          </div>
+          <div class="watch-controls" id="watch-controls" hidden>
+            <div class="control-divider"></div>
+            <button id="watch" type="button" class="watch-button">
+              <span aria-hidden="true">▷</span> Watch game
+            </button>
+          </div>
         </aside>
         <div class="game-panel panel">
           <div class="game-top">

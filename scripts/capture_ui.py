@@ -22,6 +22,8 @@ def main():
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.goto(args.url)
         page.wait_for_selector(".edge-control[role=button]")
+        assert page.locator("#mode").input_value() == "play"
+        assert page.locator("#pace").input_value() == "1000"
         page.screenshot(path=str(args.output / "desktop.png"), full_page=True)
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         assert page.locator(".game-panel").bounding_box()["y"] < 150
@@ -45,7 +47,10 @@ def main():
         page.locator("#hint").click()
         page.wait_for_selector(".hinted")
         page.locator(".hinted").click()
-        page.wait_for_function("!document.getElementById('undo').disabled")
+        page.wait_for_function(
+            "document.querySelectorAll('.drawn-edge').length >= 2 && "
+            "!document.getElementById('undo').disabled"
+        )
         page.locator("#undo").click()
         page.wait_for_function("document.getElementById('human-score').textContent === '0'")
         page.locator(".edge-control[role=button]").first.focus()
@@ -53,8 +58,11 @@ def main():
         page.wait_for_function("!document.getElementById('undo').disabled")
         page.locator("#undo").click()
         page.wait_for_function("document.querySelectorAll('.drawn-edge').length === 0")
+        page.wait_for_timeout(1200)
+        assert page.locator(".drawn-edge").count() == 0  # Cancel the pending agent timer.
         # Start over and capture the actual graph agent playing both seats.
-        page.locator("#watch").click()
+        page.locator("#pace").select_option("500")
+        page.locator("#mode").select_option("watch")
         page.wait_for_function(
             "document.getElementById('board-label').textContent.includes('SELF-PLAY')"
         )
@@ -65,6 +73,15 @@ def main():
         paused_edges = page.locator(".drawn-edge").count()
         page.wait_for_timeout(800)
         assert page.locator(".drawn-edge").count() == paused_edges
+        page.evaluate("""() => {
+            window.moveTimes = [];
+            let previous = document.querySelectorAll('.drawn-edge').length;
+            new MutationObserver(() => {
+                const count = document.querySelectorAll('.drawn-edge').length;
+                if (count > previous) window.moveTimes.push(performance.now());
+                previous = count;
+            }).observe(document.getElementById('board'), {childList: true});
+        }""")
         page.locator("#watch").click()
         frames, started = [], time.monotonic()
         while time.monotonic() - started < 90:
@@ -74,7 +91,12 @@ def main():
             page.wait_for_timeout(500)
         else:
             raise RuntimeError("Self-play did not finish within 90 seconds.")
-        assert "Watch game" in page.locator("#watch").inner_text()
+        assert "Replay" in page.locator("#watch").inner_text()
+        times = page.evaluate("window.moveTimes")
+        assert len(times) >= 2
+        assert min(b - a for a, b in zip(times, times[1:], strict=False)) >= 450
+        assert page.locator("#human-label").inner_text() == "AGENT A"
+        assert page.locator("#agent-label").inner_text() == "AGENT B"
         page.screenshot(path=str(args.output / "desktop-played.png"), full_page=True)
         frames.extend([frames[-1]] * 4)
         # One shared palette avoids flickering colors between frames.

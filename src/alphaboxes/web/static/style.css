@@ -157,6 +157,12 @@ h2 {
   font-weight: 400;
   font-size: 11px;
 }
+.setting-field {
+  min-width: 0;
+}
+.players-field .field-label {
+  margin-top: 0;
+}
 .presets {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -523,6 +529,9 @@ select {
     padding: 18px;
   }
   .panel-heading,
+  .players-field,
+  .seat-field,
+  .watch-controls,
   .controls > .field-label:first-of-type,
   .presets,
   .custom-size,
@@ -534,21 +543,8 @@ select {
     font-size: 24px;
     margin-bottom: 0;
   }
-  .controls > .field-label[for="budget"] {
-    grid-column: 1;
-    grid-row: 5;
-  }
-  .controls > .field-label[for="seat"] {
-    grid-column: 2;
-    grid-row: 5;
-  }
-  #budget {
-    grid-column: 1;
-    grid-row: 6;
-  }
-  #seat {
-    grid-column: 2;
-    grid-row: 6;
+  .players-field .field-label {
+    margin-top: 20px;
   }
   .custom-size {
     margin-bottom: 0;
