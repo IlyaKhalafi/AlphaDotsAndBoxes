@@ -24,15 +24,15 @@ weights work on square and rectangular boards of different sizes.
 
 ## Play locally
 
-Python 3.11 or newer is required. A GPU is optional.
+Python 3.11 or newer is required. Playing uses NumPy; no GPU or training framework is needed.
 
 ```bash
 git clone https://github.com/IlyaKhalafi/AlphaDotsAndBoxes.git
 cd AlphaDotsAndBoxes
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[dev]'
-adb serve --checkpoint models/agent.pt
+python -m pip install .
+adb serve --checkpoint models/agent.npz
 ```
 
 Open **http://127.0.0.1:8000**. Choose a board, adjust thinking time, and play.
@@ -42,6 +42,15 @@ and an agent-versus-agent watch mode. Board dimensions count **boxes**, not dots
 The included checkpoint is a small trained starting point. The UI also uses
 perfect search for the last 12 available edges. Launching `adb serve` without a
 checkpoint selects a clearly labeled tactical opponent.
+
+Or deploy the included model with Docker:
+
+```bash
+docker build -t alpha-dots-and-boxes .
+docker run --rm -p 9003:8000 alpha-dots-and-boxes
+```
+
+Open **http://localhost:9003**. See [deployment notes](docs/deployment.md) for custom models and hosting.
 
 ## What makes it different
 
@@ -69,6 +78,13 @@ See [the architecture notes](docs/architecture.md) for the detailed design.
 
 ## Train your own
 
+Install the optional training tools; PyTorch and RLlib are used only here:
+
+```bash
+python -m pip install -e '.[train]'
+```
+
+
 A short CPU run checks the complete pipeline:
 
 ```bash
@@ -87,7 +103,8 @@ separate. GPU training has a configurable allocation cap and pacing; review
 
 ```bash
 adb train --config configs/bootstrap.json --output runs/bootstrap --device cuda
-adb serve --checkpoint runs/bootstrap/latest.pt
+adb export --checkpoint runs/bootstrap/latest.pt --output models/custom.npz
+adb serve --checkpoint models/custom.npz
 ```
 
 Runs save progress, portable agent checkpoints, and a resumable learner state.
@@ -97,7 +114,8 @@ campaign with larger boards.
 ## Evaluate and develop
 
 ```bash
-adb evaluate --checkpoint models/agent.pt --games 40 --sizes 2x2,3x3,4x4
+adb evaluate --checkpoint models/agent.npz --games 40 --sizes 2x2,3x3,4x4
+python -m pip install -e '.[dev]'
 pytest -q
 ```
 
