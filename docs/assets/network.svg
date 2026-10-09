@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="770" viewBox="0 0 1400 770" role="img" aria-labelledby="title description">
+  <title id="title">Alpha Dots and Boxes graph network</title>
+  <desc id="description">Edges and boxes form an incidence graph. Twelve node features and three game features enter a 96-channel encoder, then six residual GIN blocks. Global mean and max pooling feed shared policy and value heads. Monte Carlo search guides self-play and RLlib learns from move probabilities and game outcomes.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0l8 4-8 4" fill="none" stroke="#889382" stroke-width="1.4"/></marker>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="#e0e2d8"/></pattern>
+    <linearGradient id="gin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#edf3f0"/><stop offset="1" stop-color="#e0ebe7"/></linearGradient>
+    <style>
+      text{font-family:Arial,Helvetica,sans-serif;fill:#29362d}.label{font-size:12px;letter-spacing:2px;fill:#6a7867}.heading{font-family:Georgia,serif;font-size:30px;letter-spacing:-.7px}.body{font-size:15px;fill:#62715f}.small{font-size:12px;fill:#657761}.number{font-size:12px;fill:#c95435;letter-spacing:2px}.wire{fill:none;stroke:#889382;stroke-width:1.8;marker-end:url(#arrow)}.card{fill:#fcfaf6;stroke:#d8dfd2;stroke-width:1.3}.blue{fill:#316a86}.orange{fill:#c95435}
+    </style>
+  </defs>
+  <rect width="1400" height="770" rx="20" fill="#f6f3ed"/>
+  <rect x="32" y="32" width="1336" height="706" rx="14" fill="url(#dots)" opacity=".65"/>
+  <text x="60" y="72" class="label">ALPHA DOTS &amp; BOXES / THE NETWORK</text>
+  <text x="60" y="122" font-family="Georgia,serif" font-size="44" letter-spacing="-1.5">One set of weights. Any board shape.</text>
+  <text x="60" y="154" class="body">A move is an edge. A reward is a box. The graph keeps that relationship intact.</text>
+  <line x1="60" y1="181" x2="1340" y2="181" stroke="#d8dfd2"/>
+
+  <rect x="60" y="218" width="270" height="311" rx="12" class="card"/>
+  <text x="84" y="250" class="number">01 / REPRESENT</text>
+  <text x="84" y="289" class="heading">Edges + boxes</text>
+  <g stroke="#b6c3b3" stroke-width="2">
+    <path d="M130 363L195 403 259 363M130 447L195 403 259 447" fill="none"/>
+  </g>
+  <g fill="#e3edf0" stroke="#316a86" stroke-width="2">
+    <circle cx="130" cy="363" r="13"/><circle cx="259" cy="363" r="13"/><circle cx="130" cy="447" r="13"/><circle cx="259" cy="447" r="13"/>
+  </g>
+  <rect x="177" y="385" width="36" height="36" rx="8" fill="#f4e4dc" stroke="#c95435" stroke-width="2"/>
+  <text x="84" y="507" class="small">12 node features + 3 game features</text>
+  <path d="M330 377H372" class="wire"/>
+
+  <rect x="387" y="218" width="300" height="311" rx="12" fill="url(#gin)" stroke="#b9cdc0" stroke-width="1.3"/>
+  <text x="412" y="250" class="number">02 / CONNECT</text>
+  <text x="412" y="289" class="heading">Residual GIN</text>
+  <rect x="415" y="322" width="244" height="41" rx="7" fill="#fcfaf6" stroke="#bfd0c0"/>
+  <text x="537" y="348" text-anchor="middle" font-size="14">Node encoder · 96 channels</text>
+  <path d="M537 364V380" class="wire"/>
+  <rect x="424" y="395" width="226" height="49" rx="7" fill="#c8dcd1" stroke="#93b09e"/>
+  <rect x="419" y="389" width="236" height="49" rx="7" fill="#d4e4dc" stroke="#93b09e"/>
+  <rect x="414" y="383" width="246" height="49" rx="7" fill="#eaf2ed" stroke="#93b09e"/>
+  <text x="537" y="413" text-anchor="middle" font-size="16">6 × message-passing blocks</text>
+  <text x="413" y="477" class="small">Sum neighbors → MLP → residual + norm</text>
+  <text x="413" y="507" class="small">Shared across all nodes and board sizes</text>
+  <path d="M687 377H728" class="wire"/>
+
+  <rect x="744" y="218" width="282" height="311" rx="12" class="card"/>
+  <text x="769" y="250" class="number">03 / PREDICT</text>
+  <text x="769" y="289" class="heading">Two questions</text>
+  <rect x="768" y="318" width="234" height="39" rx="7" fill="#edf0e8"/>
+  <text x="885" y="343" text-anchor="middle" font-size="14">Global mean + max + context</text>
+  <path d="M837 358V382" class="wire"/>
+  <path d="M1002 337H1016V487H1007" class="wire"/>
+  <rect x="768" y="387" width="234" height="62" rx="7" fill="#e3edf0" stroke="#bacfd7"/>
+  <text x="785" y="413" font-size="17" class="blue">Where should I draw?</text>
+  <text x="785" y="435" class="small">Local + global · legal edge policy</text>
+  <rect x="768" y="465" width="234" height="45" rx="7" fill="#f4e4dc" stroke="#e6c7b6"/>
+  <text x="785" y="493" font-size="17" class="orange">Can I win? · value ∈ [−1, 1]</text>
+  <path d="M1026 377H1066" class="wire"/>
+
+  <rect x="1082" y="218" width="258" height="311" rx="12" class="card"/>
+  <text x="1106" y="250" class="number">04 / PLAN</text>
+  <text x="1106" y="289" class="heading">Think ahead</text>
+  <g fill="none" stroke="#99ac91" stroke-width="1.8"><path d="M1210 330L1153 386M1210 330L1267 386M1153 386L1128 427M1153 386L1178 427M1267 386L1242 427M1267 386L1292 427"/></g>
+  <g fill="#fcfaf6" stroke="#91a689" stroke-width="2"><circle cx="1210" cy="330" r="9"/><circle cx="1153" cy="386" r="8"/><circle cx="1267" cy="386" r="8"/><circle cx="1128" cy="427" r="6"/><circle cx="1178" cy="427" r="6"/><circle cx="1242" cy="427" r="6"/><circle cx="1292" cy="427" r="6"/></g>
+  <path d="M1210 330L1153 386L1178 427" stroke="#c95435" stroke-width="3" fill="none"/>
+  <text x="1106" y="479" class="body">PUCT tree search</text>
+  <text x="1106" y="507" class="small">Extra turns preserve the value sign</text>
+
+  <path d="M1211 530V584H195V549" fill="none" stroke="#b18e72" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+  <rect x="442" y="566" width="488" height="38" rx="19" fill="#f6f3ed" stroke="#d9ccbd"/>
+  <text x="686" y="591" text-anchor="middle" font-size="14" fill="#856a54">Play → search probabilities + game outcome → learn</text>
+  <rect x="60" y="646" width="1280" height="64" rx="10" fill="#e9ede3"/>
+  <text x="84" y="673" class="label">RLLIB LEARNER</text>
+  <text x="84" y="696" font-size="14">Policy cross-entropy + value regression · AdamW · replay across board sizes</text>
+  <text x="1316" y="684" text-anchor="end" font-size="14" fill="#52684d">272,648 parameters / 96 channels / 6 layers</text>
+</svg>

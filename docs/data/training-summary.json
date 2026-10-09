@@ -1,0 +1,66 @@
+{
+  "python": "3.12.3",
+  "software": {
+    "torch": "2.12.1",
+    "ray": "2.58.0",
+    "gymnasium": "1.2.2",
+    "numpy": "2.5.1",
+    "fastapi": "0.143.0"
+  },
+  "runs": [
+    {
+      "label": "bootstrap",
+      "config": {
+        "sizes": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "iterations": 80,
+        "games_per_iteration": 16,
+        "workers": 4,
+        "updates_per_iteration": 16,
+        "batch_size": 128,
+        "replay_capacity": 20000,
+        "learning_rate": 0.0003,
+        "width": 96,
+        "depth": 6,
+        "seed": 42,
+        "temperature_moves": 12,
+        "device": "cuda",
+        "gpu_memory_gb": 4.0,
+        "gpu_duty_cycle": 0.15,
+        "checkpoint_every": 10,
+        "search": {
+          "simulations": 32,
+          "cpuct": 1.5,
+          "noise_fraction": 0.25,
+          "dirichlet_alpha": 0.3,
+          "exact_threshold": 0
+        }
+      },
+      "first_iteration": 1,
+      "last_iteration": 80,
+      "games_total": 1280,
+      "positions_total": 19426,
+      "elapsed_seconds": 693.6266620600363,
+      "median_iteration_seconds": 8.549513504491188,
+      "peak_allocated_mb": 148.47021484375,
+      "last10_mean_policy_loss": 1.584315836429596,
+      "last10_mean_value_loss": 0.4996171772480011
+    }
+  ]
+}

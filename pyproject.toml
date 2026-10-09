@@ -19,6 +19,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "httpx>=0.28,<1", "ruff>=0.14,<1"]
 media = ["playwright>=1.55,<2", "pillow>=11,<13", "httpx>=0.28,<1"]
+analysis = ["matplotlib>=3.9,<4"]
 
 [project.scripts]
 adb = "alphaboxes.cli:main"
