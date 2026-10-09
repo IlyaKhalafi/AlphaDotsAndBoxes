@@ -17,7 +17,7 @@ from ray.rllib.core.learner.learner_group import LearnerGroup
 from ray.rllib.core.rl_module.multi_rl_module import MultiRLModuleSpec
 from ray.rllib.policy.sample_batch import DEFAULT_POLICY_ID, MultiAgentBatch, SampleBatch
 
-from alphaboxes.checkpoint import save_agent
+from alphaboxes.checkpoint import load_agent, save_agent
 from alphaboxes.game import board
 from alphaboxes.graph import encode
 from alphaboxes.learner import AlphaZeroLearner
@@ -44,6 +44,7 @@ class TrainConfig:
     gpu_memory_gb: float = 4.0
     gpu_duty_cycle: float = 0.15
     checkpoint_every: int = 10
+    max_seconds: float | None = None
     search: SearchConfig = field(default_factory=lambda: SearchConfig(simulations=64))
 
     def __post_init__(self):
@@ -65,6 +66,10 @@ class TrainConfig:
             raise ValueError("device must be cpu or cuda.")
         if not 0 < self.gpu_duty_cycle <= 1 or self.gpu_memory_gb <= 0:
             raise ValueError("GPU memory and duty-cycle limits must be positive.")
+        if self.max_seconds is not None and (
+            not np.isfinite(self.max_seconds) or self.max_seconds <= 0
+        ):
+            raise ValueError("max_seconds must be finite and positive.")
 
     @classmethod
     def from_json(cls, path: Path) -> "TrainConfig":
@@ -130,13 +135,37 @@ def metric_values(results: list[dict]) -> dict[str, float]:
     return metrics
 
 
-def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path:
+def train(
+    config: TrainConfig,
+    output: Path,
+    resume: Path | None = None,
+    initial_checkpoint: Path | None = None,
+) -> Path:
+    if resume and initial_checkpoint:
+        raise ValueError("Choose resume or an initial checkpoint, not both.")
+    initial_model, initial_metadata = (
+        load_agent(initial_checkpoint) if initial_checkpoint else (None, {})
+    )
+    if initial_model and any(
+        initial_model.model_config[key] != getattr(config, key) for key in ("width", "depth")
+    ):
+        raise ValueError(
+            "Initial checkpoint width and depth must match the training configuration."
+        )
     output.mkdir(parents=True, exist_ok=True)
     torch.set_num_threads(2)
     torch.manual_seed(config.seed)
     rng = np.random.default_rng(config.seed)
     random.seed(config.seed)
     learner = build_learner(config)
+    initialization = {}
+    if initial_model:
+        learner.set_weights({DEFAULT_POLICY_ID: initial_model.get_state()})
+        initialization = {
+            "checkpoint_sha256": initial_metadata["checkpoint_sha256"],
+            "training_games": initial_metadata.get("games_total", 0),
+            "training_positions": initial_metadata.get("positions_total", 0),
+        }
     replay: deque[Example] = deque(maxlen=config.replay_capacity)
     start_iteration, games_total, positions_total = 0, 0, 0
     config_path = output / "config.json"
@@ -149,6 +178,7 @@ def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path
             if old_config[key] != asdict(config)[key]:
                 raise ValueError(f"Cannot resume with a different {key}.")
         learner.set_state(state["learner"])
+        initialization = state.get("initialization", {})
         replay.extend(state["replay"])
         rng.bit_generator.state = state["rng"]
         start_iteration = state["iteration"]
@@ -237,7 +267,12 @@ def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path
                     "sizes": [list(size) for size in config.sizes],
                     "simulations": config.search.simulations,
                     "training_exact_threshold": config.search.exact_threshold,
+                    "initialization": initialization,
                 }
+                budget_exhausted = (
+                    config.max_seconds is not None
+                    and time.monotonic() - started >= config.max_seconds
+                )
                 record = (
                     metadata
                     | metrics
@@ -247,6 +282,11 @@ def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path
                         "update_seconds": update_seconds,
                         "iteration_seconds": time.monotonic() - iteration_start,
                         "elapsed_seconds": time.monotonic() - started,
+                        "stop_reason": "time_budget"
+                        if budget_exhausted
+                        else "iterations"
+                        if iteration == config.iterations
+                        else None,
                         "gpu_peak_mb": torch.cuda.max_memory_allocated() / 1024**2
                         if config.device == "cuda"
                         else 0,
@@ -257,7 +297,11 @@ def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path
                 print(json.dumps(record), flush=True)
                 weights = learner.get_weights()[DEFAULT_POLICY_ID]
                 save_agent(output / "latest.pt", weights, config.width, config.depth, metadata)
-                if iteration % config.checkpoint_every == 0 or iteration == config.iterations:
+                if (
+                    iteration % config.checkpoint_every == 0
+                    or iteration == config.iterations
+                    or budget_exhausted
+                ):
                     save_agent(
                         output / f"agent-{iteration:05d}.pt",
                         weights,
@@ -273,10 +317,13 @@ def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path
                         "iteration": iteration,
                         "games_total": games_total,
                         "positions_total": positions_total,
+                        "initialization": initialization,
                     }
                     temporary = output / "resume.tmp"
                     torch.save(state, temporary)
                     os.replace(temporary, output / "resume.pt")
+                if budget_exhausted:
+                    break
     finally:
         for worker in workers:
             ray.kill(worker)

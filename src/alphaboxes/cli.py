@@ -11,9 +11,16 @@ def main():
     training = commands.add_parser("train", help="Run RLlib AlphaZero self-play")
     training.add_argument("--config", type=Path, default=Path("configs/bootstrap.json"))
     training.add_argument("--output", type=Path, default=Path("runs/bootstrap"))
-    training.add_argument("--resume", type=Path)
+    initialization = training.add_mutually_exclusive_group()
+    initialization.add_argument("--resume", type=Path)
+    initialization.add_argument(
+        "--initial-checkpoint", type=Path, help="Start from weights on new boards"
+    )
     training.add_argument("--device", choices=["cpu", "cuda"])
     training.add_argument("--iterations", type=int)
+    training.add_argument(
+        "--seconds", type=float, help="Stop after a complete iteration and save progress"
+    )
     serving = commands.add_parser("serve", help="Open the local game UI")
     serving.add_argument("--checkpoint", type=Path)
     serving.add_argument("--host", default="127.0.0.1")
@@ -37,7 +44,9 @@ def main():
             for key in ("device", "iterations")
             if getattr(args, key) is not None
         }
-        train(replace(config, **overrides), args.output, args.resume)
+        if args.seconds is not None:
+            overrides["max_seconds"] = args.seconds
+        train(replace(config, **overrides), args.output, args.resume, args.initial_checkpoint)
     elif args.command == "serve":
         import uvicorn
 
