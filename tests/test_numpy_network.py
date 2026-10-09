@@ -30,6 +30,7 @@ def test_numpy_matches_torch_on_live_games_and_padding(tmp_path, size):
         with torch.inference_mode():
             expected = module.forward_inference({Columns.OBS: tensor_observations([obs])})
         logits, value = network.forward(obs)
+        assert logits.dtype == np.float32
         np.testing.assert_allclose(
             logits, expected[Columns.ACTION_DIST_INPUTS][0].numpy(), atol=3e-6, rtol=3e-5
         )

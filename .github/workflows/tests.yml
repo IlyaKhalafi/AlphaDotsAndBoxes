@@ -6,13 +6,16 @@ on:
 jobs:
   deployment:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        numpy: ["numpy==1.26.4", "numpy"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
-      - run: python -m pip install . pytest httpx
+      - run: python -m pip install '${{ matrix.numpy }}' . pytest httpx
       - run: pytest -q tests/test_deployment.py
 
   test:

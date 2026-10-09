@@ -35,7 +35,7 @@ def weight_shapes(width: int, depth: int) -> dict[str, tuple[int, ...]]:
 
 
 def silu(x: np.ndarray) -> np.ndarray:
-    return x / (1 + np.exp(np.clip(-x, -80, 80)))
+    return x / (np.float32(1) + np.exp(np.clip(-x, -80, 80)))
 
 
 class NumpyNetwork:
@@ -65,7 +65,7 @@ class NumpyNetwork:
         for index in range(self.depth):
             prefix = f"blocks.{index}"
             messages = obs["adjacency"] @ h
-            aggregate = (1 + self.weights[f"{prefix}.epsilon"]) * h + messages
+            aggregate = (np.float32(1) + self.weights[f"{prefix}.epsilon"]) * h + messages
             residual = h + self.linear(
                 silu(self.linear(aggregate, f"{prefix}.mlp.0")), f"{prefix}.mlp.2"
             )
@@ -77,7 +77,7 @@ class NumpyNetwork:
                 normalized * self.weights[f"{prefix}.norm.weight"]
                 + self.weights[f"{prefix}.norm.bias"]
             ) * mask
-        mean = h.sum(axis=0) / max(mask.sum(), 1)
+        mean = h.sum(axis=0) / max(mask.sum(), np.float32(1))
         maximum = np.where(mask != 0, h, np.float32(-1e9)).max(axis=0)
         readout = np.concatenate((mean, maximum, context))
         shared = np.broadcast_to(readout, (len(x), len(readout)))
