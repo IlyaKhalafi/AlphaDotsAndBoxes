@@ -178,8 +178,9 @@ UI aid; 6×6 tests use 20 games. Duels randomize six opening moves and balance
 seats. [Raw fresh receipts](data/larger-fresh) retain every outcome, settings,
 hashes, and duel move lists. NumPy inference runs in a clean installation
 without PyTorch/RLlib. Strong scripted results on unseen 6×6 do not establish
-expert play or improvement over the preview. The additional 5×5 Deep match
-is still running; it cannot override the observed 4×4 regression on its own.
+expert play or improvement over the preview. The additional [5×5 Deep match](data/larger-fresh/deep-preview-duel-5x5.json)
+finished 17–0–23 over 40 games (42.5% score), confirming another regression
+against the preview at the UI's thinking budget.
 
 The subsequent run warm-starts iteration 200 with seed 44. Its first 20
 iterations completed 640 games and 28,118 positions in 1,229.49 seconds,
