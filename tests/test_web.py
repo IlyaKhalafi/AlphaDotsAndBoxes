@@ -1,0 +1,42 @@
+from fastapi.testclient import TestClient
+
+from alphaboxes.web.app import create_app
+
+
+def test_playable_api_and_stale_move_protection():
+    client = TestClient(create_app())
+    assert client.get("/").status_code == 200
+    assert client.get("/api/health").json()["agent"] == "tactical"
+    game = client.post("/api/games", json={"rows": 1, "cols": 1}).json()
+    path = f"/api/games/{game['id']}"
+    hint = client.post(path + "/hint", json={"revision": 0, "simulations": 8})
+    assert hint.status_code == 200
+    assert client.get(path).json()["revision"] == 0
+    move = client.post(path + "/move", json={"revision": 0, "action": 0})
+    assert move.status_code == 200
+    assert client.post(path + "/move", json={"revision": 0, "action": 1}).status_code == 409
+    assert client.post(path + "/agent", json={"revision": 1, "simulations": 8}).status_code == 200
+    undone = client.post(path + "/undo", json={"revision": 2, "action": 0}).json()
+    assert undone["edges"] == [-1] * 4
+    assert undone["revision"] == 3
+
+
+def test_demo_can_finish_and_sessions_can_be_deleted():
+    client = TestClient(create_app())
+    game = client.post("/api/games", json={"rows": 1, "cols": 1, "demo": True}).json()
+    path = f"/api/games/{game['id']}"
+    while not game["terminal"]:
+        game = client.post(
+            path + "/agent", json={"revision": game["revision"], "simulations": 8}
+        ).json()
+    assert sum(game["scores"]) == 1
+    assert client.delete(path).status_code == 204
+    assert client.get(path).status_code == 404
+
+
+def test_invalid_dimensions_and_out_of_turn():
+    client = TestClient(create_app())
+    assert client.post("/api/games", json={"rows": 0}).status_code == 422
+    game = client.post("/api/games", json={"human_player": 1}).json()
+    response = client.post(f"/api/games/{game['id']}/move", json={"revision": 0, "action": 0})
+    assert response.status_code == 409

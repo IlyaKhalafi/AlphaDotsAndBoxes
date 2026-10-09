@@ -125,7 +125,7 @@ def metric_values(results: list[dict]) -> dict[str, float]:
         for key, value in result.get(DEFAULT_POLICY_ID, {}).items():
             if hasattr(value, "peek"):
                 value = value.peek()
-            if isinstance(value, (float, int, np.number)):
+            if isinstance(value, (float, int, np.number)) and np.isfinite(value):
                 metrics[key] = float(value)
     return metrics
 
