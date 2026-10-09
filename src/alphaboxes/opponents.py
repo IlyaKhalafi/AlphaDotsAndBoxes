@@ -32,6 +32,13 @@ def tactical_action(state: State, rng: np.random.Generator) -> int:
     return int(rng.choice(safe or legal))
 
 
+def endgame_action(state: State, rng: np.random.Generator) -> int:
+    """A tougher baseline: tactical opening followed by an exact 12-edge endgame."""
+    if len(state.legal_actions) <= 12:
+        return int(rng.choice(solve(state)[1]))
+    return tactical_action(state, rng)
+
+
 def solve(state: State) -> tuple[float, tuple[int, ...]]:
     """Exact minimax score margin; switch signs only when the player changes.
 

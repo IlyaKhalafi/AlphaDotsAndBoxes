@@ -219,6 +219,8 @@ def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path
                     batch = make_batch([replay[int(index)] for index in indices])
                     result = learner.update(batch=batch)
                     metrics = metric_values(result)
+                if config.device == "cuda":
+                    torch.cuda.synchronize()
                 update_seconds = time.monotonic() - update_start
                 if config.device == "cuda":
                     # Pace GPU work; no exclusive mode, reset, or changes to other processes.

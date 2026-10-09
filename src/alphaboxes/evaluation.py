@@ -11,7 +11,7 @@ import torch
 
 from alphaboxes.checkpoint import load_agent
 from alphaboxes.game import State
-from alphaboxes.opponents import random_action, solve, tactical_action
+from alphaboxes.opponents import endgame_action, random_action, solve, tactical_action
 from alphaboxes.search import MCTS, NeuralEvaluator, SearchConfig
 
 
@@ -44,6 +44,8 @@ def evaluate(
         opponents = {"random": random_action, "tactical": tactical_action}
         if State.new(*size).board.num_edges <= 12:
             opponents["exact"] = lambda state, rng: int(rng.choice(solve(state)[1]))
+        else:
+            opponents["tactical_endgame"] = endgame_action
         for opponent_name, opponent in opponents.items():
             started = time.monotonic()
             outcomes, scores, seats = [], [], []
