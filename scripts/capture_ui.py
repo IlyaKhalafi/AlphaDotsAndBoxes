@@ -30,6 +30,16 @@ def main():
         page.locator(".rules-help summary").click()
         assert page.locator(".rules-help p").is_visible()
         page.locator(".rules-help summary").click()
+        page.locator('[data-size="5"]').click()
+        page.wait_for_function(
+            "document.getElementById('board-label').textContent.startsWith('5 × 5 boxes')"
+        )
+        assert page.locator(".edge-control[role=button]").count() == 60
+        assert page.locator(".board-dot").count() == 36
+        page.locator('[data-size="3"]').click()
+        page.wait_for_function(
+            "document.getElementById('board-label').textContent.startsWith('3 × 3 boxes')"
+        )
         # Verify hint, a real human move, the agent response, and undo.
         page.locator("#budget").select_option("32")
         page.locator("#hint").click()

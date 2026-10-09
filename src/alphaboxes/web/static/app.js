@@ -164,7 +164,7 @@ function render() {
   $("agent-track").style.width =
     `${(100 * agentScore) / (game.rows * game.cols)}%`;
   $("board-label").textContent =
-    `${game.rows} × ${game.cols}${game.demo ? " / SELF-PLAY" : ""}`;
+    `${game.rows} × ${game.cols} boxes${game.demo ? " / SELF-PLAY" : ""}`;
   $("human-label").textContent = game.demo ? "AGENT A" : "YOU";
   $("agent-label").textContent = game.demo ? "AGENT B" : "AGENT";
   $("human-turn").hidden = game.terminal || !humanTurn;
@@ -367,6 +367,7 @@ document.querySelectorAll("[data-size]").forEach((button) =>
       other.setAttribute("aria-pressed", String(other === button));
     });
     $("rows").value = $("cols").value = button.dataset.size;
+    startGame();
   }),
 );
 ["rows", "cols"].forEach((id) =>

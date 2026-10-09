@@ -90,11 +90,13 @@ The 3×3 stronger-opponent result falls from 65% in the selection sample to 45%
 in this fresh sample. That variation and the weak 2×5 result rule out a claim
 of robust expert play or reliable arbitrary-size generalization.
 
-An informal human test also reported an easy win against the released agent on
-5×5, a size outside training. The score, seat, and search budget were not
-recorded, so this is qualitative feedback rather than an additional benchmark.
-It reinforces the larger-board limitation; increasing the UI's thinking time
-does not replace training and evaluation on those boards.
+An informal human test reported an easy 9–7 win on 4×4 boxes using Deep thinking
+(512 search simulations). The player confirmed the dimensions after initially
+describing the board as “5×5.” No replay or seat was recorded, so this is feedback
+rather than an additional benchmark.
+The UI now labels active dimensions in boxes and applies board presets
+immediately to prevent a selected size from differing from the active game.
+Increasing thinking time does not replace larger-board training and human tests.
 
 ## Checkpoint selection and refinement
 

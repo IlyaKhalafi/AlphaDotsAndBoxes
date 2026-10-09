@@ -66,7 +66,7 @@ def test_exact_oracle():
 
 def test_random_games_conserve_boxes():
     rng = np.random.default_rng(17)
-    for size in [(1, 2), (2, 3), (4, 4)]:
+    for size in [(1, 2), (2, 3), (4, 4), (5, 5)]:
         s = State.new(*size)
         for _ in range(s.board.num_edges):
             before = s
