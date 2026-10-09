@@ -32,14 +32,14 @@ cd AlphaDotsAndBoxes
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install .
-adb serve --checkpoint models/agent.npz
+adb serve --checkpoint models/larger.npz
 ```
 
 Open **http://127.0.0.1:8000**. Choose a board, adjust thinking time, and play.
 The interface supports hints, undo, keyboard controls, custom rectangular boards,
 and an agent-versus-agent watch mode. Board dimensions count **boxes**, not dots.
 
-The included checkpoint is a small trained starting point. The UI also uses
+The included model has trained on boards through 5×5. The UI also uses
 perfect search for the last 12 available edges. Launching `adb serve` without a
 checkpoint selects a clearly labeled tactical opponent.
 
@@ -84,7 +84,6 @@ Install the optional training tools; PyTorch and RLlib are used only here:
 python -m pip install -e '.[train]'
 ```
 
-
 A short CPU run checks the complete pipeline:
 
 ```bash
@@ -114,7 +113,7 @@ campaign with larger boards.
 ## Evaluate and develop
 
 ```bash
-adb evaluate --checkpoint models/agent.npz --games 40 --sizes 2x2,3x3,4x4
+adb evaluate --checkpoint models/larger.npz --games 40 --sizes 2x2,3x3,4x4
 python -m pip install -e '.[dev]'
 pytest -q
 ```

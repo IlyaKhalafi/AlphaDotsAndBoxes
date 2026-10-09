@@ -216,6 +216,7 @@ artifacts/private/
 docs/assets/*.png
 !models/agent.pt
 !models/refined.pt
+!models/larger.pt
 
 # Ruff stuff:
 .ruff_cache/

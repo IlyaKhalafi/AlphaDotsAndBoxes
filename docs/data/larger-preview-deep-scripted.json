@@ -1,0 +1,219 @@
+{
+  "checkpoint_sha256": "9490da1e599b145c7c60dc130cb3f7ab50740b07a6fe43ee815e404d618ff218",
+  "checkpoint_metadata": {
+    "games_total": 1280,
+    "initialization": {
+      "checkpoint_sha256": "8f6d35978e9b3ff98594ef7b412dfe9db1542d0351f783c19a3b262be8416bc9",
+      "training_games": 1280,
+      "training_positions": 19426
+    },
+    "iteration": 80,
+    "positions_total": 51540,
+    "seed": 43,
+    "simulations": 64,
+    "sizes": [
+      [
+        3,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        5,
+        5
+      ]
+    ],
+    "source_checkpoint_sha256": "38dec4370afa9ea5913de0fcce3b8be745cb33a9478603cb85e8318b8bc98ddb",
+    "training_exact_threshold": 12,
+    "checkpoint_sha256": "9490da1e599b145c7c60dc130cb3f7ab50740b07a6fe43ee815e404d618ff218"
+  },
+  "inference": "numpy",
+  "seed": 3032,
+  "simulations": 512,
+  "exact_threshold": 12,
+  "mode": "search",
+  "opponents": [
+    "tactical_endgame",
+    "chain_control"
+  ],
+  "results": [
+    {
+      "size": [
+        4,
+        4
+      ],
+      "opponent": "tactical_endgame",
+      "games": 20,
+      "wins": 19,
+      "draws": 0,
+      "losses": 1,
+      "win_rate": 0.95,
+      "score_rate": 0.95,
+      "win_rate_95ci": [
+        0.7638641064874331,
+        0.9911187805671268
+      ],
+      "mean_box_margin": 7.1,
+      "seconds": 106.45171883498551,
+      "agent_moves": 476,
+      "outcomes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        -1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "box_margins": [
+        2,
+        10,
+        12,
+        8,
+        2,
+        6,
+        4,
+        8,
+        6,
+        6,
+        -2,
+        2,
+        8,
+        10,
+        4,
+        12,
+        12,
+        8,
+        14,
+        10
+      ],
+      "agent_seats": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "size": [
+        4,
+        4
+      ],
+      "opponent": "chain_control",
+      "games": 20,
+      "wins": 18,
+      "draws": 2,
+      "losses": 0,
+      "win_rate": 0.9,
+      "score_rate": 0.95,
+      "win_rate_95ci": [
+        0.6989617935882066,
+        0.9721341060158468
+      ],
+      "mean_box_margin": 6.3,
+      "seconds": 105.67444334900938,
+      "agent_moves": 465,
+      "outcomes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        -0.0,
+        1.0,
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "box_margins": [
+        8,
+        10,
+        12,
+        8,
+        4,
+        2,
+        12,
+        0,
+        4,
+        6,
+        0,
+        2,
+        8,
+        8,
+        10,
+        8,
+        10,
+        4,
+        6,
+        4
+      ],
+      "agent_seats": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ]
+    }
+  ]
+}

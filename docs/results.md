@@ -1,15 +1,15 @@
 # Experiments and observations
 
-The released agent has learned useful tactics and can play boards beyond its
-training sizes. **Expert-human strength has not been demonstrated.** The stronger
-endgame baseline exposes weaknesses, especially on an unseen rectangular board.
+The agents have learned useful tactics and can process different board sizes.
+**Expert-human strength has not been demonstrated.** The original bootstrap's
+endgame benchmark exposes weaknesses, especially on an unseen rectangular board.
 This report includes those failures alongside the improvements.
 
 Measurements below were collected on October 9, 2026. Dimensions count boxes.
-Both checkpoints and their training history are described in
+The checkpoints and their training history are described in
 [the model notes](../models/README.md).
 
-## Training completed
+## Original small-board training
 
 Both phases use a six-block, 96-channel residual GIN with 272,648 parameters,
 training seed 42, and uniformly sampled 1×2, 2×2, 2×3, and 3×3 boards. Four
@@ -54,7 +54,7 @@ versions are in [training-summary.json](data/training-summary.json); complete
 iteration metrics are in [bootstrap CSV](data/training-bootstrap.csv) and
 [refinement CSV](data/training-refined.csv).
 
-## Final test of the recommended checkpoint
+## Fresh tests of the original bootstrap checkpoint
 
 `models/agent.pt` is bootstrap iteration 80. These fresh tests use evaluation
 seed **2027**, 40 games per opponent/board, alternating seats equally, and 128
@@ -98,7 +98,37 @@ The UI now labels active dimensions in boxes and applies board presets
 immediately to prevent a selected size from differing from the active game.
 Increasing thinking time does not replace larger-board training and human tests.
 
-## Checkpoint selection and refinement
+## Larger-board preview
+
+The broader campaign warm-starts bootstrap weights with a new optimizer and
+replay, training seed 43, and uniformly mixed 3×3, 4×4, 3×5, and 5×5 boards.
+The currently playable snapshot is iteration 80: 1,280 additional games and
+51,540 new positions, using 64 search simulations and exact root decisions
+with at most 12 remaining edges. The bounded campaign is still running; this
+preview is not its final checkpoint selection.
+
+NumPy deployment tests use seed 3032, 20 games per opponent, alternating seats,
+512 simulations, and the UI's 12-edge endgame aid. The checkpoint duel uses six
+randomized opening moves and independent move RNG streams for each network.
+
+| 4×4 opponent                   | Wins | Draws | Losses | Score rate |
+| ------------------------------ | ---: | ----: | -----: | ---------: |
+| Bootstrap, equal search budget |   18 |     0 |      2 |        90% |
+| Tactical endgame               |   19 |     0 |      1 |        95% |
+| Chain control                  |   18 |     2 |      0 |        95% |
+
+The [duel receipt](data/larger-preview-deep-duel.json) and
+[scripted-opponent receipt](data/larger-preview-deep-scripted.json) retain settings,
+hashes, raw outcomes, and confidence intervals; the duel also retains move lists.
+These are encouraging comparisons, not high-level human matches. The
+[bootstrap Deep benchmark](data/bootstrap-deep-4x4.json) uses PyTorch inference,
+so its scripted-opponent results are not an isolated test of weight changes.
+The direct duel compares both exported networks with NumPy.
+Additional [retention tests](data/larger-preview-retention.json) check 3×3 and
+unseen 2×5 boards without the agent's exact endgame aid. Their small samples
+still expose losses, so size flexibility should not be read as uniform strength.
+
+## Original checkpoint selection and refinement
 
 The earlier seed-2026 sample informed checkpoint selection. Bootstrap was
 evaluated in a single multi-board command; refinement used separate per-board

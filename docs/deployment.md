@@ -8,7 +8,7 @@ from the deployment dependency set.
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install .
-adb serve --checkpoint models/agent.npz --host 0.0.0.0 --port 9003
+adb serve --checkpoint models/larger.npz --host 0.0.0.0 --port 9003
 ```
 
 Open port 9003 on the host or place the service behind your hosting platform's
@@ -57,6 +57,8 @@ seven extra padding nodes. Maximum absolute error was 1.43×10⁻⁶ for logits 
 records both checkpoint hashes and software versions. A fresh installation and
 a non-root Docker container both completed graph search without training
 frameworks installed; the clean installation also finished a 3×3 self-play game.
+The [larger-board export receipt](data/numpy-larger-parity.json) checks the same
+206 states against the recommended model's source weights.
 
 ## Hosting behavior
 

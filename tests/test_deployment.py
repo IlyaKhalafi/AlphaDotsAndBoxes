@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def test_deployed_server_and_search_do_not_import_training_frameworks():
-    output = Path(__file__).resolve().parents[1] / "models/agent.npz"
+    output = Path(__file__).resolve().parents[1] / "models/larger.npz"
     program = """
 import importlib.abc
 import sys
