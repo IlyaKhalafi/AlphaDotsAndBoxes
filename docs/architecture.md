@@ -96,6 +96,11 @@ once per iteration. RLlib's lower-level learner API is used deliberately;
 this is not PPO renamed as AlphaZero. Library use alone does not guarantee a
 speedup; no comparison against an equivalent pure implementation is claimed.
 
+Inference uses a bounded cache of 4,096 canonical positions. Cache keys omit
+edge authors and encode box ownership relative to the active player, matching
+the network features. The cache is cleared whenever a self-play worker receives
+new weights; predictions from earlier checkpoints cannot become new targets.
+
 Minibatches pad only to the largest graph in that batch. RLlib environment
 spaces have a configured capacity to satisfy Gymnasium's fixed-space contract;
 the network has no capacity-dependent parameters and inference uses actual graph

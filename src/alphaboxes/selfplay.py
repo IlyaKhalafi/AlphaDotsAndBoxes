@@ -49,6 +49,7 @@ class SelfPlayWorker:
         self, weights: dict, sizes: list[tuple[int, int]], games: int, temperature_moves: int
     ) -> list[Example]:
         self.module.set_state(weights)
+        self.search.evaluator.clear_cache()
         samples = []
         for _ in range(games):
             size = sizes[int(self.rng.integers(len(sizes)))]

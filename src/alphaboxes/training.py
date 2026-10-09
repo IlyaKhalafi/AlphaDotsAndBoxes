@@ -200,6 +200,7 @@ def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path
                     examples = [example for chunk in ray.get(tasks) for example in chunk]
                 else:
                     local_search.evaluator.module.set_state(weights)
+                    local_search.evaluator.clear_cache()
                     examples = []
                     for _ in range(config.games_per_iteration):
                         size = config.sizes[int(rng.integers(len(config.sizes)))]

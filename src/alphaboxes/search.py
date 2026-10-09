@@ -1,5 +1,6 @@
 """PUCT search with perspective-aware backups and optional exact endgames."""
 
+from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import Protocol
 
@@ -18,19 +19,41 @@ class Evaluator(Protocol):
 
 
 class NeuralEvaluator:
-    def __init__(self, module: GraphModule):
+    def __init__(self, module: GraphModule, cache_size: int = 4096):
         self.module = module.eval()
+        self.cache_size = cache_size
+        self._cache: OrderedDict[tuple, tuple[np.ndarray, float]] = OrderedDict()
+
+    def clear_cache(self) -> None:
+        """Call after replacing weights; values are specific to one checkpoint."""
+        self._cache.clear()
 
     def __call__(self, state: State) -> tuple[np.ndarray, float]:
+        # Edge authors do not affect play; box authors are relative to the active player.
+        key = (
+            state.board.rows,
+            state.board.cols,
+            sum(1 << i for i, owner in enumerate(state.edges) if owner >= 0),
+            sum(1 << i for i, owner in enumerate(state.owners) if owner == state.player),
+            sum(1 << i for i, owner in enumerate(state.owners) if owner == 1 - state.player),
+        )
+        if key in self._cache:
+            self._cache.move_to_end(key)
+            return self._cache[key]
         obs = tensor_observations([encode(state)])
         device = next(self.module.parameters()).device
         obs = {key: value.to(device) for key, value in obs.items()}
         with torch.inference_mode():
             result = self.module.forward_inference({Columns.OBS: obs})
             probabilities = result[Columns.ACTION_DIST_INPUTS].softmax(dim=-1)[0]
-        return probabilities[: state.board.num_edges].cpu().numpy(), float(
-            result[Columns.VF_PREDS][0]
-        )
+        policy = probabilities[: state.board.num_edges].cpu().numpy()
+        policy.flags.writeable = False
+        prediction = (policy, float(result[Columns.VF_PREDS][0]))
+        if self.cache_size > 0:
+            self._cache[key] = prediction
+            if len(self._cache) > self.cache_size:
+                self._cache.popitem(last=False)
+        return prediction
 
 
 @dataclass(frozen=True)
