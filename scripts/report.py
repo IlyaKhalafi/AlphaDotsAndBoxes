@@ -49,7 +49,9 @@ def main():
             clean(json.loads(line)) for line in (run / "metrics.jsonl").read_text().splitlines()
         ]
         with (args.output / f"training-{run.name}.csv").open("w", newline="") as file:
-            writer = csv.DictWriter(file, fieldnames=FIELDS, extrasaction="ignore")
+            writer = csv.DictWriter(
+                file, fieldnames=FIELDS, extrasaction="ignore", lineterminator="\n"
+            )
             writer.writeheader()
             writer.writerows(rows)
         result = {

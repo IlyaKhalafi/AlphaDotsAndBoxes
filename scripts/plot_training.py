@@ -26,6 +26,7 @@ def main():
             "font.family": "DejaVu Sans",
             "font.size": 11,
             "svg.fonttype": "none",
+            "svg.hashsalt": "alphaboxes-training",
             "axes.spines.top": False,
             "axes.spines.right": False,
             "axes.labelcolor": "#465246",
@@ -69,6 +70,10 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(args.output, metadata={"Date": None})
     plt.close(figure)
+    if args.output.suffix.lower() == ".svg":
+        args.output.write_text(
+            "\n".join(line.rstrip() for line in args.output.read_text().splitlines()) + "\n"
+        )
 
 
 if __name__ == "__main__":
