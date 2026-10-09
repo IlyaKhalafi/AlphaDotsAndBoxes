@@ -155,6 +155,32 @@ limited; selecting iteration 200 is a heuristic, not proof of superiority.
 Fresh NumPy tests use seed 3033, including direct comparisons against the
 preview, a 4×4 Deep check, rectangular transfer, and held-out 6×6 play.
 
+The completed fresh checks do **not** justify replacing the preview. Equal
+128-simulation search beats bootstrap, but ties the preview on 5×5; the
+4×4 Deep comparison scores below 50%. The later model therefore remains a
+training initialization rather than the recommended deployment checkpoint.
+
+| Candidate iteration 200 / test | Board | Wins–draws–losses | Score rate |
+| ------------------------------ | ----- | ---------------: | ---------: |
+| Bootstrap, standard duel       | 4×4   |            29–6–5 |        80% |
+| Bootstrap, standard duel       | 5×5   |            32–0–8 |        80% |
+| Preview, standard duel         | 4×4   |            28–4–8 |        75% |
+| Preview, standard duel         | 5×5   |           20–0–20 |        50% |
+| Preview, Deep duel             | 4×4   |           8–2–10 |        45% |
+| Tactical endgame               | 5×5   |            38–0–2 |        95% |
+| Chain control                  | 5×5   |            36–0–4 |        90% |
+| Tactical endgame (unseen size) | 6×6   |            18–0–2 |        90% |
+| Chain control (unseen size)    | 6×6   |            18–1–1 |      92.5% |
+
+Standard duels and scripted 4×4/5×5 tests use 40 games per entry and no
+agent endgame aid. The 4×4 Deep duel uses 20 games, 512 simulations and the
+UI aid; 6×6 tests use 20 games. Duels randomize six opening moves and balance
+seats. [Raw fresh receipts](data/larger-fresh) retain every outcome, settings,
+hashes, and duel move lists. NumPy inference runs in a clean installation
+without PyTorch/RLlib. Strong scripted results on unseen 6×6 do not establish
+expert play or improvement over the preview. The additional 5×5 Deep match
+is still running; it cannot override the observed 4×4 regression on its own.
+
 The subsequent three-hour run warm-starts iteration 200 with seed 44,
 256 simulations, eight workers, batch size 1,024, eight updates per 32 new
 games, and 200,000 replay positions. Five-by-five is sampled twice as often
