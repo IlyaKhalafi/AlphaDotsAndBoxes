@@ -181,11 +181,27 @@ without PyTorch/RLlib. Strong scripted results on unseen 6×6 do not establish
 expert play or improvement over the preview. The additional 5×5 Deep match
 is still running; it cannot override the observed 4×4 regression on its own.
 
-The subsequent three-hour run warm-starts iteration 200 with seed 44,
-256 simulations, eight workers, batch size 1,024, eight updates per 32 new
-games, and 200,000 replay positions. Five-by-five is sampled twice as often
-as each of 3×3, 4×4, and 3×5. The allocator cap is 8 GiB and update pacing
-25%. This run is in progress; no outcome or expert strength is claimed yet.
+The subsequent run warm-starts iteration 200 with seed 44. Its first 20
+iterations completed 640 games and 28,118 positions in 1,229.49 seconds,
+using 256 simulations, eight workers, batch size 1,024, and an 8 GiB cap.
+It then resumed the same optimizer and replay with a total **eight-hour**
+budget, 512 simulations, 12 workers, 96 games per iteration, 16 updates,
+batch size 32,768, 500,000 replay positions, a 64 GiB allocator cap, and
+50% application update pacing. Five-by-five is sampled twice as often as
+each of 3×3, 4×4, and 3×5. Both segments enable exact root endgames with at
+most 12 remaining edges. The time budget includes the initial segment;
+startup and the configuration pause are excluded.
+
+Before resuming, a disposable RLlib learner completed one full 32,768-position
+5×5 update with 52.33 GiB peak allocation and 55.23 GiB reserved memory.
+Its weights were discarded. The separate GPU process remained running at
+about 34.7 GiB. Batched graph encoding reproduced 83 previously encoded
+square, rectangular, terminal and padded observations exactly. A repeated-5×5
+batch preparation diagnostic fell from 6.86 seconds to 0.73 seconds after
+vectorization. These are local resource/preparation measurements, not an
+end-to-end throughput or strength comparison. The
+[probe receipt](data/deep-large-batch-probe.json) records timings and limits.
+This run is in progress; no outcome or expert strength is claimed yet.
 
 ### Preview deployment checks
 

@@ -23,7 +23,7 @@ environment and versions are recorded alongside the experiment results.
 | `bootstrap.json` | 1,280 games on 1×2, 2×2, 2×3, 3×3              | 32 simulations                       | 4           |
 | `refine.json`    | Resume bootstrap through iteration 160         | 64 simulations + exact last 12 edges | 4           |
 | `larger.json`    | 80-minute warm start on 3×3, 4×4, 3×5, 5×5     | 64 simulations + exact last 12 edges | 4           |
-| `deep.json`      | Three-hour warm start; emphasize 5×5           | 256 simulations + exact last 12 edges | 8         |
+| `deep.json`      | Eight-hour warm start; emphasize 5×5           | 512 simulations + exact last 12 edges | 12        |
 | `strong.json`    | Longer mixed-size experiment, through 5×5      | 128 simulations                      | 8           |
 
 The strong preset is a proposed experiment, not a run claimed in the results.
@@ -43,10 +43,12 @@ This differs from `--resume`, which restores the full learner and replay. The
 two options are mutually exclusive. Evaluate before replacing a playable model:
 fine-tuning can also weaken previously learned play.
 
-The deep preset quadruples the self-play search budget and uses batches of
-1,024 positions with an 8 GiB allocator cap and 25% update pacing. Its eight
-updates per iteration keep sampled training positions at twice the larger
-preset's count while doubling the number of new games. The repeated 5×5 entry
+The deep preset uses 512 self-play simulations and batches of 32,768 positions
+with a 64 GiB allocator cap and 50% update pacing. Twelve workers collect 96
+games per iteration; the learner performs 16 updates, with a 500,000-position
+replay buffer. This preset targets a large-memory GPU: a full 5×5 batch used
+52.3 GiB of allocated memory in a disposable learner probe. Reduce the batch
+size and memory cap for smaller hardware. The repeated 5×5 entry
 is intentional: workers sample that board twice as often as each other size.
 It retains the same network dimensions so selected weights transfer directly.
 
@@ -118,7 +120,10 @@ files you trust. Inference checkpoints use PyTorch's restricted weights loader.
 
 `max_seconds` in a configuration, or `--seconds` on the command line, limits the
 training loop at completed iteration boundaries. Startup is excluded and the
-last iteration may exceed the budget. The driver saves an inference snapshot
+last iteration may exceed the budget. Resuming into the same output directory
+includes the time already recorded in that run, so changing three hours to
+eight hours grants a total of eight hours. Resuming into a new output directory
+starts a new timer. The driver saves an inference snapshot
 and full resume state before stopping, including between ordinary checkpoint
 intervals. The larger-board preset budgets 80 minutes for training, leaving
 evaluation time within a two-hour experiment.
