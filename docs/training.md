@@ -23,6 +23,7 @@ environment and versions are recorded alongside the experiment results.
 | `bootstrap.json` | 1,280 games on 1×2, 2×2, 2×3, 3×3              | 32 simulations                       | 4           |
 | `refine.json`    | Resume bootstrap through iteration 160         | 64 simulations + exact last 12 edges | 4           |
 | `larger.json`    | 80-minute warm start on 3×3, 4×4, 3×5, 5×5     | 64 simulations + exact last 12 edges | 4           |
+| `deep.json`      | Three-hour warm start; emphasize 5×5           | 256 simulations + exact last 12 edges | 8         |
 | `strong.json`    | Longer mixed-size experiment, through 5×5      | 128 simulations                      | 8           |
 
 The strong preset is a proposed experiment, not a run claimed in the results.
@@ -41,6 +42,22 @@ fresh; checkpoint metadata retains the source hash and earlier training counts.
 This differs from `--resume`, which restores the full learner and replay. The
 two options are mutually exclusive. Evaluate before replacing a playable model:
 fine-tuning can also weaken previously learned play.
+
+The deep preset quadruples the self-play search budget and uses batches of
+1,024 positions with an 8 GiB allocator cap and 25% update pacing. Its eight
+updates per iteration keep sampled training positions at twice the larger
+preset's count while doubling the number of new games. The repeated 5×5 entry
+is intentional: workers sample that board twice as often as each other size.
+It retains the same network dimensions so selected weights transfer directly.
+
+```bash
+adb train --config configs/deep.json --output runs/deep \
+  --initial-checkpoint models/larger.pt --device cuda
+```
+
+The larger batch increases actual GPU allocation; raising the cap alone would
+not do so. Search still runs on CPU workers. Check the other workload and free
+CPU capacity before using the larger preset on a shared machine.
 
 ```bash
 adb train --config configs/bootstrap.json --output runs/bootstrap --device cuda

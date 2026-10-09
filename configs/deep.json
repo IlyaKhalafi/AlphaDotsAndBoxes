@@ -1,0 +1,18 @@
+{
+  "sizes": [[3, 3], [4, 4], [3, 5], [5, 5], [5, 5]],
+  "iterations": 10000,
+  "max_seconds": 10800,
+  "games_per_iteration": 32,
+  "workers": 8,
+  "updates_per_iteration": 8,
+  "batch_size": 1024,
+  "replay_capacity": 200000,
+  "learning_rate": 0.0001,
+  "width": 96,
+  "depth": 6,
+  "seed": 44,
+  "gpu_memory_gb": 8.0,
+  "gpu_duty_cycle": 0.25,
+  "checkpoint_every": 10,
+  "search": { "simulations": 256, "exact_threshold": 12 }
+}
