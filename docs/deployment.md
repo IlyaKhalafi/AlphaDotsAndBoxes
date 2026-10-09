@@ -69,6 +69,12 @@ session store; neither is included. Large boards and Deep thinking cost more CPU
 time. The CLI defaults to one OpenBLAS/OMP thread unless you set those environment
 variables explicitly.
 
+For move-by-move debugging, `GET /api/games/{id}/replay` exports the active
+game's moves, players, agent search settings, checkpoint metadata, and final
+position. Replaying those actions reconstructs extra turns correctly. Undo
+removes the discarded continuation from the export. Save the response before
+the session expires or the server restarts; games are not stored on disk.
+
 The runtime is free of external model APIs and credentials. Training and
 development use `.[train]` and `.[dev]` respectively; recording the UI uses the
 optional `.[media]` tools.

@@ -35,6 +35,37 @@ def test_demo_can_finish_and_sessions_can_be_deleted():
     assert client.get(path).status_code == 404
 
 
+def test_replay_preserves_turns_and_tracks_undo():
+    import json
+
+    from alphaboxes.game import State
+
+    client = TestClient(create_app())
+    game = client.post("/api/games", json={"rows": 1, "cols": 2, "demo": True}).json()
+    path = f"/api/games/{game['id']}"
+    while not game["terminal"]:
+        game = client.post(
+            path + "/agent", json={"revision": game["revision"], "simulations": 8}
+        ).json()
+    for undo in (False, True):
+        if undo:
+            game = client.post(path + "/undo", json={"revision": game["revision"]}).json()
+        replay = client.get(path + "/replay").json()
+        state = State.new(replay["rows"], replay["cols"])
+        players = []
+        for move in replay["moves"]:
+            assert move["player"] == state.player
+            assert move["analysis"]["action"] == move["action"]
+            players.append(state.player)
+            state = state.play(move["action"])
+        assert json.loads(json.dumps(state.as_dict())) == replay["final_state"]
+        assert state.edges == tuple(game["edges"])
+        if not undo:
+            assert any(a == b for a, b in zip(players, players[1:], strict=False))
+    client.delete(path)
+    assert client.get(path + "/replay").status_code == 404
+
+
 def test_invalid_dimensions_and_out_of_turn():
     client = TestClient(create_app())
     assert client.post("/api/games", json={"rows": 0}).status_code == 422

@@ -40,12 +40,19 @@ class SearchRequest(Revision):
 
 
 @dataclass
+class Turn:
+    state: State
+    action: int
+    analysis: dict | None = None
+
+
+@dataclass
 class Session:
     state: State
     human: int
     demo: bool
     revision: int = 0
-    history: list[State] = field(default_factory=list)
+    history: list[Turn] = field(default_factory=list)
     last_action: int | None = None
     touched: float = field(default_factory=time.monotonic)
     lock: threading.Lock = field(default_factory=threading.Lock)
@@ -59,9 +66,9 @@ class Session:
             "can_undo": bool(self.history),
         }
 
-    def play(self, action: int):
+    def play(self, action: int, analysis: dict | None = None):
         next_state = self.state.play(action)
-        self.history.append(self.state)
+        self.history.append(Turn(self.state, action, analysis))
         self.state = next_state
         self.last_action = action
         self.revision += 1
@@ -140,6 +147,28 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
         with session.lock:
             return session.snapshot()
 
+    @app.get("/api/games/{game_id}/replay")
+    def replay(game_id: str):
+        session = get_session(game_id)
+        with session.lock:
+            return {
+                "format_version": 1,
+                "rows": session.state.board.rows,
+                "cols": session.state.board.cols,
+                "human_player": session.human,
+                "demo": session.demo,
+                "checkpoint": metadata,
+                "moves": [
+                    {
+                        "action": turn.action,
+                        "player": turn.state.player,
+                        "analysis": turn.analysis,
+                    }
+                    for turn in session.history
+                ],
+                "final_state": session.state.as_dict(),
+            }
+
     @app.delete("/api/games/{game_id}", status_code=204)
     def delete_game(game_id: str):
         with sessions_lock:
@@ -168,20 +197,15 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             started = time.monotonic()
             exact = evaluator is not None and len(session.state.legal_actions) <= 12
             action, value = search(session, request.simulations)
-            session.play(action)
-            return session.snapshot() | {
-                "analysis": {
-                    "action": action,
-                    "value": value,
-                    "seconds": time.monotonic() - started,
-                    "simulations": request.simulations if evaluator and not exact else 0,
-                    "method": "exact_endgame"
-                    if exact
-                    else "graph_search"
-                    if evaluator
-                    else "tactical",
-                }
+            analysis = {
+                "action": action,
+                "value": value,
+                "seconds": time.monotonic() - started,
+                "simulations": request.simulations if evaluator and not exact else 0,
+                "method": "exact_endgame" if exact else "graph_search" if evaluator else "tactical",
             }
+            session.play(action, analysis)
+            return session.snapshot() | {"analysis": analysis}
 
     @app.post("/api/games/{game_id}/hint")
     def hint(game_id: str, request: SearchRequest):
@@ -200,7 +224,7 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
                 raise HTTPException(409, "No move to undo.")
             # Return to before the most recent human move, including subsequent agent moves.
             while session.history:
-                previous = session.history.pop()
+                previous = session.history.pop().state
                 session.state = previous
                 if session.demo or previous.player == session.human:
                     break
