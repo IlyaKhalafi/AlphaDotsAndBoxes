@@ -164,6 +164,7 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             if not session.demo and session.state.player == session.human:
                 raise HTTPException(409, "It is your turn.")
             started = time.monotonic()
+            exact = evaluator is not None and len(session.state.legal_actions) <= 12
             action, value = search(session, request.simulations)
             session.play(action)
             return session.snapshot() | {
@@ -171,7 +172,12 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
                     "action": action,
                     "value": value,
                     "seconds": time.monotonic() - started,
-                    "simulations": request.simulations,
+                    "simulations": request.simulations if evaluator and not exact else 0,
+                    "method": "exact_endgame"
+                    if exact
+                    else "graph_search"
+                    if evaluator
+                    else "tactical",
                 }
             }
 

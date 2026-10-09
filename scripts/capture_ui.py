@@ -32,11 +32,24 @@ def main():
         page.wait_for_function("!document.getElementById('undo').disabled")
         page.locator("#undo").click()
         page.wait_for_function("document.getElementById('human-score').textContent === '0'")
+        page.locator(".edge-control[role=button]").first.focus()
+        page.locator(".edge-control[role=button]").first.press("Enter")
+        page.wait_for_function("!document.getElementById('undo').disabled")
+        page.locator("#undo").click()
+        page.wait_for_function("document.querySelectorAll('.drawn-edge').length === 0")
         # Start over and capture the actual graph agent playing both seats.
         page.locator("#watch").click()
         page.wait_for_function(
             "document.getElementById('board-label').textContent.includes('SELF-PLAY')"
         )
+        page.locator("#watch").click()
+        page.wait_for_function("!document.getElementById('watch').disabled")
+        assert page.locator("#turn-title").inner_text() == "Replay paused."
+        assert page.locator(".edge-control[role=button]").count() == 0
+        paused_edges = page.locator(".drawn-edge").count()
+        page.wait_for_timeout(800)
+        assert page.locator(".drawn-edge").count() == paused_edges
+        page.locator("#watch").click()
         frames, started = [], time.monotonic()
         while time.monotonic() - started < 90:
             frames.append(Image.open(io.BytesIO(page.screenshot())).convert("RGB"))
@@ -45,6 +58,7 @@ def main():
             page.wait_for_timeout(500)
         else:
             raise RuntimeError("Self-play did not finish within 90 seconds.")
+        assert "Watch the agent play" in page.locator("#watch").inner_text()
         page.screenshot(path=str(args.output / "desktop-played.png"), full_page=True)
         frames.extend([frames[-1]] * 4)
         # One shared palette avoids flickering colors between frames.

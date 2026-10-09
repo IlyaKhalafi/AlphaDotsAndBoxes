@@ -67,7 +67,7 @@ function drawBoard() {
     root.append(text);
   });
   const interactive =
-    !busy && !game.terminal && !watching && game.player === game.human_player;
+    !busy && !game.terminal && !game.demo && game.player === game.human_player;
   game.geometry.forEach(([r1, c1, r2, c2], action) => {
     const attrs = {
       x1: x0 + c1 * step,
@@ -164,14 +164,14 @@ function render() {
   $("agent-track").style.width =
     `${(100 * agentScore) / (game.rows * game.cols)}%`;
   $("board-label").textContent =
-    `${game.rows} × ${game.cols} BOARD${watching ? " / SELF-PLAY" : ""}`;
+    `${game.rows} × ${game.cols} BOARD${game.demo ? " / SELF-PLAY" : ""}`;
   $("human-label").textContent = game.demo ? "AGENT A" : "YOU";
   $("agent-label").textContent = game.demo ? "AGENT B" : "AGENT";
   $("human-turn").hidden = game.terminal || !humanTurn;
-  $("human-turn").textContent = watching ? "PLAYING" : "YOUR TURN";
+  $("human-turn").textContent = game.demo ? "PLAYING" : "YOUR TURN";
   $("agent-turn").hidden = game.terminal || humanTurn;
   $("agent-turn").textContent = busy ? "THINKING" : "PLAYING";
-  $("hint").disabled = busy || watching || game.terminal || !humanTurn;
+  $("hint").disabled = busy || game.demo || game.terminal || !humanTurn;
   $("undo").disabled = busy || watching || !game.can_undo;
   $("watch").classList.toggle("active", watching);
   $("watch").disabled = busy && !watching;
@@ -210,13 +210,22 @@ function render() {
         ? "THINKING"
         : "LET’S PLAY";
     $("status").textContent = watching
-      ? "Two sides. One network. Learning one line at a time."
+      ? "Two sides. One network. Looking ahead, one line at a time."
       : humanTurn
         ? "Choose an empty line between two dots."
         : "Looking for the next good move.";
-    if (game.analysis && humanTurn && !busy)
+    if (game.demo && !watching) {
+      $("turn-title").textContent = "Replay paused.";
+      $("status").textContent = "Resume the replay or start a fresh board.";
+      pill.querySelector("span").textContent = "PAUSED";
+    }
+    if (game.analysis && !busy && (watching || (humanTurn && !game.demo))) {
+      const seconds = game.analysis.seconds.toFixed(2);
       $("status").textContent =
-        `Your move. Agent considered ${game.analysis.simulations} searches in ${game.analysis.seconds.toFixed(2)}s.`;
+        game.analysis.method === "exact_endgame"
+          ? `Last move: endgame solved in ${seconds}s.`
+          : `Last move: agent thought for ${seconds}s.`;
+    }
   }
   drawBoard();
 }
@@ -267,6 +276,7 @@ async function agentTurns(token) {
       game = next;
       hinted = null;
       busy = false;
+      if (game.terminal) watching = false;
       render();
       await delay(watching ? 200 : 120);
     } catch (error) {
@@ -280,7 +290,7 @@ async function agentTurns(token) {
   }
 }
 async function humanMove(action) {
-  if (busy || watching || game.terminal || game.player !== game.human_player)
+  if (busy || game.demo || game.terminal || game.player !== game.human_player)
     return;
   const token = generation;
   busy = true;
