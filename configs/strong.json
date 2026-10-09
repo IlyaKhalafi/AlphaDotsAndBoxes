@@ -1,0 +1,13 @@
+{
+  "sizes": [[2, 2], [2, 3], [3, 3], [3, 4], [4, 4], [4, 5], [5, 5]],
+  "iterations": 2000,
+  "games_per_iteration": 64,
+  "workers": 8,
+  "updates_per_iteration": 32,
+  "batch_size": 128,
+  "replay_capacity": 100000,
+  "width": 96,
+  "depth": 6,
+  "checkpoint_every": 25,
+  "search": {"simulations": 128}
+}
