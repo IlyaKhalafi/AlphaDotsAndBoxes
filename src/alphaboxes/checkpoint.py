@@ -1,5 +1,7 @@
 """Portable, inference-only checkpoints separate from resumable learner state."""
 
+import hashlib
+import io
 from pathlib import Path
 
 import torch
@@ -21,9 +23,12 @@ def save_agent(path: Path, weights: dict, width: int, depth: int, metadata: dict
 
 
 def load_agent(path: Path) -> tuple[GraphModule, dict]:
-    payload = torch.load(path, map_location="cpu", weights_only=True)
+    # Hash the same snapshot that is loaded, even if a training job replaces the file.
+    snapshot = path.read_bytes()
+    payload = torch.load(io.BytesIO(snapshot), map_location="cpu", weights_only=True)
     if payload.get("format_version") != 1:
         raise ValueError("Unsupported agent checkpoint version.")
     module = module_spec(**payload["model_config"]).build()
     module.load_state_dict(payload["state_dict"], strict=True)
-    return module.eval(), payload["metadata"]
+    metadata = {**payload["metadata"], "checkpoint_sha256": hashlib.sha256(snapshot).hexdigest()}
+    return module.eval(), metadata

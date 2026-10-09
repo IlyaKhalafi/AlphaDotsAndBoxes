@@ -1,6 +1,5 @@
 """Seat-balanced evaluation with raw outcomes and uncertainty intervals."""
 
-import hashlib
 import json
 import math
 import time
@@ -93,7 +92,7 @@ def evaluate(
             rows.append(record)
             print(json.dumps(record), flush=True)
     result = {
-        "checkpoint_sha256": hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+        "checkpoint_sha256": metadata["checkpoint_sha256"],
         "checkpoint_metadata": metadata,
         "seed": seed,
         "simulations": 0 if policy_only else simulations,

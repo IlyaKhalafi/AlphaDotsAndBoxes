@@ -160,6 +160,7 @@ def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path
         if not ray.is_initialized():
             # Always a new local instance. Never attach to someone else's Ray cluster.
             ray.init(
+                address="local",
                 num_cpus=config.workers,
                 num_gpus=0,
                 include_dashboard=False,
