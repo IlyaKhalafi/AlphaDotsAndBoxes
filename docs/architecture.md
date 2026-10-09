@@ -115,8 +115,11 @@ interactive search and dense adjacency allocations practical. Dense adjacency
 costs O((E+B)²) memory per observation. Very large boards should use sparse
 aggregation and stronger throughput engineering before extended training.
 
-Inference checkpoints contain weights and plain metadata, loaded with
-`weights_only=True`. Resumable checkpoints also contain RLlib optimizer state,
+Deployment uses a NumPy implementation of the same GIN: linear layers, SiLU,
+residual aggregation, layer normalization, masked pooling, and policy/value heads.
+Exported `.npz` checkpoints contain float32 arrays and JSON metadata, loaded with
+`allow_pickle=False`; inference imports neither PyTorch nor RLlib. Training-side
+`.pt` checkpoints use `weights_only=True`. Resumable checkpoints also contain RLlib optimizer state,
 replay, and the driver's RNG state; load these only from trusted local runs.
 Resuming retains learning progress but restarts worker RNG streams, so it does
 not reproduce an uninterrupted run bit for bit. CUDA operations can also vary

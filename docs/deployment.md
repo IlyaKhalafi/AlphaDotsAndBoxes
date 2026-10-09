@@ -51,6 +51,13 @@ can change search tie decisions. Tests compare masked logits and values across
 square, rectangular, and padded graphs. Evaluate exported weights when reporting
 deployed playing strength.
 
+The bootstrap export was checked on 206 states across six board shapes, with
+seven extra padding nodes. Maximum absolute error was 1.43×10⁻⁶ for logits and
+3.88×10⁻⁷ for values. The [parity receipt](data/numpy-bootstrap-parity.json)
+records both checkpoint hashes and software versions. A fresh installation and
+a non-root Docker container both completed graph search without training
+frameworks installed; the clean installation also finished a 3×3 self-play game.
+
 ## Hosting behavior
 
 Use one server process: games live in its memory, expire after an hour of
