@@ -87,10 +87,10 @@ files you trust. Inference checkpoints use PyTorch's restricted weights loader.
 ## Evaluate fairly
 
 ```bash
-adb evaluate --checkpoint models/bootstrap.pt --sizes 2x2,3x3,4x4 \
+adb evaluate --checkpoint models/agent.pt --sizes 2x2,3x3,4x4 \
   --games 40 --simulations 128 --seed 2026 --output runs/pure.json
 
-adb evaluate --checkpoint models/bootstrap.pt --sizes 2x2,3x3,4x4 \
+adb evaluate --checkpoint models/agent.pt --sizes 2x2,3x3,4x4 \
   --games 40 --simulations 128 --exact-threshold 12 \
   --seed 2026 --output runs/aided.json
 ```

@@ -32,7 +32,7 @@ cd AlphaDotsAndBoxes
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
-adb serve --checkpoint models/bootstrap.pt
+adb serve --checkpoint models/agent.pt
 ```
 
 Open **http://127.0.0.1:8000**. Choose a board, adjust thinking time, and play.
@@ -97,7 +97,7 @@ campaign with larger boards.
 ## Evaluate and develop
 
 ```bash
-adb evaluate --checkpoint models/bootstrap.pt --games 40 --sizes 2x2,3x3,4x4
+adb evaluate --checkpoint models/agent.pt --games 40 --sizes 2x2,3x3,4x4
 pytest -q
 ```
 

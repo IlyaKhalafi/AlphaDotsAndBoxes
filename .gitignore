@@ -205,20 +205,17 @@ cython_debug/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
-# Local training, credentials, and workspace instructions
+# Local training and credentials
 runs/
 checkpoints/
 *.pt
 *.pth
 *.pem
 .env.*
-AGENTS.md
-**/AGENTS.md
-.agents/
-.codex/
 artifacts/private/
 docs/assets/*.png
-!models/bootstrap.pt
+!models/agent.pt
+!models/refined.pt
 
 # Ruff stuff:
 .ruff_cache/
