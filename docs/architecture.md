@@ -29,14 +29,14 @@ GCN/GAT/GIN ablation has not been run.
 
 The 12 node channels encode:
 
-| Channels | Meaning |
-| --- | --- |
-| 0–1 | Edge or box node |
-| 2 | Edge is occupied |
-| 3–4 | Box belongs to current player or opponent |
-| 5–9 | Box has 0, 1, 2, 3, or 4 remaining sides (one-hot) |
-| 10 | Edge's number of adjacent boxes, divided by two |
-| 11 | Adjacent boxes completed by drawing this edge, divided by two |
+| Channels | Meaning                                                       |
+| -------- | ------------------------------------------------------------- |
+| 0–1      | Edge or box node                                              |
+| 2        | Edge is occupied                                              |
+| 3–4      | Box belongs to current player or opponent                     |
+| 5–9      | Box has 0, 1, 2, 3, or 4 remaining sides (one-hot)            |
+| 10       | Edge's number of adjacent boxes, divided by two               |
+| 11       | Adjacent boxes completed by drawing this edge, divided by two |
 
 Three game channels encode score difference from the current player's
 perspective, remaining edge fraction, and unclaimed box fraction. They are
@@ -77,8 +77,9 @@ terminal outcomes, not intermediate box rewards.
 
 An optional exact minimax oracle solves small endgames using occupancy bitsets
 and memoization. Historical edge ownership is irrelevant to future play. The
-oracle maximizes final box margin. It is disabled in the training presets and
-the default evaluation command. The UI enables it in late games; evaluations
+oracle maximizes final box margin. It is disabled in bootstrap training and
+the default evaluation command; refinement enables it at the root with at most
+12 edges remaining. The UI enables it in late games; evaluations
 with it enabled are reported separately so its contribution is visible.
 
 ## RLlib's role

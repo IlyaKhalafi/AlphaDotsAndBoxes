@@ -25,6 +25,7 @@ def main():
         {
             "font.family": "DejaVu Sans",
             "font.size": 11,
+            "svg.fonttype": "none",
             "axes.spines.top": False,
             "axes.spines.right": False,
             "axes.labelcolor": "#465246",

@@ -4,9 +4,9 @@ Both checkpoints use the same 272,648-parameter residual GIN: six blocks with 96
 channels, shared edge policy and global value heads. They support different board
 sizes without replacing a layer.
 
-| File | Training | Role |
-| --- | --- | --- |
-| `agent.pt` | 1,280 pure search-guided self-play games, 19,426 positions | Recommended starting opponent |
+| File         | Training                                                                              | Role                          |
+| ------------ | ------------------------------------------------------------------------------------- | ----------------------------- |
+| `agent.pt`   | 1,280 pure search-guided self-play games, 19,426 positions                            | Recommended starting opponent |
 | `refined.pt` | 2,560 cumulative games, 38,810 positions; second phase enables exact 12-edge endgames | Comparison / further research |
 
 The recommended checkpoint remains the first run because it scored slightly
