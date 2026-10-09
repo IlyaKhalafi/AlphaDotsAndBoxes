@@ -5,6 +5,16 @@ from dataclasses import replace
 from pathlib import Path
 
 
+def match_arguments(parser, output: str) -> None:
+    parser.add_argument("--checkpoint", type=Path, required=True)
+    parser.add_argument("--output", type=Path, default=Path(output))
+    parser.add_argument("--sizes", default="2x2,3x3,4x4")
+    parser.add_argument("--games", type=int, default=40)
+    parser.add_argument("--simulations", type=int, default=128)
+    parser.add_argument("--exact-threshold", type=int, default=0)
+    parser.add_argument("--seed", type=int, default=2026)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Train and play Alpha Dots & Boxes")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -26,14 +36,21 @@ def main():
     serving.add_argument("--host", default="127.0.0.1")
     serving.add_argument("--port", type=int, default=8000)
     evaluation = commands.add_parser("evaluate", help="Evaluate both seats against baselines")
-    evaluation.add_argument("--checkpoint", type=Path, required=True)
-    evaluation.add_argument("--output", type=Path, default=Path("runs/evaluation.json"))
-    evaluation.add_argument("--sizes", default="2x2,3x3,4x4")
-    evaluation.add_argument("--games", type=int, default=40)
-    evaluation.add_argument("--simulations", type=int, default=128)
-    evaluation.add_argument("--exact-threshold", type=int, default=0)
-    evaluation.add_argument("--seed", type=int, default=2026)
+    match_arguments(evaluation, "runs/evaluation.json")
     evaluation.add_argument("--policy-only", action="store_true", help="Evaluate without search")
+    evaluation.add_argument(
+        "--opponents",
+        nargs="+",
+        choices=["random", "tactical", "exact", "tactical_endgame", "chain_control"],
+        help="Select benchmarks; defaults preserve the original evaluation schedule",
+    )
+    duel = commands.add_parser(
+        "duel", help="Compare checkpoints with balanced seats and random openings"
+    )
+    match_arguments(duel, "runs/duel.json")
+    duel.set_defaults(sizes="5x5", seed=3031)
+    duel.add_argument("--opponent-checkpoint", type=Path, required=True)
+    duel.add_argument("--opening-moves", type=int, default=6)
     args = parser.parse_args()
     if args.command == "train":
         from alphaboxes.training import TrainConfig, train
@@ -53,6 +70,21 @@ def main():
         from alphaboxes.web.app import create_app
 
         uvicorn.run(create_app(args.checkpoint), host=args.host, port=args.port)
+    elif args.command == "duel":
+        from alphaboxes.evaluation import compare_agents
+
+        sizes = [tuple(map(int, size.split("x"))) for size in args.sizes.split(",")]
+        compare_agents(
+            args.checkpoint,
+            args.opponent_checkpoint,
+            args.output,
+            sizes,
+            args.games,
+            args.simulations,
+            args.exact_threshold,
+            args.seed,
+            args.opening_moves,
+        )
     else:
         from alphaboxes.evaluation import evaluate
 
@@ -66,6 +98,7 @@ def main():
             args.exact_threshold,
             args.seed,
             args.policy_only,
+            args.opponents,
         )
 
 
