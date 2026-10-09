@@ -1,7 +1,9 @@
 """Seat-balanced evaluation with raw outcomes and uncertainty intervals."""
 
+import importlib.metadata
 import json
 import math
+import platform
 import time
 from pathlib import Path
 
@@ -12,6 +14,13 @@ from alphaboxes.checkpoint import load_evaluator
 from alphaboxes.game import State
 from alphaboxes.opponents import endgame_action, random_action, solve, tactical_action
 from alphaboxes.search import MCTS, SearchConfig
+
+
+def software_versions(*checkpoints: Path) -> dict[str, str]:
+    versions = {"python": platform.python_version(), "numpy": np.__version__}
+    if any(path.suffix != ".npz" for path in checkpoints):
+        versions.update({name: importlib.metadata.version(name) for name in ("torch", "ray")})
+    return versions
 
 
 def wilson(wins: int, games: int) -> tuple[float, float]:
@@ -114,6 +123,7 @@ def evaluate(
     result = {
         "checkpoint_sha256": metadata["checkpoint_sha256"],
         "checkpoint_metadata": metadata,
+        "software": software_versions(checkpoint),
         "inference": "numpy" if checkpoint.suffix == ".npz" else "torch",
         "seed": seed,
         "simulations": 0 if policy_only else simulations,
@@ -184,6 +194,7 @@ def compare_agents(
         "checkpoint_metadata": metadata,
         "opponent_sha256": opponent_metadata["checkpoint_sha256"],
         "opponent_metadata": opponent_metadata,
+        "software": software_versions(checkpoint, opponent_checkpoint),
         "inference": "numpy" if checkpoint.suffix == ".npz" else "torch",
         "opponent_inference": "numpy" if opponent_checkpoint.suffix == ".npz" else "torch",
         "seed": seed,

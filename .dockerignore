@@ -11,4 +11,3 @@ docs
 .env*
 *.pt
 *.pth
-AGENTS.md
