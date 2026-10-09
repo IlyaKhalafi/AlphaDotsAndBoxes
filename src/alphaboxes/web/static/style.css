@@ -160,9 +160,6 @@ h2 {
 .setting-field {
   min-width: 0;
 }
-.players-field .field-label {
-  margin-top: 0;
-}
 .presets {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -224,11 +221,6 @@ select {
 .primary:hover {
   background: #b4492e;
 }
-.control-divider {
-  height: 1px;
-  background: var(--line);
-  margin: 22px 0 18px;
-}
 .watch-button {
   display: flex;
   align-items: center;
@@ -251,6 +243,19 @@ select {
   justify-content: space-between;
   align-items: center;
   gap: 8px;
+}
+.game-top > div:first-child {
+  min-width: 0;
+}
+.game-options {
+  display: grid;
+  justify-items: end;
+  gap: 9px;
+  flex-shrink: 0;
+}
+#mode {
+  width: 138px;
+  height: 34px;
 }
 .eyebrow {
   font-size: 11px;
@@ -369,6 +374,7 @@ select {
 }
 .board-actions {
   display: flex;
+  align-items: center;
   gap: 16px;
   white-space: nowrap;
 }
@@ -378,6 +384,9 @@ select {
 }
 .board-actions .primary {
   padding: 9px 12px;
+}
+.board-actions .watch-button {
+  padding: 9px 0;
 }
 .score-column {
   display: grid;
@@ -529,22 +538,15 @@ select {
     padding: 18px;
   }
   .panel-heading,
-  .players-field,
   .seat-field,
-  .watch-controls,
   .controls > .field-label:first-of-type,
   .presets,
-  .custom-size,
-  .control-divider,
-  .watch-button {
+  .custom-size {
     grid-column: 1 / -1;
   }
   .panel-heading {
     font-size: 24px;
     margin-bottom: 0;
-  }
-  .players-field .field-label {
-    margin-top: 20px;
   }
   .custom-size {
     margin-bottom: 0;

@@ -33,13 +33,6 @@
       <section class="play-layout" aria-label="Game">
         <aside class="controls panel">
           <h2 class="panel-heading">Game</h2>
-          <div class="setting-field players-field">
-            <label class="field-label" for="mode">Players</label>
-            <select id="mode">
-              <option value="play">You vs Agent</option>
-              <option value="watch">Agent vs Agent</option>
-            </select>
-          </div>
           <div class="field-label">Board size <span>boxes</span></div>
           <div class="presets" role="group" aria-label="Board size">
             <button data-size="2" type="button" aria-pressed="false">
@@ -100,12 +93,6 @@
               <option value="1">Agent</option>
             </select>
           </div>
-          <div class="watch-controls" id="watch-controls" hidden>
-            <div class="control-divider"></div>
-            <button id="watch" type="button" class="watch-button">
-              <span aria-hidden="true">▷</span> Watch game
-            </button>
-          </div>
         </aside>
         <div class="game-panel panel">
           <div class="game-top">
@@ -113,8 +100,14 @@
               <span class="eyebrow" id="board-label">3 × 3 boxes</span>
               <h2 id="turn-title">Your move.</h2>
             </div>
-            <div class="live-pill" id="live-pill">
-              <i></i><span>READY</span>
+            <div class="game-options">
+              <select id="mode" aria-label="Players" title="Players">
+                <option value="play">You vs Agent</option>
+                <option value="watch">Agent vs Agent</option>
+              </select>
+              <div class="live-pill" id="live-pill">
+                <i></i><span>READY</span>
+              </div>
             </div>
           </div>
           <div class="board-wrap">
@@ -128,6 +121,11 @@
           <div class="board-bottom">
             <p id="status" aria-live="polite"></p>
             <div class="board-actions">
+              <span id="watch-controls" hidden>
+                <button id="watch" type="button" class="watch-button">
+                  <span aria-hidden="true">Ⅱ</span> Pause
+                </button>
+              </span>
               <button id="hint" type="button">Hint</button>
               <button id="undo" type="button" disabled>Undo</button>
               <button id="new-game" type="button" class="primary">

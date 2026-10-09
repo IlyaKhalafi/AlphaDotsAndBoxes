@@ -11,7 +11,7 @@ A graph network that learns the classic pencil-and-paper game by playing itself.
 ![RLlib](https://img.shields.io/badge/RLlib-2.58-c95435)
 [![License: MIT](https://img.shields.io/badge/license-MIT-6c8266)](LICENSE)
 
-![The agent playing a real game in the web UI](docs/assets/self-play.gif)
+![The agent playing a real game in the web UI](docs/assets/gameplay.gif)
 
 </div>
 

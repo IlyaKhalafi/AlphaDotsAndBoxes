@@ -103,7 +103,7 @@ def main():
         palette = frames[-1].resize((960, 615)).quantize(colors=96)
         indexed = [frame.resize((960, 615)).quantize(palette=palette) for frame in frames]
         indexed[0].save(
-            args.output / "self-play.gif",
+            args.output / "gameplay.gif",
             save_all=True,
             append_images=indexed[1:],
             duration=500,
@@ -115,6 +115,7 @@ def main():
         mobile.wait_for_selector(".edge-control[role=button]")
         assert mobile.evaluate("document.documentElement.scrollWidth <= innerWidth")
         assert mobile.locator("#new-game").bounding_box()["y"] < 650
+        assert mobile.locator("#mode").bounding_box()["y"] < 200
         mobile.screenshot(path=str(args.output / "mobile.png"), full_page=True)
         # A rectangular custom board must remain playable.
         mobile.locator(".custom-size summary").click()

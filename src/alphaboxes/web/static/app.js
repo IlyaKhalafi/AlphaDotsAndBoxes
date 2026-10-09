@@ -165,6 +165,7 @@ function render() {
   const humanTurn = game.player === game.human_player;
   $("seat-controls").hidden = game.demo;
   $("watch-controls").hidden = !game.demo;
+  $("hint").hidden = game.demo;
   $("human-score").textContent = humanScore;
   $("agent-score").textContent = agentScore;
   $("human-track").style.width =
