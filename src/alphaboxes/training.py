@@ -234,6 +234,7 @@ def train(config: TrainConfig, output: Path, resume: Path | None = None) -> Path
                     "seed": config.seed,
                     "sizes": [list(size) for size in config.sizes],
                     "simulations": config.search.simulations,
+                    "training_exact_threshold": config.search.exact_threshold,
                 }
                 record = (
                     metadata

@@ -1,0 +1,12 @@
+{
+  "sizes": [[1, 2], [2, 2], [2, 3], [3, 3]],
+  "iterations": 160,
+  "games_per_iteration": 16,
+  "workers": 4,
+  "updates_per_iteration": 16,
+  "batch_size": 128,
+  "width": 96,
+  "depth": 6,
+  "checkpoint_every": 10,
+  "search": {"simulations": 64, "exact_threshold": 12}
+}

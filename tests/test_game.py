@@ -1,3 +1,5 @@
+from functools import cache
+
 import numpy as np
 import pytest
 
@@ -75,3 +77,39 @@ def test_random_games_conserve_boxes():
             assert (s.player == before.player) == (captured > 0)
         assert s.terminal
         assert sum(s.scores) == s.board.num_boxes
+
+
+def test_bitset_oracle_matches_rules_engine_minimax():
+    """An independent engine-based reference catches scoring/turn/cache mistakes."""
+
+    @cache
+    def reference(state):
+        if state.terminal:
+            scores = state.scores
+            return scores[state.player] - scores[1 - state.player]
+        values = []
+        for action in state.legal_actions:
+            child = state.play(action)
+            # The engine keeps edge authors for UI; minimax needs only occupancy.
+            child = State(
+                child.board,
+                tuple(0 if e >= 0 else -1 for e in child.edges),
+                child.owners,
+                child.player,
+            )
+            value = reference(child)
+            values.append(value if state.player == child.player else -value)
+        return max(values)
+
+    rng = np.random.default_rng(71)
+    for size in [(1, 1), (1, 2), (2, 2)]:
+        state = State.new(*size)
+        while not state.terminal:
+            margin, optimal = solve(state)
+            expected = reference(state) / state.board.num_boxes
+            assert margin == expected
+            for action in optimal:
+                child = state.play(action)
+                score = reference(child) / state.board.num_boxes
+                assert (score if child.player == state.player else -score) == margin
+            state = state.play(int(rng.choice(state.legal_actions)))

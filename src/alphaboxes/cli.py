@@ -26,6 +26,7 @@ def main():
     evaluation.add_argument("--simulations", type=int, default=128)
     evaluation.add_argument("--exact-threshold", type=int, default=0)
     evaluation.add_argument("--seed", type=int, default=2026)
+    evaluation.add_argument("--policy-only", action="store_true", help="Evaluate without search")
     args = parser.parse_args()
     if args.command == "train":
         from alphaboxes.training import TrainConfig, train
@@ -55,6 +56,7 @@ def main():
             args.simulations,
             args.exact_threshold,
             args.seed,
+            args.policy_only,
         )
 
 

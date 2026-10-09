@@ -32,6 +32,7 @@ def evaluate(
     simulations: int = 128,
     exact_threshold: int = 0,
     seed: int = 2026,
+    policy_only: bool = False,
 ) -> dict:
     if games < 2 or games % 2:
         raise ValueError("Use an even number of games >= 2 for balanced seats.")
@@ -60,7 +61,7 @@ def evaluate(
                 )
                 while not state.terminal:
                     if state.player == agent_seat:
-                        policy, _ = search.policy(state)
+                        policy, _ = neural(state) if policy_only else search.policy(state)
                         # Randomize tied visit counts, avoiding edge-index bias.
                         action = int(rng.choice(np.flatnonzero(policy == policy.max())))
                         actions_total += 1
@@ -95,8 +96,9 @@ def evaluate(
         "checkpoint_sha256": hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
         "checkpoint_metadata": metadata,
         "seed": seed,
-        "simulations": simulations,
-        "exact_threshold": exact_threshold,
+        "simulations": 0 if policy_only else simulations,
+        "exact_threshold": 0 if policy_only else exact_threshold,
+        "mode": "policy" if policy_only else "search",
         "results": rows,
     }
     output.parent.mkdir(parents=True, exist_ok=True)
