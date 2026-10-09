@@ -6,13 +6,12 @@ import time
 from pathlib import Path
 
 import numpy as np
-import torch
 
 from alphaboxes.chains import chain_action
-from alphaboxes.checkpoint import load_agent
+from alphaboxes.checkpoint import load_evaluator
 from alphaboxes.game import State
 from alphaboxes.opponents import endgame_action, random_action, solve, tactical_action
-from alphaboxes.search import MCTS, NeuralEvaluator, SearchConfig
+from alphaboxes.search import MCTS, SearchConfig
 
 
 def wilson(wins: int, games: int) -> tuple[float, float]:
@@ -59,9 +58,7 @@ def evaluate(
 ) -> dict:
     if games < 2 or games % 2:
         raise ValueError("Use an even number of games >= 2 for balanced seats.")
-    torch.set_num_threads(1)
-    module, metadata = load_agent(checkpoint)
-    neural = NeuralEvaluator(module)
+    neural, metadata = load_evaluator(checkpoint)
     rng = np.random.default_rng(seed)
     rows = []
     for size in sizes:
@@ -117,6 +114,7 @@ def evaluate(
     result = {
         "checkpoint_sha256": metadata["checkpoint_sha256"],
         "checkpoint_metadata": metadata,
+        "inference": "numpy" if checkpoint.suffix == ".npz" else "torch",
         "seed": seed,
         "simulations": 0 if policy_only else simulations,
         "exact_threshold": 0 if policy_only else exact_threshold,
@@ -143,10 +141,9 @@ def compare_agents(
     """Seat-balanced checkpoint matches with reproducible randomized openings."""
     if games < 2 or games % 2 or opening_moves < 0:
         raise ValueError("Use an even game count >=2 and nonnegative opening_moves.")
-    torch.set_num_threads(1)
-    model, metadata = load_agent(checkpoint)
-    opponent, opponent_metadata = load_agent(opponent_checkpoint)
-    evaluators = [NeuralEvaluator(model), NeuralEvaluator(opponent)]
+    neural, metadata = load_evaluator(checkpoint)
+    opponent, opponent_metadata = load_evaluator(opponent_checkpoint)
+    evaluators = [neural, opponent]
     rows = []
     for size in sizes:
         started = time.monotonic()
@@ -187,6 +184,8 @@ def compare_agents(
         "checkpoint_metadata": metadata,
         "opponent_sha256": opponent_metadata["checkpoint_sha256"],
         "opponent_metadata": opponent_metadata,
+        "inference": "numpy" if checkpoint.suffix == ".npz" else "torch",
+        "opponent_inference": "numpy" if opponent_checkpoint.suffix == ".npz" else "torch",
         "seed": seed,
         "simulations": simulations,
         "exact_threshold": exact_threshold,

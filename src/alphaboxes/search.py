@@ -1,26 +1,27 @@
 """PUCT search with perspective-aware backups and optional exact endgames."""
 
+from __future__ import annotations
+
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 import numpy as np
-import torch
-from ray.rllib.core.columns import Columns
 
 from alphaboxes.game import State
 from alphaboxes.graph import encode
-from alphaboxes.network import GraphModule, tensor_observations
 from alphaboxes.opponents import solve
+
+if TYPE_CHECKING:
+    from alphaboxes.network import GraphModule
 
 
 class Evaluator(Protocol):
     def __call__(self, state: State) -> tuple[np.ndarray, float]: ...
 
 
-class NeuralEvaluator:
-    def __init__(self, module: GraphModule, cache_size: int = 4096):
-        self.module = module.eval()
+class CachedEvaluator:
+    def __init__(self, cache_size: int = 4096):
         self.cache_size = cache_size
         self._cache: OrderedDict[tuple, tuple[np.ndarray, float]] = OrderedDict()
 
@@ -40,6 +41,31 @@ class NeuralEvaluator:
         if key in self._cache:
             self._cache.move_to_end(key)
             return self._cache[key]
+        prediction = self._predict(state)
+        prediction[0].flags.writeable = False
+        if self.cache_size > 0:
+            self._cache[key] = prediction
+            if len(self._cache) > self.cache_size:
+                self._cache.popitem(last=False)
+        return prediction
+
+    def _predict(self, state: State) -> tuple[np.ndarray, float]:
+        raise NotImplementedError
+
+
+class NeuralEvaluator(CachedEvaluator):
+    """Training-side PyTorch adapter; importing search never imports PyTorch."""
+
+    def __init__(self, module: GraphModule, cache_size: int = 4096):
+        super().__init__(cache_size)
+        self.module = module.eval()
+
+    def _predict(self, state: State) -> tuple[np.ndarray, float]:
+        import torch
+        from ray.rllib.core.columns import Columns
+
+        from alphaboxes.network import tensor_observations
+
         obs = tensor_observations([encode(state)])
         device = next(self.module.parameters()).device
         obs = {key: value.to(device) for key, value in obs.items()}
@@ -47,13 +73,7 @@ class NeuralEvaluator:
             result = self.module.forward_inference({Columns.OBS: obs})
             probabilities = result[Columns.ACTION_DIST_INPUTS].softmax(dim=-1)[0]
         policy = probabilities[: state.board.num_edges].cpu().numpy()
-        policy.flags.writeable = False
-        prediction = (policy, float(result[Columns.VF_PREDS][0]))
-        if self.cache_size > 0:
-            self._cache[key] = prediction
-            if len(self._cache) > self.cache_size:
-                self._cache.popitem(last=False)
-        return prediction
+        return policy, float(result[Columns.VF_PREDS][0])
 
 
 @dataclass(frozen=True)
@@ -77,7 +97,7 @@ class Node:
     prior: float = 1.0
     visits: int = 0
     value_sum: float = 0.0
-    children: dict[int, "Node"] = field(default_factory=dict)
+    children: dict[int, Node] = field(default_factory=dict)
 
     @property
     def value(self) -> float:

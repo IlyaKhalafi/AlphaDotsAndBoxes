@@ -1,11 +1,16 @@
 """Edge/box incidence graphs, with no coordinates or size-dependent weights."""
 
-from functools import lru_cache
+from __future__ import annotations
 
-import gymnasium as gym
+from functools import lru_cache
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from alphaboxes.game import State, board
+
+if TYPE_CHECKING:
+    import gymnasium as gym
 
 FEATURES = 12
 
@@ -64,6 +69,8 @@ def encode(state: State, capacity: int | None = None) -> dict[str, np.ndarray]:
 
 
 def spaces(capacity: int) -> tuple[gym.spaces.Dict, gym.spaces.Discrete]:
+    import gymnasium as gym
+
     observation = gym.spaces.Dict(
         {
             "x": gym.spaces.Box(0, 1, (capacity, FEATURES), np.float32),

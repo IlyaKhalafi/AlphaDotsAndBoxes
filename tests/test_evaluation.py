@@ -29,7 +29,7 @@ def test_evaluation_receipt_uses_loaded_snapshot(tmp_path, monkeypatch):
     import hashlib
 
     from alphaboxes import evaluation
-    from alphaboxes.checkpoint import load_agent, save_agent
+    from alphaboxes.checkpoint import load_evaluator, save_agent
     from alphaboxes.network import module_spec
 
     checkpoint = tmp_path / "agent.pt"
@@ -38,11 +38,11 @@ def test_evaluation_receipt_uses_loaded_snapshot(tmp_path, monkeypatch):
     expected_hash = hashlib.sha256(checkpoint.read_bytes()).hexdigest()
 
     def load_then_move(path):
-        loaded = load_agent(path)
+        loaded = load_evaluator(path)
         path.rename(tmp_path / "moved.pt")
         return loaded
 
-    monkeypatch.setattr(evaluation, "load_agent", load_then_move)
+    monkeypatch.setattr(evaluation, "load_evaluator", load_then_move)
     receipt = evaluation.evaluate(
         checkpoint, tmp_path / "result.json", [(1, 1)], games=2, simulations=2
     )

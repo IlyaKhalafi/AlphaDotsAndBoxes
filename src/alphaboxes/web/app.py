@@ -7,16 +7,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
-import torch
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from alphaboxes.checkpoint import load_agent
+from alphaboxes.checkpoint import load_evaluator
 from alphaboxes.game import State
 from alphaboxes.opponents import tactical_action
-from alphaboxes.search import MCTS, NeuralEvaluator, SearchConfig
+from alphaboxes.search import MCTS, SearchConfig
 
 STATIC = Path(__file__).parent / "static"
 
@@ -69,9 +68,7 @@ class Session:
 
 
 def create_app(checkpoint: Path | None = None) -> FastAPI:
-    torch.set_num_threads(1)
-    module, metadata = load_agent(checkpoint) if checkpoint else (None, {})
-    evaluator = NeuralEvaluator(module) if module else None
+    evaluator, metadata = load_evaluator(checkpoint) if checkpoint else (None, {})
     sessions: dict[str, Session] = {}
     sessions_lock = threading.Lock()
     search_lock = threading.Lock()
@@ -111,9 +108,14 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
     def health():
         return {
             "status": "ok",
-            "agent": "graph" if module else "tactical",
+            "agent": "graph" if evaluator else "tactical",
+            "inference": "numpy"
+            if checkpoint and checkpoint.suffix == ".npz"
+            else "torch"
+            if evaluator
+            else None,
             "training": metadata,
-            "exact_endgame_edges": 12 if module else 0,
+            "exact_endgame_edges": 12 if evaluator else 0,
         }
 
     @app.post("/api/games", status_code=201)

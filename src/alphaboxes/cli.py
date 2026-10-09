@@ -1,6 +1,7 @@
 """Command-line entry points; heavy training imports stay out of help/startup."""
 
 import argparse
+import os
 from dataclasses import replace
 from pathlib import Path
 
@@ -51,7 +52,15 @@ def main():
     duel.set_defaults(sizes="5x5", seed=3031)
     duel.add_argument("--opponent-checkpoint", type=Path, required=True)
     duel.add_argument("--opening-moves", type=int, default=6)
+    export = commands.add_parser(
+        "export", help="Convert training weights to NumPy deployment weights"
+    )
+    export.add_argument("--checkpoint", type=Path, required=True)
+    export.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.command in {"serve", "evaluate", "duel"}:
+        os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+        os.environ.setdefault("OMP_NUM_THREADS", "1")
     if args.command == "train":
         from alphaboxes.training import TrainConfig, train
 
@@ -70,6 +79,10 @@ def main():
         from alphaboxes.web.app import create_app
 
         uvicorn.run(create_app(args.checkpoint), host=args.host, port=args.port)
+    elif args.command == "export":
+        from alphaboxes.numpy_network import export_agent
+
+        print(export_agent(args.checkpoint, args.output))
     elif args.command == "duel":
         from alphaboxes.evaluation import compare_agents
 
