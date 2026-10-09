@@ -28,14 +28,16 @@ class NewGame(BaseModel):
     demo: bool = False
 
 
-class Move(BaseModel):
+class Revision(BaseModel):
+    revision: int = Field(ge=0)
+
+
+class Move(Revision):
     action: int = Field(ge=0)
-    revision: int = Field(ge=0)
 
 
-class SearchRequest(BaseModel):
+class SearchRequest(Revision):
     simulations: int = Field(default=128, ge=8, le=512)
-    revision: int = Field(ge=0)
 
 
 @dataclass
@@ -96,7 +98,7 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             if evaluator is None:
                 return tactical_action(session.state, rng), None
             # Exact search is a clearly identified playing aid, never training data.
-            planner = MCTS(evaluator, SearchConfig(simulations=simulations, exact_threshold=10))
+            planner = MCTS(evaluator, SearchConfig(simulations=simulations, exact_threshold=12))
             policy, value = planner.policy(session.state)
             action = int(rng.choice(np.flatnonzero(policy == policy.max())))
             return action, value
@@ -111,7 +113,7 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             "status": "ok",
             "agent": "graph" if module else "tactical",
             "training": metadata,
-            "exact_endgame_edges": 10 if module else 0,
+            "exact_endgame_edges": 12 if module else 0,
         }
 
     @app.post("/api/games", status_code=201)
@@ -182,7 +184,7 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             return {"action": action, "value": value, "revision": session.revision}
 
     @app.post("/api/games/{game_id}/undo")
-    def undo(game_id: str, request: Move):
+    def undo(game_id: str, request: Revision):
         session = get_session(game_id)
         with session.lock:
             check_revision(session, request.revision)

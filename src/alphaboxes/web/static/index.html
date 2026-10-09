@@ -1,52 +1,217 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#f6f3ed">
-  <meta name="description" content="A familiar pencil-and-paper game. An opponent that learns by playing. Play Alpha Dots & Boxes.">
-  <title>Alpha Dots & Boxes — one more line.</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <script src="/static/app.js" defer></script>
-</head>
-<body>
-  <header class="masthead">
-    <a class="wordmark" href="/" aria-label="Alpha Dots and Boxes home"><span class="logo" aria-hidden="true">▦</span> alpha<span class="wordmark-light"> / dots & boxes</span></a>
-    <span class="header-note"><i></i> LEARNED THROUGH SELF-PLAY</span>
-    <a href="#how-to-play" class="text-link">How to play <span aria-hidden="true">↗</span></a>
-  </header>
-  <main>
-    <section class="intro">
-      <div><div class="eyebrow">THE CLASSIC GAME. A NEW CHALLENGER.</div><h1>Every line<br>changes the <em>game.</em></h1></div>
-      <div class="intro-aside"><p>Connect the dots. Close a box.<br>Keep your turn. Stay one step ahead.</p><div class="agent-label"><span class="spark" aria-hidden="true">✳</span><span id="agent-description">Loading opponent…</span></div></div>
-    </section>
-    <section class="play-layout" aria-label="Game">
-      <aside class="controls panel">
-        <div class="panel-heading"><span class="eyebrow">01 / MAKE IT YOURS</span><h2>Your board</h2></div>
-        <div class="field-label">Board size <span>boxes</span></div>
-        <div class="presets" role="group" aria-label="Board size"><button data-size="2" type="button">2 × 2</button><button data-size="3" type="button" class="selected" aria-pressed="true">3 × 3</button><button data-size="4" type="button">4 × 4</button><button data-size="5" type="button">5 × 5</button></div>
-        <details class="custom-size"><summary>Custom board</summary><div class="dimension-fields"><label>Rows<input id="rows" type="number" min="1" max="12" value="3"></label><span>×</span><label>Columns<input id="cols" type="number" min="1" max="12" value="3"></label></div></details>
-        <label class="field-label" for="budget">Thinking time</label>
-        <select id="budget"><option value="32">Quick · 32 searches</option><option value="128" selected>Considered · 128 searches</option><option value="512">Deep · 512 searches</option></select>
-        <label class="field-label" for="seat">First move</label><select id="seat"><option value="0">You go first</option><option value="1">Agent goes first</option></select>
-        <button id="new-game" type="button" class="primary">Start a fresh board <span aria-hidden="true">↗</span></button>
-        <div class="control-divider"></div>
-        <button id="watch" type="button" class="watch-button"><span aria-hidden="true">▷</span> Watch the agent play</button>
-        <p class="control-note">Same learned network.<br>A different challenge on every board.</p>
-      </aside>
-      <div class="game-panel panel">
-        <div class="game-top"><div><span class="eyebrow" id="board-label">3 × 3 BOARD</span><h2 id="turn-title">Your move.</h2></div><div class="live-pill" id="live-pill"><i></i><span>LET’S PLAY</span></div></div>
-        <div class="board-wrap"><svg id="board" viewBox="0 0 400 400" role="group" aria-label="Dots and Boxes board"></svg></div>
-        <div class="board-bottom"><p id="status" aria-live="polite">Choose an empty line between two dots.</p><div class="board-actions"><button id="hint" type="button">Hint <span aria-hidden="true">✧</span></button><button id="undo" type="button" disabled>Undo <span aria-hidden="true">↶</span></button></div></div>
-      </div>
-      <aside class="score-column">
-        <div class="score-card human-card"><div class="score-top"><span class="player-dot human-dot"></span><span id="human-label">YOU</span><span id="human-turn" class="turn-indicator">YOUR TURN</span></div><div class="score-number" id="human-score">0</div><div class="score-caption">boxes claimed</div><div class="score-track"><span id="human-track"></span></div></div>
-        <div class="score-card agent-card"><div class="score-top"><span class="player-dot agent-dot"></span><span id="agent-label">AGENT</span><span id="agent-turn" class="turn-indicator" hidden>THINKING</span></div><div class="score-number" id="agent-score">0</div><div class="score-caption">boxes claimed</div><div class="score-track"><span id="agent-track"></span></div></div>
-        <div class="small-note"><span class="eyebrow">A LITTLE FORESIGHT</span><p>Sometimes the best box<br>is the one you leave behind.</p><svg viewBox="0 0 120 55" aria-hidden="true"><path d="M15 40h40V12h40" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="15" cy="40" r="3"/><circle cx="55" cy="40" r="3"/><circle cx="55" cy="12" r="3"/><circle cx="95" cy="12" r="3"/></svg></div>
-      </aside>
-    </section>
-    <section id="how-to-play" class="rules"><div class="rules-title"><span class="eyebrow">A MINUTE TO LEARN</span><h2>Small rules.<br>Long game.</h2></div><div class="rule"><span class="rule-number">01</span><h3>Draw a line</h3><p>Take turns connecting two neighboring dots. Click an empty edge to make your move.</p></div><div class="rule"><span class="rule-number">02</span><h3>Make it a box</h3><p>Draw the fourth side and the box is yours. Each box counts as one point.</p></div><div class="rule"><span class="rule-number">03</span><h3>Go again</h3><p>Close a box and keep your turn. The most boxes at the end wins.</p></div></section>
-    <footer><span>Alpha Dots & Boxes</span><span>Built on a simple idea: learn by playing.</span><span>ONE MORE LINE.</span></footer>
-  </main>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f6f3ed" />
+    <meta
+      name="description"
+      content="A familiar pencil-and-paper game. An opponent that learns by playing. Play Alpha Dots & Boxes."
+    />
+    <title>Alpha Dots & Boxes — one more line.</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="wordmark" href="/" aria-label="Alpha Dots and Boxes home"
+        ><span class="logo" aria-hidden="true">▦</span> alpha<span
+          class="wordmark-light"
+        >
+          / dots & boxes</span
+        ></a
+      >
+      <span class="header-note"><i></i> LEARNED THROUGH SELF-PLAY</span>
+      <a href="#how-to-play" class="text-link"
+        >How to play <span aria-hidden="true">↗</span></a
+      >
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <div class="eyebrow">THE CLASSIC GAME. A NEW CHALLENGER.</div>
+          <h1>Every line<br />changes the <em>game.</em></h1>
+        </div>
+        <div class="intro-aside">
+          <p>
+            Connect the dots. Close a box.<br />Keep your turn. Stay one step
+            ahead.
+          </p>
+          <div class="agent-label">
+            <span class="spark" aria-hidden="true">✳</span
+            ><span id="agent-description">Loading opponent…</span>
+          </div>
+        </div>
+      </section>
+      <section class="play-layout" aria-label="Game">
+        <aside class="controls panel">
+          <div class="panel-heading">
+            <span class="eyebrow">01 / MAKE IT YOURS</span>
+            <h2>Your board</h2>
+          </div>
+          <div class="field-label">Board size <span>boxes</span></div>
+          <div class="presets" role="group" aria-label="Board size">
+            <button data-size="2" type="button">2 × 2</button
+            ><button
+              data-size="3"
+              type="button"
+              class="selected"
+              aria-pressed="true"
+            >
+              3 × 3</button
+            ><button data-size="4" type="button">4 × 4</button
+            ><button data-size="5" type="button">5 × 5</button>
+          </div>
+          <details class="custom-size">
+            <summary>Custom board</summary>
+            <div class="dimension-fields">
+              <label
+                >Rows<input
+                  id="rows"
+                  type="number"
+                  min="1"
+                  max="12"
+                  value="3" /></label
+              ><span>×</span
+              ><label
+                >Columns<input
+                  id="cols"
+                  type="number"
+                  min="1"
+                  max="12"
+                  value="3"
+              /></label>
+            </div>
+          </details>
+          <label class="field-label" for="budget">Thinking time</label>
+          <select id="budget">
+            <option value="32">Quick · 32</option>
+            <option value="128" selected>Considered · 128</option>
+            <option value="512">Deep · 512</option>
+          </select>
+          <label class="field-label" for="seat">First move</label
+          ><select id="seat">
+            <option value="0">You go first</option>
+            <option value="1">Agent goes first</option>
+          </select>
+          <button id="new-game" type="button" class="primary">
+            Start a fresh board <span aria-hidden="true">↗</span>
+          </button>
+          <div class="control-divider"></div>
+          <button id="watch" type="button" class="watch-button">
+            <span aria-hidden="true">▷</span> Watch the agent play
+          </button>
+          <p class="control-note">
+            Same learned network.<br />A different challenge on every board.
+          </p>
+        </aside>
+        <div class="game-panel panel">
+          <div class="game-top">
+            <div>
+              <span class="eyebrow" id="board-label">3 × 3 BOARD</span>
+              <h2 id="turn-title">Your move.</h2>
+            </div>
+            <div class="live-pill" id="live-pill">
+              <i></i><span>LET’S PLAY</span>
+            </div>
+          </div>
+          <div class="board-wrap">
+            <svg
+              id="board"
+              viewBox="0 0 400 400"
+              role="group"
+              aria-label="Dots and Boxes board"
+            ></svg>
+          </div>
+          <div class="board-bottom">
+            <p id="status" aria-live="polite">
+              Choose an empty line between two dots.
+            </p>
+            <div class="board-actions">
+              <button id="hint" type="button">
+                Hint <span aria-hidden="true">✧</span></button
+              ><button id="undo" type="button" disabled>
+                Undo <span aria-hidden="true">↶</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <aside class="score-column">
+          <div class="score-card human-card">
+            <div class="score-top">
+              <span class="player-dot human-dot"></span
+              ><span id="human-label">YOU</span
+              ><span id="human-turn" class="turn-indicator">YOUR TURN</span>
+            </div>
+            <div class="score-number" id="human-score">0</div>
+            <div class="score-caption">boxes claimed</div>
+            <div class="score-track"><span id="human-track"></span></div>
+          </div>
+          <div class="score-card agent-card">
+            <div class="score-top">
+              <span class="player-dot agent-dot"></span
+              ><span id="agent-label">AGENT</span
+              ><span id="agent-turn" class="turn-indicator" hidden
+                >THINKING</span
+              >
+            </div>
+            <div class="score-number" id="agent-score">0</div>
+            <div class="score-caption">boxes claimed</div>
+            <div class="score-track"><span id="agent-track"></span></div>
+          </div>
+          <div class="small-note">
+            <span class="eyebrow">A LITTLE FORESIGHT</span>
+            <p>Sometimes the best box<br />is the one you leave behind.</p>
+            <svg viewBox="0 0 120 55" aria-hidden="true">
+              <path
+                d="M15 40h40V12h40"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <circle cx="15" cy="40" r="3" />
+              <circle cx="55" cy="40" r="3" />
+              <circle cx="55" cy="12" r="3" />
+              <circle cx="95" cy="12" r="3" />
+            </svg>
+          </div>
+        </aside>
+      </section>
+      <section id="how-to-play" class="rules">
+        <div class="rules-title">
+          <span class="eyebrow">A MINUTE TO LEARN</span>
+          <h2>
+            Small rules.<br />
+            Long game.
+          </h2>
+        </div>
+        <div class="rule">
+          <span class="rule-number">01</span>
+          <h3>Draw a line</h3>
+          <p>
+            Take turns connecting two neighboring dots. Click an empty edge to
+            make your move.
+          </p>
+        </div>
+        <div class="rule">
+          <span class="rule-number">02</span>
+          <h3>Make it a box</h3>
+          <p>
+            Draw the fourth side and the box is yours. Each box counts as one
+            point.
+          </p>
+        </div>
+        <div class="rule">
+          <span class="rule-number">03</span>
+          <h3>Go again</h3>
+          <p>Close a box and keep your turn. The most boxes at the end wins.</p>
+        </div>
+      </section>
+      <footer>
+        <span>Alpha Dots & Boxes</span
+        ><span>Built on a simple idea: learn by playing.</span
+        ><span>ONE MORE LINE.</span>
+      </footer>
+    </main>
+  </body>
 </html>
