@@ -19,7 +19,7 @@ from ray.rllib.policy.sample_batch import DEFAULT_POLICY_ID, MultiAgentBatch, Sa
 
 from alphaboxes.checkpoint import load_agent, save_agent
 from alphaboxes.game import board
-from alphaboxes.graph import encode
+from alphaboxes.graph import encode_batch
 from alphaboxes.learner import AlphaZeroLearner
 from alphaboxes.network import module_spec
 from alphaboxes.search import MCTS, NeuralEvaluator, SearchConfig
@@ -81,15 +81,13 @@ class TrainConfig:
 
 def make_batch(examples: list[Example]) -> MultiAgentBatch:
     capacity = max(example.state.board.num_nodes for example in examples)
-    observations = [encode(example.state, capacity) for example in examples]
+    observations = encode_batch([example.state for example in examples], capacity)
     policies = np.zeros((len(examples), capacity), dtype=np.float32)
     for i, example in enumerate(examples):
         policies[i, : len(example.policy)] = example.policy
     batch = SampleBatch(
         {
-            Columns.OBS: {
-                key: np.stack([obs[key] for obs in observations]) for key in observations[0]
-            },
+            Columns.OBS: observations,
             "policy_target": policies,
             "value_target": np.array([example.value for example in examples], dtype=np.float32),
         }
@@ -168,6 +166,7 @@ def train(
         }
     replay: deque[Example] = deque(maxlen=config.replay_capacity)
     start_iteration, games_total, positions_total = 0, 0, 0
+    elapsed_before_resume = 0.0
     config_path = output / "config.json"
     config_path.write_text(json.dumps(asdict(config), indent=2) + "\n")
     if resume:
@@ -183,6 +182,18 @@ def train(
         rng.bit_generator.state = state["rng"]
         start_iteration = state["iteration"]
         games_total, positions_total = state["games_total"], state["positions_total"]
+        if resume.resolve().parent == output.resolve():
+            # Continuing a run extends its total budget; a new output starts a new clock.
+            elapsed_before_resume = state.get("elapsed_seconds", 0.0)
+            metrics_path = output / "metrics.jsonl"
+            if metrics_path.exists():
+                previous = [json.loads(line) for line in metrics_path.read_text().splitlines()]
+                if previous and previous[-1]["iteration"] > start_iteration:
+                    raise ValueError(
+                        "Resume checkpoint is older than run metrics. Use a new output directory."
+                    )
+                if previous and "elapsed_seconds" not in state:
+                    elapsed_before_resume = previous[-1]["elapsed_seconds"]
     workers = []
     owns_ray = False
     local_search = None
@@ -271,7 +282,7 @@ def train(
                 }
                 budget_exhausted = (
                     config.max_seconds is not None
-                    and time.monotonic() - started >= config.max_seconds
+                    and elapsed_before_resume + time.monotonic() - started >= config.max_seconds
                 )
                 record = (
                     metadata
@@ -281,7 +292,7 @@ def train(
                         "sample_seconds": sample_seconds,
                         "update_seconds": update_seconds,
                         "iteration_seconds": time.monotonic() - iteration_start,
-                        "elapsed_seconds": time.monotonic() - started,
+                        "elapsed_seconds": elapsed_before_resume + time.monotonic() - started,
                         "stop_reason": "time_budget"
                         if budget_exhausted
                         else "iterations"
@@ -318,6 +329,7 @@ def train(
                         "games_total": games_total,
                         "positions_total": positions_total,
                         "initialization": initialization,
+                        "elapsed_seconds": record["elapsed_seconds"],
                     }
                     temporary = output / "resume.tmp"
                     torch.save(state, temporary)

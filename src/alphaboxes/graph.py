@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections import defaultdict
+from collections.abc import Sequence
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
@@ -28,44 +30,55 @@ def adjacency(rows: int, cols: int) -> np.ndarray:
 
 
 def encode(state: State, capacity: int | None = None) -> dict[str, np.ndarray]:
-    geometry = state.board
-    n, e = geometry.num_nodes, geometry.num_edges
-    capacity = n if capacity is None else capacity
-    if capacity < n:
+    return {key: value[0] for key, value in encode_batch([state], capacity).items()}
+
+
+def encode_batch(states: Sequence[State], capacity: int | None = None) -> dict[str, np.ndarray]:
+    """Vectorize each board shape, keeping batch order and zero-filled padding."""
+    if not states:
+        raise ValueError("Cannot encode an empty batch.")
+    required = max(state.board.num_nodes for state in states)
+    capacity = required if capacity is None else capacity
+    if capacity < required:
         raise ValueError("Observation capacity is smaller than this board.")
-    x = np.zeros((capacity, FEATURES), dtype=np.float32)
-    x[:e, 0] = 1  # edge node
-    x[e:n, 1] = 1  # box node
-    x[:e, 2] = np.asarray(state.edges) >= 0
-    remaining = np.array([sum(state.edges[j] < 0 for j in edges) for edges in geometry.boxes])
-    x[e:n, 3] = np.asarray(state.owners) == state.player
-    x[e:n, 4] = np.asarray(state.owners) == 1 - state.player
-    x[e + np.arange(geometry.num_boxes), 5 + remaining] = 1  # free sides: 0..4
-    for edge, neighbors in enumerate(geometry.edge_boxes):
-        x[edge, 10] = len(neighbors) / 2
-        x[edge, 11] = np.count_nonzero(remaining[list(neighbors)] == 1) / 2
-    scores = state.scores
-    context = np.array(
-        [
-            (scores[state.player] - scores[1 - state.player]) / geometry.num_boxes,
-            len(state.legal_actions) / e,
-            sum(owner < 0 for owner in state.owners) / geometry.num_boxes,
-        ],
-        dtype=np.float32,
-    )
-    adj = np.zeros((capacity, capacity), dtype=np.float32)
-    adj[:n, :n] = adjacency(geometry.rows, geometry.cols)
-    mask = np.zeros(capacity, dtype=np.float32)
-    mask[:e] = np.asarray(state.edges) < 0
-    node_mask = np.zeros(capacity, dtype=np.float32)
-    node_mask[:n] = 1
-    return {
-        "x": x,
-        "adjacency": adj,
-        "action_mask": mask,
-        "node_mask": node_mask,
-        "context": context,
+    count = len(states)
+    result = {
+        "x": np.zeros((count, capacity, FEATURES), dtype=np.float32),
+        "adjacency": np.zeros((count, capacity, capacity), dtype=np.float32),
+        "action_mask": np.zeros((count, capacity), dtype=np.float32),
+        "node_mask": np.zeros((count, capacity), dtype=np.float32),
+        "context": np.zeros((count, 3), dtype=np.float32),
     }
+    groups: dict[tuple[int, int], list[int]] = defaultdict(list)
+    for index, state in enumerate(states):
+        groups[(state.board.rows, state.board.cols)].append(index)
+    for shape, indices in groups.items():
+        geometry = board(*shape)
+        n, e = geometry.num_nodes, geometry.num_edges
+        edges = np.array([states[i].edges for i in indices], dtype=np.int8)
+        owners = np.array([states[i].owners for i in indices], dtype=np.int8)
+        players = np.array([states[i].player for i in indices], dtype=np.int8)[:, None]
+        free = edges < 0
+        remaining = free[:, np.asarray(geometry.boxes)].sum(axis=-1)
+        ours, theirs = owners == players, owners == 1 - players
+        x = np.zeros((len(indices), n, FEATURES), dtype=np.float32)
+        x[:, :e, 0] = 1
+        x[:, e:, 1] = 1
+        x[:, :e, 2] = ~free
+        x[:, e:, 3], x[:, e:, 4] = ours, theirs
+        x[np.arange(len(indices))[:, None], e + np.arange(geometry.num_boxes), 5 + remaining] = 1
+        adj = adjacency(*shape)
+        incidence = adj[:e, e:n]
+        x[:, :e, 10] = incidence.sum(axis=1) / 2
+        x[:, :e, 11] = (remaining == 1).astype(np.float32) @ incidence.T / 2
+        result["x"][indices, :n] = x
+        result["adjacency"][indices, :n, :n] = adj
+        result["action_mask"][indices, :e] = free
+        result["node_mask"][indices, :n] = 1
+        result["context"][indices, 0] = (ours.sum(axis=1) - theirs.sum(axis=1)) / geometry.num_boxes
+        result["context"][indices, 1] = free.sum(axis=1) / e
+        result["context"][indices, 2] = (owners < 0).sum(axis=1) / geometry.num_boxes
+    return result
 
 
 def spaces(capacity: int) -> tuple[gym.spaces.Dict, gym.spaces.Discrete]:

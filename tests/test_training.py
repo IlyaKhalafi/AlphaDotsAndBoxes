@@ -1,3 +1,4 @@
+import json
 from dataclasses import replace
 
 import pytest
@@ -29,6 +30,33 @@ def test_rllib_training_checkpoint_and_resume(tmp_path):
     after, metadata = load_agent(path)
     assert metadata["games_total"] == 4
     assert any(not torch.equal(before[key], tensor) for key, tensor in after.state_dict().items())
+    records = [json.loads(line) for line in (tmp_path / "metrics.jsonl").read_text().splitlines()]
+    assert records[-1]["elapsed_seconds"] > records[0]["elapsed_seconds"]
+
+
+def test_resuming_same_run_retains_used_time_budget(tmp_path):
+    config = TrainConfig(
+        sizes=((1, 1),),
+        iterations=1,
+        games_per_iteration=1,
+        workers=0,
+        updates_per_iteration=1,
+        batch_size=4,
+        width=16,
+        depth=2,
+        checkpoint_every=1,
+        search=SearchConfig(simulations=2),
+    )
+    train(config, tmp_path)
+    resume = tmp_path / "resume.pt"
+    state = torch.load(resume, map_location="cpu", weights_only=False)
+    state["elapsed_seconds"] = 100.0
+    torch.save(state, resume)
+    train(replace(config, iterations=10, max_seconds=50), tmp_path, resume)
+    record = json.loads((tmp_path / "metrics.jsonl").read_text().splitlines()[-1])
+    assert record["iteration"] == 2
+    assert record["stop_reason"] == "time_budget"
+    assert record["elapsed_seconds"] >= 100
 
 
 def test_warm_start_on_new_boards_and_time_budget(tmp_path):
