@@ -98,6 +98,11 @@ The UI now labels active dimensions in boxes and applies board presets
 immediately to prevent a selected size from differing from the active game.
 Increasing thinking time does not replace larger-board training and human tests.
 
+After the larger-board NumPy preview was installed, the same player reported a
+10–6 loss to the agent on the requested 4×4 Deep test. The seat was not reported.
+That is one encouraging informal human result, alongside the earlier 9–7 win
+over bootstrap; it does not establish strength against high-level human players.
+
 ## Larger-board preview
 
 The broader campaign warm-starts bootstrap weights with a new optimizer and

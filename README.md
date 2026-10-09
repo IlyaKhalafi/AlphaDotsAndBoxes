@@ -37,7 +37,9 @@ adb serve --checkpoint models/larger.npz
 
 Open **http://127.0.0.1:8000**. Choose a board, adjust thinking time, and play.
 The interface supports hints, undo, keyboard controls, custom rectangular boards,
-and an agent-versus-agent watch mode. Board dimensions count **boxes**, not dots.
+and an agent-versus-agent watch mode. Select **Agent vs Agent** under Players to
+watch both sides, adjust **Move delay**, and pause or resume. Board dimensions
+count **boxes**, not dots.
 
 The included model has trained on boards through 5×5. The UI also uses
 perfect search for the last 12 available edges. Launching `adb serve` without a
