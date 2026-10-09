@@ -164,7 +164,7 @@ function render() {
   $("agent-track").style.width =
     `${(100 * agentScore) / (game.rows * game.cols)}%`;
   $("board-label").textContent =
-    `${game.rows} × ${game.cols} BOARD${game.demo ? " / SELF-PLAY" : ""}`;
+    `${game.rows} × ${game.cols}${game.demo ? " / SELF-PLAY" : ""}`;
   $("human-label").textContent = game.demo ? "AGENT A" : "YOU";
   $("agent-label").textContent = game.demo ? "AGENT B" : "AGENT";
   $("human-turn").hidden = game.terminal || !humanTurn;
@@ -176,23 +176,24 @@ function render() {
   $("watch").classList.toggle("active", watching);
   $("watch").disabled = busy && !watching;
   $("watch").innerHTML = watching
-    ? '<span aria-hidden="true">Ⅱ</span> Pause the replay'
-    : '<span aria-hidden="true">▷</span> Watch the agent play';
+    ? '<span aria-hidden="true">Ⅱ</span> Pause'
+    : game.demo && !game.terminal
+      ? '<span aria-hidden="true">▷</span> Resume'
+      : '<span aria-hidden="true">▷</span> Watch game';
   const pill = $("live-pill");
   pill.className = "live-pill";
   if (game.terminal) {
     $("turn-title").textContent =
       humanScore === agentScore
-        ? "A perfect tie."
+        ? "Draw."
         : game.demo
           ? humanScore > agentScore
             ? "Agent A wins."
             : "Agent B wins."
           : humanScore > agentScore
-            ? "This board is yours."
-            : "The agent takes it.";
-    $("status").textContent =
-      `Final score: ${humanScore} – ${agentScore}. Ready for another board?`;
+            ? "You win."
+            : "Agent wins.";
+    $("status").textContent = "";
     pill.classList.add("finished");
     pill.querySelector("span").textContent = "BOARD COMPLETE";
   } else {
@@ -208,24 +209,18 @@ function render() {
       ? "SELF-PLAY"
       : busy
         ? "THINKING"
-        : "LET’S PLAY";
-    $("status").textContent = watching
-      ? "Two sides. One network. Looking ahead, one line at a time."
-      : humanTurn
-        ? "Choose an empty line between two dots."
-        : "Looking for the next good move.";
+        : "READY";
+    $("status").textContent = "";
     if (game.demo && !watching) {
-      $("turn-title").textContent = "Replay paused.";
-      $("status").textContent = "Resume the replay or start a fresh board.";
+      $("turn-title").textContent = "Paused.";
       pill.querySelector("span").textContent = "PAUSED";
     }
-    if (game.analysis && !busy && (watching || (humanTurn && !game.demo))) {
-      const seconds = game.analysis.seconds.toFixed(2);
-      $("status").textContent =
-        game.analysis.method === "exact_endgame"
-          ? `Last move: endgame solved in ${seconds}s.`
-          : `Last move: agent thought for ${seconds}s.`;
-    }
+    if (
+      game.analysis?.method === "exact_endgame" &&
+      !busy &&
+      (watching || (humanTurn && !game.demo))
+    )
+      $("status").textContent = "Endgame solved.";
   }
   drawBoard();
 }
@@ -316,7 +311,7 @@ function showError(error, token) {
   watching = false;
   if (game) render();
   $("status").textContent =
-    error.message || "Connection lost. Please start a fresh board.";
+    error.message || "Connection lost. Start a new game.";
 }
 $("new-game").addEventListener("click", () => startGame(false));
 $("watch").addEventListener("click", async () => {
@@ -342,8 +337,7 @@ $("hint").addEventListener("click", async () => {
     hinted = result.action;
     busy = false;
     render();
-    $("status").textContent =
-      "Try the highlighted line. The next move is yours.";
+    $("status").textContent = "Hint highlighted.";
   } catch (error) {
     showError(error, token);
   }
@@ -391,9 +385,14 @@ document.querySelectorAll("[data-size]").forEach((button) =>
     const health = await api("/api/health", undefined, "GET");
     agentKind = health.agent;
     $("agent-description").textContent =
+      agentKind === "graph" ? "Experimental agent" : "Tactical opponent";
+    const sizes = health.training?.sizes
+      ?.map(([r, c]) => `${r}×${c}`)
+      .join(", ");
+    $("agent-description").title =
       agentKind === "graph"
-        ? "A graph network, trained by playing."
-        : "Tactical opponent · load a trained agent to play the network.";
+        ? `Training boards: ${sizes || "unknown"}. Larger-board strength is unproven.`
+        : "Rule-based opponent; no checkpoint loaded.";
     await startGame();
   } catch (error) {
     $("status").textContent = error.message;

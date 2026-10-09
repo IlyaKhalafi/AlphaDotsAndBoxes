@@ -90,6 +90,12 @@ The 3×3 stronger-opponent result falls from 65% in the selection sample to 45%
 in this fresh sample. That variation and the weak 2×5 result rule out a claim
 of robust expert play or reliable arbitrary-size generalization.
 
+An informal human test also reported an easy win against the released agent on
+5×5, a size outside training. The score, seat, and search budget were not
+recorded, so this is qualitative feedback rather than an additional benchmark.
+It reinforces the larger-board limitation; increasing the UI's thinking time
+does not replace training and evaluation on those boards.
+
 ## Checkpoint selection and refinement
 
 The earlier seed-2026 sample informed checkpoint selection. Bootstrap was
