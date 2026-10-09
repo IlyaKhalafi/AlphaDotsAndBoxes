@@ -132,6 +132,42 @@ Baselines:
 - **Tactical endgame:** tactical opening, exact minimax with at most 12 edges
   remaining. It is stronger than the tactical baseline, but not a validated
   expert-human substitute.
+- **Chain control (opt-in):** tactical opening, a reduced chain/loop game that
+  can hand back two or four boxes to retain control, and exact minimax for the
+  final 12 edges. The abstraction is a heuristic, particularly around short
+  chains and unusual interleavings; it is not a perfect-play claim. It supplies
+  no training labels.
+
+Select a particular benchmark without changing the original default schedule:
+
+```bash
+adb evaluate --checkpoint runs/larger/latest.pt --sizes 5x5 --games 40 \
+  --opponents tactical_endgame chain_control
+```
+
+Compare checkpoints directly with balanced seats and six randomized opening
+moves. The two networks receive the same search budget and independent move RNG
+streams; openings are reproducible by game number. Receipts retain complete move
+lists for replay and both checkpoint hashes. Endgame assistance defaults to zero.
+
+```bash
+adb duel --checkpoint runs/larger/latest.pt --opponent-checkpoint models/agent.pt \
+  --sizes 5x5 --games 40 --seed 3031 --output runs/larger-duel.json
+```
+
+To evaluate spaced snapshots during training:
+
+```bash
+python scripts/tournament.py --run runs/larger --baseline models/agent.pt \
+  --output runs/selection --every 40 --games 20 --watch-seconds 5400
+```
+
+The tournament defaults to 5×5; use `--sizes 4x4,5x5` to include both boards.
+It ranks the mean score against tactical endgame, chain control,
+and the released checkpoint. It also evaluates the final timed snapshot and
+keeps the baseline on an exact selection-score tie. This is checkpoint selection,
+not a final strength claim. Test the selected weights on a fresh seed and verify
+smaller-board retention before replacing a playable checkpoint.
 
 For a serious strength claim, evaluate multiple training seeds, unseen sizes and
 rectangles, independent chain-aware opponents, and a balanced series of matches
