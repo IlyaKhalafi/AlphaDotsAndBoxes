@@ -1,5 +1,10 @@
 {
-  "sizes": [[3, 3], [4, 4], [3, 5], [5, 5]],
+  "sizes": [
+    [3, 3],
+    [4, 4],
+    [3, 5],
+    [5, 5]
+  ],
   "iterations": 10000,
   "max_seconds": 4800,
   "games_per_iteration": 16,
@@ -14,5 +19,5 @@
   "gpu_memory_gb": 4.0,
   "gpu_duty_cycle": 0.15,
   "checkpoint_every": 10,
-  "search": {"simulations": 64, "exact_threshold": 12}
+  "search": { "simulations": 64, "exact_threshold": 12 }
 }

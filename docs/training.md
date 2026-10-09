@@ -17,15 +17,30 @@ environment and versions are recorded alongside the experiment results.
 
 ## Presets
 
-| Preset | Purpose | Self-play search | CPU workers |
-| --- | --- | --- | --- |
-| `smoke.json` | Two tiny iterations; verify updates and saving | 8 simulations | 0 |
-| `bootstrap.json` | 1,280 games on 1×2, 2×2, 2×3, 3×3 | 32 simulations | 4 |
-| `refine.json` | Resume bootstrap through iteration 160 | 64 simulations + exact last 12 edges | 4 |
-| `strong.json` | Longer mixed-size experiment, through 5×5 | 128 simulations | 8 |
+| Preset           | Purpose                                        | Self-play search                     | CPU workers |
+| ---------------- | ---------------------------------------------- | ------------------------------------ | ----------- |
+| `smoke.json`     | Two tiny iterations; verify updates and saving | 8 simulations                        | 0           |
+| `bootstrap.json` | 1,280 games on 1×2, 2×2, 2×3, 3×3              | 32 simulations                       | 4           |
+| `refine.json`    | Resume bootstrap through iteration 160         | 64 simulations + exact last 12 edges | 4           |
+| `larger.json`    | 80-minute warm start on 3×3, 4×4, 3×5, 5×5     | 64 simulations + exact last 12 edges | 4           |
+| `strong.json`    | Longer mixed-size experiment, through 5×5      | 128 simulations                      | 8           |
 
 The strong preset is a proposed experiment, not a run claimed in the results.
 It is not an automatic guarantee of expert-level strength.
+
+For larger-board fine-tuning, transfer the released weights into a fresh run:
+
+```bash
+adb train --config configs/larger.json --output runs/larger \
+  --initial-checkpoint models/agent.pt --device cuda
+```
+
+`--initial-checkpoint` transfers only network weights, so the board-size set can
+change. Width and depth must match. Optimizer, replay, and run counters start
+fresh; checkpoint metadata retains the source hash and earlier training counts.
+This differs from `--resume`, which restores the full learner and replay. The
+two options are mutually exclusive. Evaluate before replacing a playable model:
+fine-tuning can also weaken previously learned play.
 
 ```bash
 adb train --config configs/bootstrap.json --output runs/bootstrap --device cuda
@@ -64,13 +79,13 @@ nvidia-smi
 
 Every run writes:
 
-| File | Contents |
-| --- | --- |
-| `config.json` | Resolved settings |
-| `metrics.jsonl` | Per-iteration sample time, update time, losses, counts, allocation peak |
-| `latest.pt` | Latest inference weights and metadata; written atomically |
-| `agent-NNNNN.pt` | Periodic inference snapshots |
-| `resume.pt` | RLlib learner/optimizer state, replay, driver RNG, iteration and counts |
+| File             | Contents                                                                |
+| ---------------- | ----------------------------------------------------------------------- |
+| `config.json`    | Resolved settings                                                       |
+| `metrics.jsonl`  | Per-iteration sample time, update time, losses, counts, allocation peak |
+| `latest.pt`      | Latest inference weights and metadata; written atomically               |
+| `agent-NNNNN.pt` | Periodic inference snapshots                                            |
+| `resume.pt`      | RLlib learner/optimizer state, replay, driver RNG, iteration and counts |
 
 ```bash
 adb train --config configs/bootstrap.json --iterations 120 \
@@ -83,6 +98,13 @@ budgets, training length, and batch settings may change. Restarting workers
 creates new worker RNG streams, so resume is not bitwise equivalent to an
 uninterrupted run. Resume files contain pickled local replay objects: only load
 files you trust. Inference checkpoints use PyTorch's restricted weights loader.
+
+`max_seconds` in a configuration, or `--seconds` on the command line, limits the
+training loop at completed iteration boundaries. Startup is excluded and the
+last iteration may exceed the budget. The driver saves an inference snapshot
+and full resume state before stopping, including between ordinary checkpoint
+intervals. The larger-board preset budgets 80 minutes for training, leaving
+evaluation time within a two-hour experiment.
 
 ## Evaluate fairly
 
