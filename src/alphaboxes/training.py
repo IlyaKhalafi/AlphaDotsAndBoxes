@@ -79,8 +79,9 @@ class TrainConfig:
             raise ValueError("max_seconds must be finite and positive.")
 
     @classmethod
-    def from_json(cls, path: Path) -> "TrainConfig":
+    def from_json(cls, path: Path, **overrides) -> "TrainConfig":
         config = json.loads(path.read_text())
+        config.update(overrides)
         config["sizes"] = tuple(tuple(size) for size in config.get("sizes", cls().sizes))
         config["search"] = SearchConfig(**config.get("search", {}))
         return cls(**config)

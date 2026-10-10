@@ -127,6 +127,42 @@ Only the supervisor's own child processes are stopped during recovery. Replace
 `--initial-checkpoint` with `--resume runs/deep/resume.pt` to continue an existing
 run. Training also releases unused CUDA cache between iterations.
 
+Self-play defaults to single-game CPU workers. Set `selfplay_batch_size` to
+advance independent games together and combine their neural predictions. Set
+`selfplay_device` to `cuda` to run those predictions on the GPU; this requires
+`--device cuda` and nonzero workers. Each GPU sampler has a separate 1 GiB
+PyTorch allocator cap. Its Ray GPU fraction is an admission-control hint,
+not a VRAM allocation or hardware partition. Include sampler contexts and the
+other job's allocation when choosing the learner's `gpu_memory_gb` cap.
+
+Search creates states only for visited moves. Single-state graph encoding avoids
+training-batch setup work, while the training encoder remains vectorized.
+Dedicated evaluation copies avoid repeatedly changing every layer's mode.
+All three changes preserve the game rules and search budget.
+
+Build the optional exact-endgame accelerator locally:
+
+```bash
+pip install -e '.[accelerate]'
+python scripts/build_acceleration.py
+```
+
+The Cython solver uses masks over at most 18 **remaining** edges, so it supports
+boards whose total edge count exceeds 64. It preserves double captures and extra
+turns. Ordinary installation uses the Python solver and requires neither Cython
+nor a compiler; the generated binary is excluded from version control.
+
+Measure search and endgames separately on fixed positions:
+
+```bash
+python scripts/benchmark_search.py --checkpoint models/larger.pt \
+  --device cuda --batch 8 --output runs/search-benchmark.json
+python scripts/benchmark_search.py --mode oracle --output runs/oracle-benchmark.json
+```
+
+Compare identical positions, checkpoints, simulation counts and thread limits.
+Microbenchmarks do not establish end-to-end training speed or playing strength.
+
 ```bash
 adb train --config configs/bootstrap.json --iterations 120 \
   --output runs/bootstrap --resume runs/bootstrap/resume.pt --device cuda

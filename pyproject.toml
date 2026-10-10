@@ -17,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 train = ["torch>=2.5,<3", "ray[rllib]==2.58.0"]
 dev = ["alpha-dots-and-boxes[train]", "pytest>=8,<10", "httpx>=0.28,<1", "ruff>=0.14,<1"]
+accelerate = ["Cython>=3.1,<4", "setuptools>=75"]
 media = ["playwright>=1.55,<2", "pillow>=11,<13", "httpx>=0.28,<1"]
 analysis = ["matplotlib>=3.9,<4"]
 
@@ -27,7 +28,7 @@ adb = "alphaboxes.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-alphaboxes = ["web/static/*"]
+alphaboxes = ["web/static/*", "*.pyx"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

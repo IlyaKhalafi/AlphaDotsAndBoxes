@@ -35,3 +35,15 @@ jobs:
       - run: ruff format --check src tests scripts
       - run: pytest -q
       - run: adb train --config configs/smoke.json --output runs/ci
+
+  acceleration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[accelerate]' pytest
+      - run: python scripts/build_acceleration.py
+      - run: pytest -q tests/test_acceleration.py tests/test_game.py -k 'not graph_and_padding'

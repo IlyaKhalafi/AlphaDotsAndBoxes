@@ -6,6 +6,11 @@ import numpy as np
 
 from alphaboxes.game import State
 
+try:
+    from alphaboxes._endgame import solve_remaining
+except ImportError:
+    solve_remaining = None
+
 
 def random_action(state: State, rng: np.random.Generator) -> int:
     return int(rng.choice(state.legal_actions))
@@ -46,6 +51,20 @@ def solve(state: State) -> tuple[float, tuple[int, ...]]:
     affect the remaining game. Intended for small boards / few remaining edges.
     """
     geometry = state.board
+    legal = state.legal_actions
+    if solve_remaining is not None and 0 < len(legal) <= 18:
+        local = {action: i for i, action in enumerate(legal)}
+        masks = np.array(
+            [sum(1 << local[e] for e in edges if e in local) for edges in geometry.boxes],
+            dtype=np.uint32,
+        )
+        neighbors = np.array(
+            [(geometry.edge_boxes[a] + (-1, -1))[:2] for a in legal], dtype=np.int32
+        )
+        future_margin, actions = solve_remaining(masks, neighbors)
+        scores = state.scores
+        scored = scores[state.player] - scores[1 - state.player]
+        return (scored + future_margin) / geometry.num_boxes, tuple(legal[a] for a in actions)
     full = (1 << geometry.num_edges) - 1
     box_masks = tuple(sum(1 << e for e in edges) for edges in geometry.boxes)
 

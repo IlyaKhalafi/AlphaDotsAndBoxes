@@ -108,3 +108,11 @@ def test_warm_start_on_new_boards_and_time_budget(tmp_path):
 def test_invalid_training_time_budget(seconds):
     with pytest.raises(ValueError, match="max_seconds"):
         TrainConfig(max_seconds=seconds)
+
+
+def test_cli_overrides_are_validated_with_gpu_selfplay(tmp_path):
+    path = tmp_path / "config.json"
+    path.write_text(json.dumps({"selfplay_device": "cuda"}))
+    assert TrainConfig.from_json(path, device="cuda").device == "cuda"
+    with pytest.raises(ValueError, match="CUDA self-play"):
+        TrainConfig.from_json(path, device="cpu")

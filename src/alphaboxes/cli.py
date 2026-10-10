@@ -2,7 +2,6 @@
 
 import argparse
 import os
-from dataclasses import replace
 from pathlib import Path
 
 
@@ -64,7 +63,6 @@ def main():
     if args.command == "train":
         from alphaboxes.training import TrainConfig, train
 
-        config = TrainConfig.from_json(args.config)
         overrides = {
             key: getattr(args, key)
             for key in ("device", "iterations")
@@ -72,7 +70,8 @@ def main():
         }
         if args.seconds is not None:
             overrides["max_seconds"] = args.seconds
-        train(replace(config, **overrides), args.output, args.resume, args.initial_checkpoint)
+        config = TrainConfig.from_json(args.config, **overrides)
+        train(config, args.output, args.resume, args.initial_checkpoint)
     elif args.command == "serve":
         import uvicorn
 
