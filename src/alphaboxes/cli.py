@@ -56,6 +56,12 @@ def main():
     )
     export.add_argument("--checkpoint", type=Path, required=True)
     export.add_argument("--output", type=Path, required=True)
+    widen = commands.add_parser("widen", help="Expand a trained network without restarting play")
+    widen.add_argument("--checkpoint", type=Path, required=True)
+    widen.add_argument("--output", type=Path, required=True)
+    widen.add_argument("--factor", type=int, default=3)
+    widen.add_argument("--noise", type=float, default=0.01)
+    widen.add_argument("--seed", type=int, default=45)
     args = parser.parse_args()
     if args.command in {"serve", "evaluate", "duel"}:
         os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
@@ -82,6 +88,16 @@ def main():
         from alphaboxes.numpy_network import export_agent
 
         print(export_agent(args.checkpoint, args.output))
+    elif args.command == "widen":
+        import json
+
+        from alphaboxes.growth import widen_agent
+
+        print(
+            json.dumps(
+                widen_agent(args.checkpoint, args.output, args.factor, args.noise, args.seed)
+            )
+        )
     elif args.command == "duel":
         from alphaboxes.evaluation import compare_agents
 

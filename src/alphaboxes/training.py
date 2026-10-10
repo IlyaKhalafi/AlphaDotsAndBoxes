@@ -207,6 +207,8 @@ def train(
             "training_games": initial_metadata.get("games_total", 0),
             "training_positions": initial_metadata.get("positions_total", 0),
         }
+        if "expansion" in initial_metadata:
+            initialization["expansion"] = initial_metadata["expansion"]
     replay: deque[Example] = deque(maxlen=config.replay_capacity)
     start_iteration, games_total, positions_total = 0, 0, 0
     elapsed_before_resume = 0.0
