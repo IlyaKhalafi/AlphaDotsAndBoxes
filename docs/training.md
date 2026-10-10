@@ -24,6 +24,7 @@ environment and versions are recorded alongside the experiment results.
 | `refine.json`    | Resume bootstrap through iteration 160         | 64 simulations + exact last 12 edges | 4           |
 | `larger.json`    | 80-minute warm start on 3×3, 4×4, 3×5, 5×5     | 64 simulations + exact last 12 edges | 4           |
 | `deep.json`      | Eight-hour warm start; emphasize 5×5           | 512 simulations + exact last 12 edges | 12        |
+| `wide.json`      | Eight-hour refinement with 288 hidden channels | 512 simulations + exact last 12 edges | 4 GPU samplers |
 | `strong.json`    | Longer mixed-size experiment, through 5×5      | 128 simulations                      | 8           |
 
 The strong preset is a proposed experiment, not a run claimed in the results.
@@ -42,6 +43,31 @@ fresh; checkpoint metadata retains the source hash and earlier training counts.
 This differs from `--resume`, which restores the full learner and replay. The
 two options are mutually exclusive. Evaluate before replacing a playable model:
 fine-tuning can also weaken previously learned play.
+
+### Expand a trained model
+
+The wide preset has 2,421,512 parameters: 288 channels and six residual GIN
+blocks, compared with 272,648 parameters at 96 channels. First widen the
+recommended checkpoint, then start a fresh optimizer and replay buffer:
+
+```bash
+adb widen --checkpoint models/larger.pt --output runs/wide/initial.pt --factor 3
+python scripts/supervise_training.py --config configs/wide.json --output runs/wide \
+  --initial-checkpoint runs/wide/initial.pt
+```
+
+Widening duplicates hidden channels and splits outgoing weights. Zero-sum
+outgoing perturbations let the copies learn independently while retaining the
+original policy and value at initialization, up to floating-point rounding.
+Global readouts and LayerNorm expand consistently. Depth stays unchanged.
+Only weights transfer; source hashes, dimensions, noise and seed are recorded.
+
+Four GPU samplers each run 32 concurrent games with captured inference. The
+learner uses 12,288-position batches and a 72 GiB allocator cap; CUDA contexts
+and the samplers consume additional memory. Reduce these settings for smaller
+GPUs. The deployment export still uses ordinary NumPy. A larger model costs
+more per searched move and must pass fresh comparisons before replacing the
+playable checkpoint. [Expansion measurements](wide-run.md) record the checks.
 
 The deep preset uses 512 self-play simulations and batches of 40,960 positions
 with a 72 GiB learner allocator cap and 50% learner-update pacing. Fourteen workers collect 128
@@ -76,12 +102,14 @@ self-play, even when the solver is disabled at evaluation time.
 ## Shared hardware
 
 The code never resets the GPU, changes compute mode, or terminates other jobs.
-Only the learner uses CUDA. Each Ray worker reserves one CPU and uses one
+Samplers use CPU by default; the deep and wide presets also run neural inference
+on CUDA. Each Ray worker reserves one CPU and uses one
 PyTorch inference thread. A new private local Ray instance is started if none
 exists; the driver does not attach to an existing remote cluster.
 
-`gpu_memory_gb` caps the **PyTorch allocator** at 4 GiB by default (or half the
-device, whichever is smaller). CUDA context/driver allocations are additional.
+`gpu_memory_gb` caps the learner's **PyTorch allocator** at 4 GiB by default,
+with an explicit larger cap in GPU presets. CUDA context/driver allocations
+are additional; each GPU sampler separately caps its allocator at 1 GiB.
 `gpu_duty_cycle` defaults to 0.15: the driver synchronizes learner work and paces
 iterations so update time is at most that fraction of sampling/update/cooldown
 time. This is application pacing, not a hardware-enforced compute quota and

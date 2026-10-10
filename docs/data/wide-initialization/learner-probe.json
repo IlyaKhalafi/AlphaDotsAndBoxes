@@ -1,0 +1,28 @@
+{
+  "checkpoint_sha256": "4c8fef4d79105518182c42c00d2bfd0af5d9169c421b6ff928ee672c5b94bbae",
+  "width": 288,
+  "depth": 6,
+  "allocator": "expandable_segments:True",
+  "learner_cap_gib": 72.0,
+  "rows": [
+    {
+      "batch_size": 10000,
+      "seconds": 1.1977024599909782,
+      "peak_allocated_mib": 48286.09619140625,
+      "reserved_mib": 50948.0
+    },
+    {
+      "batch_size": 12288,
+      "seconds": 0.7990907039493322,
+      "peak_allocated_mib": 59335.1640625,
+      "reserved_mib": 62628.0
+    },
+    {
+      "batch_size": 12288,
+      "seconds": 0.8012727060122415,
+      "peak_allocated_mib": 59335.1640625,
+      "reserved_mib": 62628.0
+    }
+  ],
+  "limitation": "Disposable synthetic 5x5 batches verify updates and memory, not strength."
+}
