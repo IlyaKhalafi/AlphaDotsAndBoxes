@@ -6,7 +6,7 @@ sizes without replacing a layer.
 
 | File         | Training                                                                              | Role                              |
 | ------------ | ------------------------------------------------------------------------------------- | --------------------------------- |
-| `larger.pt`  | Bootstrap weights + 1,280 new mixed-board games, 51,540 new positions                 | Recommended experimental opponent |
+| `larger.pt`  | Larger-board iteration 200 + 320 new games, 13,934 new positions                 | Recommended experimental opponent |
 | `agent.pt`   | 1,280 pure search-guided self-play games, 19,426 positions                            | Original bootstrap baseline       |
 | `refined.pt` | 2,560 cumulative games, 38,810 positions; second phase enables exact 12-edge endgames | Comparison / further research     |
 
@@ -15,15 +15,7 @@ sizes without replacing a layer.
 Serving it requires no PyTorch or RLlib. The `.pt` files are training-side and
 legacy artifacts; export one with `adb export` to deploy it with NumPy.
 
-The current larger-board model is warm-start iteration 80, training seed 43,
-on 3×3, 4×4, 3×5, and 5×5 boards. It uses 64 search simulations and exact
-12-edge root endgames during self-play, with a new optimizer and replay. This
-snapshot beat bootstrap 18–2 in a separate 4×4 NumPy match at 512 simulations
-with the UI's endgame aid. This is a small checkpoint comparison, not evidence
-of expert-human strength. The 80-minute campaign finished at iteration 239;
-iteration 200 was selected for fresh validation. The playable files remain
-the preview while those checks run. A separate three-hour phase now starts
-from iteration 200 with deeper self-play search.
+The recommended model is deeper-self-play iteration 10, training seed 44, warm-started from larger-board iteration 200. This phase contributes 320 games and 13,934 positions; its selected snapshot uses 256 self-play simulations and exact 12-edge root endgames. It passed the pre-recorded NumPy deployment regression gate against the earlier preview on 4×4 and 5×5. [Fresh results and complete provenance](../docs/deep-run.md) describe the comparisons and their limits; expert-human strength is unproven.
 
 Before larger-board training, bootstrap was retained because it scored slightly
 higher against the stronger endgame opponent averaged across 3×3 and 4×4 in the

@@ -119,8 +119,8 @@ The currently playable snapshot is iteration 80: 1,280 additional games and
 51,540 new positions, using 64 search simulations and exact root decisions
 with at most 12 remaining edges. The bounded campaign finished at iteration
 239 after 4,818.67 seconds, with 3,824 new games and 153,630 new positions.
-The UI still serves the iteration-80 preview while fresh candidate tests run.
-Its weights therefore differ from the last training checkpoint.
+The UI initially served the iteration-80 preview during candidate validation.
+The current default is documented in [the follow-up report](deep-run.md).
 
 The complete run used four CPU workers, batches of 128, 32 updates per
 16-game iteration, learning rate 0.00015, and a 60,000-position replay buffer.
