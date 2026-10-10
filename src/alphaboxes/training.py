@@ -34,6 +34,9 @@ class TrainConfig:
     workers: int = 4
     selfplay_device: str = "cpu"
     selfplay_batch_size: int = 1
+    selfplay_cuda_graphs: bool = False
+    selfplay_gpu_workers: int | None = None
+    games_per_worker: tuple[int, ...] | None = None
     updates_per_iteration: int = 16
     batch_size: int = 128
     replay_capacity: int = 20_000
@@ -71,6 +74,19 @@ class TrainConfig:
             raise ValueError("selfplay_device must be cpu or cuda.")
         if self.selfplay_device == "cuda" and (self.device != "cuda" or not self.workers):
             raise ValueError("CUDA self-play requires a CUDA learner and Ray workers.")
+        if self.selfplay_cuda_graphs and self.selfplay_device != "cuda":
+            raise ValueError("CUDA graphs require CUDA self-play.")
+        if self.selfplay_gpu_workers is not None and (
+            not 0 <= self.selfplay_gpu_workers <= self.workers
+            or (self.selfplay_device == "cpu" and self.selfplay_gpu_workers > 0)
+        ):
+            raise ValueError("selfplay_gpu_workers must fit the worker count and device.")
+        if self.games_per_worker is not None and (
+            len(self.games_per_worker) != self.workers
+            or min(self.games_per_worker, default=0) < 1
+            or sum(self.games_per_worker) != self.games_per_iteration
+        ):
+            raise ValueError("games_per_worker must assign every game to an existing worker.")
         if not 0 < self.gpu_duty_cycle <= 1 or self.gpu_memory_gb <= 0:
             raise ValueError("GPU memory and duty-cycle limits must be positive.")
         if self.max_seconds is not None and (
@@ -84,7 +100,26 @@ class TrainConfig:
         config.update(overrides)
         config["sizes"] = tuple(tuple(size) for size in config.get("sizes", cls().sizes))
         config["search"] = SearchConfig(**config.get("search", {}))
+        if config.get("games_per_worker") is not None:
+            config["games_per_worker"] = tuple(config["games_per_worker"])
         return cls(**config)
+
+
+def sampling_plan(config: TrainConfig) -> list[tuple[str, int]]:
+    """Assign explicit loads to GPU/CPU samplers, or retain balanced legacy loads."""
+    gpu_workers = config.selfplay_gpu_workers
+    if gpu_workers is None:
+        gpu_workers = config.workers if config.selfplay_device == "cuda" else 0
+    return [
+        (
+            "cuda" if index < gpu_workers else "cpu",
+            config.games_per_worker[index]
+            if config.games_per_worker is not None
+            else config.games_per_iteration // config.workers
+            + (index < config.games_per_iteration % config.workers),
+        )
+        for index in range(config.workers)
+    ]
 
 
 def make_batch(examples: list[Example]) -> MultiAgentBatch:
@@ -210,6 +245,7 @@ def train(
     workers = []
     owns_ray = False
     local_search = None
+    plan = sampling_plan(config)
     if config.workers:
         if not ray.is_initialized():
             # Always a new local instance. Never attach to someone else's Ray cluster.
@@ -223,15 +259,18 @@ def train(
             )
             owns_ray = True
         workers = [
-            SelfPlayWorker.options(num_gpus=0.01 if config.selfplay_device == "cuda" else 0).remote(
+            SelfPlayWorker.options(num_gpus=0.01 if device == "cuda" else 0).remote(
                 config.width,
                 config.depth,
                 config.search,
                 config.seed + 1000 * (i + 1) + start_iteration,
-                config.selfplay_device,
+                device,
                 config.selfplay_batch_size,
+                max(board(*size).num_nodes for size in config.sizes)
+                if config.selfplay_cuda_graphs and device == "cuda"
+                else None,
             )
-            for i in range(config.workers)
+            for i, (device, _) in enumerate(plan)
         ]
     else:
         module = module_spec(width=config.width, depth=config.depth).build()
@@ -248,8 +287,7 @@ def train(
                         worker.collect.remote(
                             ref,
                             list(config.sizes),
-                            config.games_per_iteration // len(workers)
-                            + (i < config.games_per_iteration % len(workers)),
+                            plan[i][1],
                             config.temperature_moves,
                         )
                         for i, worker in enumerate(workers)
@@ -296,6 +334,8 @@ def train(
                     "simulations": config.search.simulations,
                     "selfplay_device": config.selfplay_device,
                     "selfplay_batch_size": config.selfplay_batch_size,
+                    "selfplay_cuda_graphs": config.selfplay_cuda_graphs,
+                    "selfplay_gpu_workers": sum(device == "cuda" for device, _ in plan),
                     "training_exact_threshold": config.search.exact_threshold,
                     "initialization": initialization,
                 }

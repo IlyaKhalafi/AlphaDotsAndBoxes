@@ -42,7 +42,13 @@ def benchmark(args):
             torch.cuda.set_per_process_memory_fraction(1024**3 / total)
         module, metadata = load_agent(args.checkpoint)
         search = MCTS(
-            NeuralEvaluator(module.to(args.device)),
+            NeuralEvaluator(
+                module.to(args.device),
+                cuda_batch_size=args.batch if args.cuda_graphs else None,
+                capacity=max(state.board.num_nodes for state in states)
+                if args.cuda_graphs
+                else None,
+            ),
             SearchConfig(simulations=args.simulations, exact_threshold=12),
             args.seed,
         )
@@ -65,6 +71,7 @@ def benchmark(args):
         "mode": args.mode,
         "device": args.device if search else "cpu",
         "batch_size": args.batch if search else 1,
+        "cuda_graphs": args.cuda_graphs,
         "size": args.size,
         "states": args.states,
         "seed": args.seed,
@@ -88,6 +95,7 @@ def main():
     parser.add_argument("--mode", choices=["search", "oracle"], default="search")
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
     parser.add_argument("--batch", type=int, default=8)
+    parser.add_argument("--cuda-graphs", action="store_true")
     parser.add_argument("--states", type=int, default=8)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--simulations", type=int, default=512)
@@ -97,6 +105,8 @@ def main():
     args.size = tuple(map(int, args.size.split("x")))
     if len(args.size) != 2 or min(args.batch, args.states, args.repeats, args.simulations) < 1:
         parser.error("Use a rows×cols size and positive benchmark counts.")
+    if args.cuda_graphs and (args.device != "cuda" or args.mode != "search"):
+        parser.error("CUDA graphs require CUDA search benchmarking.")
     benchmark(args)
 
 

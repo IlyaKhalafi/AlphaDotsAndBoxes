@@ -11,7 +11,10 @@ if __name__ == "__main__":
     setup(
         name="alphaboxes-acceleration",
         ext_modules=cythonize(
-            [Extension("alphaboxes._endgame", [str(ROOT / "src/alphaboxes/_endgame.pyx")])],
+            [
+                Extension(f"alphaboxes.{name}", [str(ROOT / f"src/alphaboxes/{name}.pyx")])
+                for name in ("_endgame", "_search")
+            ],
             build_dir=str(ROOT / "build/cython"),
             compiler_directives={"language_level": 3},
         ),

@@ -43,11 +43,11 @@ This differs from `--resume`, which restores the full learner and replay. The
 two options are mutually exclusive. Evaluate before replacing a playable model:
 fine-tuning can also weaken previously learned play.
 
-The deep preset uses 512 self-play simulations and batches of 32,768 positions
-with a 64 GiB allocator cap and 50% update pacing. Twelve workers collect 96
+The deep preset uses 512 self-play simulations and batches of 40,960 positions
+with a 72 GiB learner allocator cap and 50% learner-update pacing. Fourteen workers collect 128
 games per iteration; the learner performs 16 updates, with a 500,000-position
 replay buffer. This preset targets a large-memory GPU: a full 5×5 batch used
-52.3 GiB of allocated memory in a disposable learner probe. Reduce the batch
+65.4 GiB of allocated memory in a disposable learner probe. Reduce the batch
 size and memory cap for smaller hardware. The repeated 5×5 entry
 is intentional: workers sample that board twice as often as each other size.
 It retains the same network dimensions so selected weights transfer directly.
@@ -58,7 +58,8 @@ adb train --config configs/deep.json --output runs/deep \
 ```
 
 The larger batch increases actual GPU allocation; raising the cap alone would
-not do so. Search still runs on CPU workers. Check the other workload and free
+not do so. Tree traversal runs on CPU workers; two workers batch neural calls
+on the GPU. Check the other workload and free
 CPU capacity before using the larger preset on a shared machine.
 
 ```bash
@@ -121,7 +122,7 @@ CUDA_VISIBLE_DEVICES=0 python scripts/supervise_training.py \
 It enables expandable CUDA allocations before PyTorch starts, writes progress to
 `supervision.json`, and resumes from the full checkpoint after a memory failure
 or stalled iteration. Memory failures halve the batch size while preserving the
-GPU memory cap. Recovery is limited to three restarts and retains the original
+learner GPU memory cap. Recovery is limited to three restarts and retains the original
 remaining time budget. Other training errors stop with their log path recorded.
 Only the supervisor's own child processes are stopped during recovery. Replace
 `--initial-checkpoint` with `--resume runs/deep/resume.pt` to continue an existing
@@ -140,6 +141,18 @@ training-batch setup work, while the training encoder remains vectorized.
 Dedicated evaluation copies avoid repeatedly changing every layer's mode.
 All three changes preserve the game rules and search budget.
 
+The deep preset mixes twelve CPU workers (eight games each) with two GPU workers
+(sixteen games each). `selfplay_gpu_workers` chooses how many workers use CUDA;
+`games_per_worker` assigns their game counts explicitly and must sum to
+`games_per_iteration`. Without these fields, the configured device and balanced
+assignment apply to every worker. This mixed workload uses 14 of this VM's 18
+visible CPU cores for sampling and leaves room for the driver and the other job.
+GPU workers use one captured network call (`selfplay_cuda_graphs`) over fixed
+padded inputs, reuse it for partial batches and reload weights in place.
+Capture remains local to each worker; deployment continues to use NumPy.
+The duty-cycle setting paces learner updates only, including sampling time in
+its cooldown calculation; it does not throttle GPU sampling or partition the GPU.
+
 Build the optional exact-endgame accelerator locally:
 
 ```bash
@@ -147,7 +160,9 @@ pip install -e '.[accelerate]'
 python scripts/build_acceleration.py
 ```
 
-The Cython solver uses masks over at most 18 **remaining** edges, so it supports
+The build also compiles child scoring in search, removing Python callbacks and
+temporary arithmetic objects from the inner loop. The Cython solver uses masks
+over at most 18 **remaining** edges, so it supports
 boards whose total edge count exceeds 64. It preserves double captures and extra
 turns. Ordinary installation uses the Python solver and requires neither Cython
 nor a compiler; the generated binary is excluded from version control.

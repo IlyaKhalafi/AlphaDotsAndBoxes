@@ -73,6 +73,7 @@ class SelfPlayWorker:
         seed: int,
         device: str = "cpu",
         batch_size: int = 1,
+        cuda_graph_capacity: int | None = None,
     ):
         torch.set_num_threads(1)
         if device == "cuda":
@@ -80,7 +81,15 @@ class SelfPlayWorker:
             torch.cuda.set_per_process_memory_fraction(1024**3 / total)
         self.module = module_spec(width=width, depth=depth).build().to(device)
         self.batch_size = batch_size
-        self.search = MCTS(NeuralEvaluator(self.module), config, seed)
+        self.search = MCTS(
+            NeuralEvaluator(
+                self.module,
+                cuda_batch_size=batch_size if cuda_graph_capacity is not None else None,
+                capacity=cuda_graph_capacity,
+            ),
+            config,
+            seed,
+        )
         self.rng = np.random.default_rng(seed)
 
     def collect(

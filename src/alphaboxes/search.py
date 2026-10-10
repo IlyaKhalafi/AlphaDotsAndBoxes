@@ -12,6 +12,11 @@ from alphaboxes.game import State
 from alphaboxes.graph import encode, encode_batch
 from alphaboxes.opponents import solve
 
+try:
+    from alphaboxes._search import choose_child
+except ImportError:
+    choose_child = None
+
 if TYPE_CHECKING:
     from alphaboxes.network import GraphModule
 
@@ -83,9 +88,22 @@ class CachedEvaluator:
 class NeuralEvaluator(CachedEvaluator):
     """Training-side PyTorch adapter; importing search never imports PyTorch."""
 
-    def __init__(self, module: GraphModule, cache_size: int = 4096):
+    def __init__(
+        self,
+        module: GraphModule,
+        cache_size: int = 4096,
+        cuda_batch_size: int | None = None,
+        capacity: int | None = None,
+    ):
         super().__init__(cache_size)
         self.module = module.eval()
+        self.cuda_inference = None
+        if cuda_batch_size is not None:
+            from alphaboxes.cuda_inference import CudaInference
+
+            if next(module.parameters()).device.type != "cuda" or capacity is None:
+                raise ValueError("CUDA graph prediction requires a GPU module and graph capacity.")
+            self.cuda_inference = CudaInference(module, cuda_batch_size, capacity)
 
     def _predict(self, state: State) -> tuple[np.ndarray, float]:
         return self._predict_many([state])[0]
@@ -93,6 +111,8 @@ class NeuralEvaluator(CachedEvaluator):
     def _predict_many(self, states: list[State]) -> list[tuple[np.ndarray, float]]:
         if not states:
             return []
+        if self.cuda_inference is not None:
+            return self.cuda_inference.predict(states)
         import torch
         from ray.rllib.core.columns import Columns
 
@@ -204,6 +224,8 @@ class MCTS:
             else:
                 roots.append((index, Node(state, player=state.player)))
         self._expand_many([root for _, root in roots])
+        if not roots:
+            return results
         for _, root in roots if explore else ():
             # Scale concentration with branching factor as board sizes change.
             alpha = self.config.dirichlet_alpha * 24 / len(root.children)
@@ -217,12 +239,16 @@ class MCTS:
                 node, path = root, [root]
                 while node.children:
                     scale = self.config.cpuct * np.sqrt(node.visits + 1)
-                    child = max(
-                        node.children.values(),
-                        key=lambda child: (
-                            perspective(child.value, child.player, node.player)
-                            + scale * child.prior / (1 + child.visits)
-                        ),
+                    child = (
+                        choose_child(node.children, node.player, float(scale))
+                        if choose_child
+                        else max(
+                            node.children.values(),
+                            key=lambda child: (
+                                perspective(child.value, child.player, node.player)
+                                + scale * child.prior / (1 + child.visits)
+                            ),
+                        )
                     )
                     if child.state is None:
                         child.state = node.state.play(child.action)

@@ -7,7 +7,7 @@ import torch
 from alphaboxes.checkpoint import load_agent, save_agent
 from alphaboxes.network import module_spec
 from alphaboxes.search import SearchConfig
-from alphaboxes.training import TrainConfig, train
+from alphaboxes.training import TrainConfig, sampling_plan, train
 
 
 def test_rllib_training_checkpoint_and_resume(tmp_path):
@@ -116,3 +116,20 @@ def test_cli_overrides_are_validated_with_gpu_selfplay(tmp_path):
     assert TrainConfig.from_json(path, device="cuda").device == "cuda"
     with pytest.raises(ValueError, match="CUDA self-play"):
         TrainConfig.from_json(path, device="cpu")
+
+
+def test_sampling_plan_balances_legacy_and_mixed_workers():
+    assert sampling_plan(TrainConfig(games_per_iteration=5, workers=2)) == [("cpu", 3), ("cpu", 2)]
+    config = TrainConfig(
+        device="cuda",
+        selfplay_device="cuda",
+        workers=4,
+        games_per_iteration=12,
+        selfplay_gpu_workers=2,
+        games_per_worker=(4, 4, 2, 2),
+    )
+    assert sampling_plan(config) == [("cuda", 4), ("cuda", 4), ("cpu", 2), ("cpu", 2)]
+    with pytest.raises(ValueError, match="games_per_worker"):
+        replace(config, games_per_worker=(4, 4, 2))
+    with pytest.raises(ValueError, match="selfplay_gpu_workers"):
+        replace(config, selfplay_gpu_workers=5)
