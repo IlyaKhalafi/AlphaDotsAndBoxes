@@ -220,6 +220,11 @@ progress and retries memory failures with smaller batches, up to three times.
 record, time accounting, and repeated probe results. This run is in progress;
 the playable checkpoint remains the preview, and no new strength is claimed.
 
+At 06:26 UTC, two recovered iterations had completed, reaching 832 games
+and 36,782 positions. Iteration 22 completed all 16 updates at batch size
+32,768, crossing the boundary that failed overnight, with 52.33 GiB peak
+allocation and no supervisor restarts. Both rounds have full resume checkpoints.
+
 ### Preview deployment checks
 
 NumPy deployment tests use seed 3032, 20 games per opponent, alternating seats,
