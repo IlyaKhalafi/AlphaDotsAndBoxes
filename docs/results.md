@@ -225,6 +225,15 @@ and 36,782 positions. Iteration 22 completed all 16 updates at batch size
 32,768, crossing the boundary that failed overnight, with 52.33 GiB peak
 allocation and no supervisor restarts. Both rounds have full resume checkpoints.
 
+After iteration 66 (5,056 games and 225,156 positions), the sampler was optimized
+and resumed with twelve batched CPU workers plus two GPU workers, 128 games per
+round, batches of 40,960 and a 72 GiB learner cap. Compiled endgame and child
+scoring kernels are optional. The 16,121.48-second remaining budget preserves
+the original total of eight hours; the configuration pause is excluded.
+[Performance measurements](performance.md) document the matched-position tests,
+the mixed sampler trial and its limits. This changes throughput and resource
+use; new playing strength still requires fresh evaluation.
+
 ### Preview deployment checks
 
 NumPy deployment tests use seed 3032, 20 games per opponent, alternating seats,

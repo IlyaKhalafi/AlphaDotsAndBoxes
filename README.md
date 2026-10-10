@@ -111,6 +111,7 @@ adb serve --checkpoint models/custom.npz
 Runs save progress, portable agent checkpoints, and a resumable learner state.
 The [training guide](docs/training.md) covers resuming, refinement, and a longer
 campaign with larger boards.
+Local speed measurements are recorded in [the performance notes](docs/performance.md).
 
 ## Evaluate and develop
 
