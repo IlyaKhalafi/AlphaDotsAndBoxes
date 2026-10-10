@@ -106,6 +106,27 @@ Every run writes:
 | `agent-NNNNN.pt` | Periodic inference snapshots                                            |
 | `resume.pt`      | RLlib learner/optimizer state, replay, driver RNG, iteration and counts |
 
+The full resume state is saved atomically after every completed iteration.
+Numbered inference snapshots follow `checkpoint_every`. If interrupted between
+the full checkpoint and its metrics append, resuming restores that missing row.
+
+For long shared-GPU runs, use the bounded supervisor:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python scripts/supervise_training.py \
+  --config configs/deep.json --output runs/deep \
+  --initial-checkpoint models/larger.pt --device cuda
+```
+
+It enables expandable CUDA allocations before PyTorch starts, writes progress to
+`supervision.json`, and resumes from the full checkpoint after a memory failure
+or stalled iteration. Memory failures halve the batch size while preserving the
+GPU memory cap. Recovery is limited to three restarts and retains the original
+remaining time budget. Other training errors stop with their log path recorded.
+Only the supervisor's own child processes are stopped during recovery. Replace
+`--initial-checkpoint` with `--resume runs/deep/resume.pt` to continue an existing
+run. Training also releases unused CUDA cache between iterations.
+
 ```bash
 adb train --config configs/bootstrap.json --iterations 120 \
   --output runs/bootstrap --resume runs/bootstrap/resume.pt --device cuda

@@ -13,24 +13,33 @@ from alphaboxes.training import TrainConfig, train
 def test_rllib_training_checkpoint_and_resume(tmp_path):
     config = TrainConfig(
         sizes=((1, 1), (1, 2)),
-        iterations=1,
+        iterations=2,
         games_per_iteration=2,
         workers=0,
         updates_per_iteration=2,
         batch_size=8,
         width=16,
         depth=2,
-        checkpoint_every=1,
+        checkpoint_every=10,
     )
     path = train(config, tmp_path)
     model, metadata = load_agent(path)
-    assert metadata["games_total"] == 2
-    before = {key: tensor.clone() for key, tensor in model.state_dict().items()}
-    train(replace(config, iterations=2), tmp_path, tmp_path / "resume.pt")
-    after, metadata = load_agent(path)
     assert metadata["games_total"] == 4
+    before = {key: tensor.clone() for key, tensor in model.state_dict().items()}
+    assert not (tmp_path / "agent-00001.pt").exists()
+    first_record, second_record = [
+        json.loads(line) for line in (tmp_path / "metrics.jsonl").read_text().splitlines()
+    ]
+    # Simulate interruption after the atomic checkpoint, before its metrics append.
+    (tmp_path / "metrics.jsonl").write_text(json.dumps(first_record) + "\n")
+    train(replace(config, iterations=3), tmp_path, tmp_path / "resume.pt")
+    after, metadata = load_agent(path)
+    assert metadata["games_total"] == 6
     assert any(not torch.equal(before[key], tensor) for key, tensor in after.state_dict().items())
     records = [json.loads(line) for line in (tmp_path / "metrics.jsonl").read_text().splitlines()]
+    assert records[0] == first_record
+    assert records[1] == second_record
+    assert [row["iteration"] for row in records] == [1, 2, 3]
     assert records[-1]["elapsed_seconds"] > records[0]["elapsed_seconds"]
 
 

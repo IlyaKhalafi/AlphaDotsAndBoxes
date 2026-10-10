@@ -194,6 +194,11 @@ def train(
                     )
                 if previous and "elapsed_seconds" not in state:
                     elapsed_before_resume = previous[-1]["elapsed_seconds"]
+                if state.get("last_metric") and (
+                    not previous or previous[-1]["iteration"] < start_iteration
+                ):
+                    with metrics_path.open("a") as log:
+                        log.write(json.dumps(state["last_metric"]) + "\n")
     workers = []
     owns_ray = False
     local_search = None
@@ -264,6 +269,8 @@ def train(
                     metrics = metric_values(result)
                 if config.device == "cuda":
                     torch.cuda.synchronize()
+                    del batch
+                    torch.cuda.empty_cache()
                 update_seconds = time.monotonic() - update_start
                 if config.device == "cuda":
                     # Pace GPU work; no exclusive mode, reset, or changes to other processes.
@@ -303,9 +310,6 @@ def train(
                         else 0,
                     }
                 )
-                log.write(json.dumps(record) + "\n")
-                log.flush()
-                print(json.dumps(record), flush=True)
                 weights = learner.get_weights()[DEFAULT_POLICY_ID]
                 save_agent(output / "latest.pt", weights, config.width, config.depth, metadata)
                 if (
@@ -320,20 +324,24 @@ def train(
                         config.depth,
                         metadata,
                     )
-                    state = {
-                        "config": asdict(config),
-                        "learner": learner.get_state(),
-                        "replay": list(replay),
-                        "rng": rng.bit_generator.state,
-                        "iteration": iteration,
-                        "games_total": games_total,
-                        "positions_total": positions_total,
-                        "initialization": initialization,
-                        "elapsed_seconds": record["elapsed_seconds"],
-                    }
-                    temporary = output / "resume.tmp"
-                    torch.save(state, temporary)
-                    os.replace(temporary, output / "resume.pt")
+                state = {
+                    "config": asdict(config),
+                    "learner": learner.get_state(),
+                    "replay": list(replay),
+                    "rng": rng.bit_generator.state,
+                    "iteration": iteration,
+                    "games_total": games_total,
+                    "positions_total": positions_total,
+                    "initialization": initialization,
+                    "elapsed_seconds": record["elapsed_seconds"],
+                    "last_metric": record,
+                }
+                temporary = output / "resume.tmp"
+                torch.save(state, temporary)
+                os.replace(temporary, output / "resume.pt")
+                log.write(json.dumps(record) + "\n")
+                log.flush()
+                print(json.dumps(record), flush=True)
                 if budget_exhausted:
                     break
     finally:
