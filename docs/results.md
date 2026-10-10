@@ -202,7 +202,23 @@ batch preparation diagnostic fell from 6.86 seconds to 0.73 seconds after
 vectorization. These are local resource/preparation measurements, not an
 end-to-end throughput or strength comparison. The
 [probe receipt](data/deep-large-batch-probe.json) records timings and limits.
-This run is in progress; no outcome or expert strength is claimed yet.
+The overnight run failed during iteration 22: unused cached CUDA blocks caused
+an allocation failure at the process's own 64 GiB cap, despite 42.45 GiB of
+device memory remaining free. It logged 736 games and 32,484 positions through
+iteration 21, using 1,478.90 seconds; it did **not** complete eight hours.
+The previous full resume state contained iteration 20, so recovery rolled back
+96 games while retaining their elapsed time against the original budget.
+Failed-run weights and logs were archived before resuming.
+
+Recovery started on October 10 at 06:17 UTC with expandable CUDA allocations,
+the same 32,768 batch size, and 7 hours 35 minutes remaining. Four consecutive
+disposable updates, including growth from 32,484 to 32,768 positions, passed;
+peak allocation was 52.33 GiB and reserved memory stabilized at 55.26 GiB.
+Full resume checkpoints now save every iteration. A bounded supervisor records
+progress and retries memory failures with smaller batches, up to three times.
+[Recovery measurements](data/deep-recovery.json) preserve the failed iteration
+record, time accounting, and repeated probe results. This run is in progress;
+the playable checkpoint remains the preview, and no new strength is claimed.
 
 ### Preview deployment checks
 
