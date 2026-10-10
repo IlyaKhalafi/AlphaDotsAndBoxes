@@ -1,0 +1,206 @@
+{
+  "failure_detected_utc": "2026-10-10",
+  "failed_iteration": 22,
+  "last_logged_iteration": 21,
+  "resume_iteration": 20,
+  "last_logged_games": 736,
+  "durable_games": 640,
+  "rolled_back_games": 96,
+  "used_seconds": 1478.896130979003,
+  "reason": "CUDA allocator fragmentation at the 64 GiB per-process cap",
+  "recovery_allocator": "expandable_segments:True",
+  "batch_size": 32768,
+  "gpu_cap_gib": 64,
+  "recovery_started_utc": "2026-10-10T06:17:13Z",
+  "repeated_probe": {
+    "allocator": "expandable_segments:True",
+    "rows": [
+      {
+        "batch_size": 32484,
+        "seconds": 1.3950743619934656,
+        "peak_allocated_mib": 53116.974609375,
+        "reserved_mib": 56046.0
+      },
+      {
+        "batch_size": 32768,
+        "seconds": 0.5818568550166674,
+        "peak_allocated_mib": 53582.8662109375,
+        "reserved_mib": 56588.0
+      },
+      {
+        "batch_size": 32768,
+        "seconds": 0.5765713499858975,
+        "peak_allocated_mib": 53582.8662109375,
+        "reserved_mib": 56588.0
+      },
+      {
+        "batch_size": 32768,
+        "seconds": 0.5697962529957294,
+        "peak_allocated_mib": 53582.8662109375,
+        "reserved_mib": 56588.0
+      }
+    ]
+  },
+  "allocated_at_failure_gib": 49.28,
+  "reserved_unused_at_failure_gib": 12.6,
+  "device_free_at_failure_gib": 42.45,
+  "total_budget_seconds": 28800,
+  "remaining_at_restart_seconds": 27321.103869020997,
+  "original_failed_last_metric": {
+    "iteration": 21,
+    "games_total": 736,
+    "positions_total": 32484,
+    "seed": 44,
+    "sizes": [
+      [
+        3,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        5,
+        5
+      ]
+    ],
+    "simulations": 512,
+    "training_exact_threshold": 12,
+    "initialization": {
+      "checkpoint_sha256": "4aa5558673f9a10061724301cff13ad240e97271c4aa11f350b19540a45ac930",
+      "training_games": 3200,
+      "training_positions": 128614
+    },
+    "default_optimizer_learning_rate": 0.0001,
+    "gradients_default_optimizer_global_norm": 0.1951727718114853,
+    "module_train_batch_size_mean": 32484.0,
+    "num_module_steps_trained": 32484.0,
+    "num_module_steps_trained_lifetime": 32484.0,
+    "policy_loss": 2.162339687347412,
+    "total_loss": 2.80851411819458,
+    "value_loss": 0.6461745500564575,
+    "weights_seq_no": 176.0,
+    "replay_positions": 32484,
+    "sample_seconds": 227.91696920502,
+    "update_seconds": 21.485119500022847,
+    "iteration_seconds": 249.40214464097517,
+    "elapsed_seconds": 1478.896130979003,
+    "stop_reason": null,
+    "gpu_peak_mb": 53139.29736328125
+  },
+  "verified_utc": "2026-10-10T06:26:54Z",
+  "recovered_completed_rounds": [
+    {
+      "iteration": 21,
+      "games_total": 736,
+      "positions_total": 32484,
+      "seed": 44,
+      "sizes": [
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          5
+        ]
+      ],
+      "simulations": 512,
+      "training_exact_threshold": 12,
+      "initialization": {
+        "checkpoint_sha256": "4aa5558673f9a10061724301cff13ad240e97271c4aa11f350b19540a45ac930",
+        "training_games": 3200,
+        "training_positions": 128614
+      },
+      "default_optimizer_learning_rate": 0.0001,
+      "gradients_default_optimizer_global_norm": 0.1951727718114853,
+      "module_train_batch_size_mean": 32484.0,
+      "num_module_steps_trained": 32484.0,
+      "num_module_steps_trained_lifetime": 32484.0,
+      "policy_loss": 2.162339687347412,
+      "total_loss": 2.80851411819458,
+      "value_loss": 0.6461745500564575,
+      "weights_seq_no": 176.0,
+      "replay_positions": 32484,
+      "sample_seconds": 268.3346992890001,
+      "update_seconds": 26.141533195972443,
+      "iteration_seconds": 294.4763095139642,
+      "elapsed_seconds": 1773.372599181952,
+      "stop_reason": null,
+      "gpu_peak_mb": 53119.0986328125
+    },
+    {
+      "iteration": 22,
+      "games_total": 832,
+      "positions_total": 36782,
+      "seed": 44,
+      "sizes": [
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          5
+        ]
+      ],
+      "simulations": 512,
+      "training_exact_threshold": 12,
+      "initialization": {
+        "checkpoint_sha256": "4aa5558673f9a10061724301cff13ad240e97271c4aa11f350b19540a45ac930",
+        "training_games": 3200,
+        "training_positions": 128614
+      },
+      "default_optimizer_learning_rate": 0.0001,
+      "gradients_default_optimizer_global_norm": 0.13594980537891388,
+      "module_train_batch_size_mean": 32768.0,
+      "num_module_steps_trained": 32768.0,
+      "num_module_steps_trained_lifetime": 32768.0,
+      "policy_loss": 2.1600780487060547,
+      "total_loss": 2.8080129623413086,
+      "value_loss": 0.6479348540306091,
+      "weights_seq_no": 192.0,
+      "replay_positions": 36782,
+      "sample_seconds": 227.58884382300312,
+      "update_seconds": 23.34691089898115,
+      "iteration_seconds": 250.93582964100642,
+      "elapsed_seconds": 2025.6911427449668,
+      "stop_reason": null,
+      "gpu_peak_mb": 53582.8916015625
+    }
+  ],
+  "recovery_restarts_at_verification": 0
+}

@@ -1,0 +1,75 @@
+{
+  "status": "evaluated",
+  "selected": {
+    "label": "agent-00010",
+    "checkpoint": "runs/deep-20261009/agent-00010.pt",
+    "checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+    "mean_score": 0.8333333333333334,
+    "scores": {
+      "4x4/tactical_endgame": 0.925,
+      "4x4/chain_control": 0.85,
+      "5x5/tactical_endgame": 1.0,
+      "5x5/chain_control": 0.95,
+      "4x4/released_agent": 0.475,
+      "5x5/released_agent": 0.8
+    }
+  },
+  "promotion_gate_passed": true,
+  "final_seed": 3041,
+  "preview_checkpoint_sha256": "9490da1e599b145c7c60dc130cb3f7ab50740b07a6fe43ee815e404d618ff218",
+  "final_phase": {
+    "iteration": 171,
+    "games_total": 18496,
+    "positions_total": 823572,
+    "seed": 44,
+    "sizes": [
+      [
+        3,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        5,
+        5
+      ]
+    ],
+    "simulations": 512,
+    "selfplay_device": "cuda",
+    "selfplay_batch_size": 16,
+    "selfplay_cuda_graphs": true,
+    "selfplay_gpu_workers": 2,
+    "training_exact_threshold": 12,
+    "initialization": {
+      "checkpoint_sha256": "4aa5558673f9a10061724301cff13ad240e97271c4aa11f350b19540a45ac930",
+      "training_games": 3200,
+      "training_positions": 128614
+    },
+    "default_optimizer_learning_rate": 0.0001,
+    "gradients_default_optimizer_global_norm": 1.7397242784500122,
+    "module_train_batch_size_mean": 40960.0,
+    "num_module_steps_trained": 40960.0,
+    "num_module_steps_trained_lifetime": 40960.0,
+    "policy_loss": 2.094496965408325,
+    "total_loss": 2.690812587738037,
+    "value_loss": 0.5963156819343567,
+    "weights_seq_no": 2576.0,
+    "replay_positions": 500000,
+    "sample_seconds": 118.52721508499235,
+    "update_seconds": 51.71658836095594,
+    "iteration_seconds": 170.24404410098214,
+    "elapsed_seconds": 28941.150088886032,
+    "stop_reason": "time_budget",
+    "gpu_peak_mb": 66961.7744140625
+  }
+}

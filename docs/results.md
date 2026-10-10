@@ -217,8 +217,7 @@ peak allocation was 52.33 GiB and reserved memory stabilized at 55.26 GiB.
 Full resume checkpoints now save every iteration. A bounded supervisor records
 progress and retries memory failures with smaller batches, up to three times.
 [Recovery measurements](data/deep-recovery.json) preserve the failed iteration
-record, time accounting, and repeated probe results. This run is in progress;
-the playable checkpoint remains the preview, and no new strength is claimed.
+record, time accounting, and repeated probe results. The completed run and fresh tests are recorded in [the follow-up report](deep-run.md). Expert-human strength remains unproven.
 
 At 06:26 UTC, two recovered iterations had completed, reaching 832 games
 and 36,782 positions. Iteration 22 completed all 16 updates at batch size

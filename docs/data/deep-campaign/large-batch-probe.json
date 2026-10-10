@@ -1,0 +1,23 @@
+{
+  "batch_size": 32768,
+  "allocator_cap_gib": 64.0,
+  "peak_allocated_mib": 53583.017578125,
+  "peak_reserved_mib": 56556.0,
+  "batch_build_seconds": 6.857752244046424,
+  "update_seconds": 0.9669554919819348,
+  "metric_values": {
+    "num_trainable_parameters": 272648.0,
+    "policy_loss": 4.0952229499816895,
+    "value_loss": 0.005218647886067629,
+    "gradients_default_optimizer_global_norm": 1.2946189641952515,
+    "weights_seq_no": 1.0,
+    "module_train_batch_size_mean": 32768.0,
+    "num_module_steps_trained": 32768.0,
+    "num_module_steps_trained_lifetime": 32768.0,
+    "total_loss": 4.1004414558410645,
+    "default_optimizer_learning_rate": 0.0001
+  },
+  "note": "One disposable RLlib learner update on synthetic 5x5 positions; no campaign weights modified.",
+  "vectorized_batch_build_seconds": 0.7336844909586944,
+  "encoding_parity_states": 83
+}

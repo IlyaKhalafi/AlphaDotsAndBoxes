@@ -1,0 +1,29 @@
+{
+  "allocator": "expandable_segments:True",
+  "rows": [
+    {
+      "batch_size": 32484,
+      "seconds": 1.3950743619934656,
+      "peak_allocated_mib": 53116.974609375,
+      "reserved_mib": 56046.0
+    },
+    {
+      "batch_size": 32768,
+      "seconds": 0.5818568550166674,
+      "peak_allocated_mib": 53582.8662109375,
+      "reserved_mib": 56588.0
+    },
+    {
+      "batch_size": 32768,
+      "seconds": 0.5765713499858975,
+      "peak_allocated_mib": 53582.8662109375,
+      "reserved_mib": 56588.0
+    },
+    {
+      "batch_size": 32768,
+      "seconds": 0.5697962529957294,
+      "peak_allocated_mib": 53582.8662109375,
+      "reserved_mib": 56588.0
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "training": "configs/deep.json",
+  "initial_checkpoint_sha256": "4aa5558673f9a10061724301cff13ad240e97271c4aa11f350b19540a45ac930",
+  "selection_seed": 3040,
+  "final_seed": 3041,
+  "selection_boards": [
+    [
+      4,
+      4
+    ],
+    [
+      5,
+      5
+    ]
+  ],
+  "selection_games_per_opponent_per_board": 20,
+  "selection_simulations": 128,
+  "selection_agent_exact_threshold": 0,
+  "selection_criterion": "Mean score versus tactical_endgame, chain_control and warm-start checkpoint, averaged over both boards",
+  "promotion_checks": {
+    "preview_standard_duel_minimum_score_by_board": 0.5,
+    "preview_deep_duel_minimum_score_by_board": 0.5,
+    "require_strict_improvement_on_5x5_deep": true
+  },
+  "note": "Small seeded samples and these heuristic gates cannot establish expert-human strength."
+}
