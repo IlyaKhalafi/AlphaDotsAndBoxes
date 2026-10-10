@@ -17,7 +17,7 @@ def test_cache_uses_relative_ownership_and_invalidates():
         state.owners,
         1 - state.player,
     )
-    with patch.object(model, "forward_inference", wraps=model.forward_inference) as forward:
+    with patch.object(model, "predict", wraps=model.predict) as forward:
         a = evaluator(state)
         b = evaluator(mirrored)
         assert forward.call_count == 1
@@ -32,7 +32,7 @@ def test_cache_eviction_and_disabled_mode():
     state = State.new(1, 2)
     for capacity, expected in [(0, 3), (1, 3), (2, 2)]:
         evaluator = NeuralEvaluator(model, capacity)
-        with patch.object(model, "forward_inference", wraps=model.forward_inference) as forward:
+        with patch.object(model, "predict", wraps=model.predict) as forward:
             evaluator(state)
             evaluator(state.play(0))
             evaluator(state)

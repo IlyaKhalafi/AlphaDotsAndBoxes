@@ -61,6 +61,13 @@ class GraphModule(TorchRLModule):
             Columns.VF_PREDS: self.value(readout).squeeze(-1),
         }
 
+    @torch.inference_mode()
+    def predict(self, observations):
+        """Predict on a dedicated evaluation copy without repeated mode traversal."""
+        if self.training:
+            raise RuntimeError("Self-play prediction requires an evaluation-mode module.")
+        return self._forward({Columns.OBS: observations})
+
 
 def module_spec(capacity: int = 1, width: int = 96, depth: int = 6) -> RLModuleSpec:
     observation_space, action_space = spaces(capacity)

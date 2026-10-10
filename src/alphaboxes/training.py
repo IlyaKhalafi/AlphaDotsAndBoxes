@@ -32,6 +32,8 @@ class TrainConfig:
     iterations: int = 100
     games_per_iteration: int = 16
     workers: int = 4
+    selfplay_device: str = "cpu"
+    selfplay_batch_size: int = 1
     updates_per_iteration: int = 16
     batch_size: int = 128
     replay_capacity: int = 20_000
@@ -55,6 +57,7 @@ class TrainConfig:
             "batch_size",
             "replay_capacity",
             "checkpoint_every",
+            "selfplay_batch_size",
         ):
             if getattr(self, name) < 1:
                 raise ValueError(f"{name} must be positive.")
@@ -64,6 +67,10 @@ class TrainConfig:
             raise ValueError("Training sizes must contain boards of at most 144 boxes.")
         if self.device not in ("cpu", "cuda"):
             raise ValueError("device must be cpu or cuda.")
+        if self.selfplay_device not in ("cpu", "cuda"):
+            raise ValueError("selfplay_device must be cpu or cuda.")
+        if self.selfplay_device == "cuda" and (self.device != "cuda" or not self.workers):
+            raise ValueError("CUDA self-play requires a CUDA learner and Ray workers.")
         if not 0 < self.gpu_duty_cycle <= 1 or self.gpu_memory_gb <= 0:
             raise ValueError("GPU memory and duty-cycle limits must be positive.")
         if self.max_seconds is not None and (
@@ -100,7 +107,7 @@ def build_learner(config: TrainConfig) -> LearnerGroup:
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA requested but unavailable. Use --device cpu.")
         total_bytes = torch.cuda.get_device_properties(0).total_memory
-        fraction = min(config.gpu_memory_gb * 1024**3 / total_bytes, 0.5)
+        fraction = min(config.gpu_memory_gb * 1024**3 / total_bytes, 1.0)
         torch.cuda.set_per_process_memory_fraction(fraction, 0)
     capacity = max(board(*size).num_nodes for size in config.sizes)
     spec = MultiRLModuleSpec(
@@ -208,18 +215,20 @@ def train(
             ray.init(
                 address="local",
                 num_cpus=config.workers,
-                num_gpus=0,
+                num_gpus=1 if config.selfplay_device == "cuda" else 0,
                 include_dashboard=False,
                 object_store_memory=256 * 1024**2,
                 log_to_driver=False,
             )
             owns_ray = True
         workers = [
-            SelfPlayWorker.remote(
+            SelfPlayWorker.options(num_gpus=0.01 if config.selfplay_device == "cuda" else 0).remote(
                 config.width,
                 config.depth,
                 config.search,
                 config.seed + 1000 * (i + 1) + start_iteration,
+                config.selfplay_device,
+                config.selfplay_batch_size,
             )
             for i in range(config.workers)
         ]
@@ -284,6 +293,8 @@ def train(
                     "seed": config.seed,
                     "sizes": [list(size) for size in config.sizes],
                     "simulations": config.search.simulations,
+                    "selfplay_device": config.selfplay_device,
+                    "selfplay_batch_size": config.selfplay_batch_size,
                     "training_exact_threshold": config.search.exact_threshold,
                     "initialization": initialization,
                 }

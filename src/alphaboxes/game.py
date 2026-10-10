@@ -82,29 +82,34 @@ class State:
         return result if player == 0 else -result
 
     def captures(self, action: int) -> tuple[int, ...]:
+        edges, boxes = self.edges, self.board.boxes
         return tuple(
             b
             for b in self.board.edge_boxes[action]
             if self.owners[b] < 0
-            and all(e == action or self.edges[e] >= 0 for e in self.board.boxes[b])
+            and (boxes[b][0] == action or edges[boxes[b][0]] >= 0)
+            and (boxes[b][1] == action or edges[boxes[b][1]] >= 0)
+            and (boxes[b][2] == action or edges[boxes[b][2]] >= 0)
+            and (boxes[b][3] == action or edges[boxes[b][3]] >= 0)
         )
 
     def play(self, action: int) -> "State":
-        if self.terminal:
-            raise ValueError("The game has finished.")
         if not isinstance(action, int) or not 0 <= action < len(self.edges):
             raise ValueError("Edge index is outside the board.")
         if self.edges[action] >= 0:
+            if self.terminal:
+                raise ValueError("The game has finished.")
             raise ValueError("That edge is already drawn.")
         captured = self.captures(action)
         edges = list(self.edges)
-        owners = list(self.owners)
         edges[action] = self.player
-        for box_index in captured:
-            owners[box_index] = self.player
-        return State(
-            self.board, tuple(edges), tuple(owners), self.player if captured else 1 - self.player
-        )
+        owners = self.owners
+        if captured:
+            updated = list(owners)
+            for box_index in captured:
+                updated[box_index] = self.player
+            owners = tuple(updated)
+        return State(self.board, tuple(edges), owners, self.player if captured else 1 - self.player)
 
     def as_dict(self) -> dict:
         return {

@@ -2,7 +2,7 @@ import numpy as np
 
 from alphaboxes.game import State
 from alphaboxes.opponents import solve
-from alphaboxes.search import MCTS, SearchConfig, perspective
+from alphaboxes.search import MCTS, CachedEvaluator, SearchConfig, perspective
 
 
 def uniform(state):
@@ -44,3 +44,51 @@ def test_exact_endgame():
     policy, value = MCTS(uniform, SearchConfig(exact_threshold=7)).policy(s)
     assert set(np.flatnonzero(policy)) == set(solve(s)[1])
     assert value == 0
+
+
+def test_batched_search_matches_independent_search_with_extra_turns():
+    capturing = State.new(1, 2)
+    for action in (0, 1, 2, 3, 4, 6):
+        capturing = capturing.play(action)
+    states = [State.new(2, 2), capturing, State.new(1, 1).play(0)]
+
+    def evaluator(state):
+        return np.arange(1, state.board.num_edges + 1), (state.scores[state.player] - 1) / 3
+
+    config = SearchConfig(simulations=64)
+    batched = MCTS(evaluator, config).policies(states)
+    for state, (policy, value) in zip(states, batched, strict=True):
+        expected, expected_value = MCTS(evaluator, config).policy(state)
+        np.testing.assert_array_equal(policy, expected)
+        assert value == expected_value
+
+
+def test_batched_cache_deduplicates_misses_and_survives_eviction():
+    class RecordingEvaluator(CachedEvaluator):
+        def _predict(self, state):
+            return uniform(state)
+
+        def _predict_many(self, states):
+            self.batch_count = len(states)
+            return super()._predict_many(states)
+
+    evaluator = RecordingEvaluator(cache_size=1)
+    first, second = State.new(1, 1), State.new(1, 2)
+    predictions = evaluator.evaluate_many([first, second, first])
+    assert evaluator.batch_count == 2
+    assert predictions[0] is predictions[2]
+    assert len(predictions[1][0]) == second.board.num_edges
+    assert all(not policy.flags.writeable for policy, _ in predictions)
+
+
+def test_search_only_constructs_states_for_visited_moves(monkeypatch):
+    original = State.play
+    moves = []
+
+    def counted(state, action):
+        moves.append(action)
+        return original(state, action)
+
+    monkeypatch.setattr(State, "play", counted)
+    MCTS(uniform, SearchConfig(simulations=32)).policy(State.new(5, 5))
+    assert len(moves) <= 32

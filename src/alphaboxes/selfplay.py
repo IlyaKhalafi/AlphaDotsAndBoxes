@@ -37,11 +37,49 @@ def play_episode(
     ]
 
 
+def play_episodes(
+    search: MCTS,
+    sizes: list[tuple[int, int]],
+    rng: np.random.Generator,
+    temperature_moves: int = 12,
+) -> list[Example]:
+    """Advance independent games together; preserve turns and per-game targets."""
+    states = [State.new(*size) for size in sizes]
+    histories = [[] for _ in states]
+    while active := [i for i, state in enumerate(states) if not state.terminal]:
+        predictions = search.policies([states[i] for i in active], explore=True)
+        for index, (policy, _) in zip(active, predictions, strict=True):
+            history = histories[index]
+            history.append((states[index], policy))
+            if len(history) <= temperature_moves:
+                action = int(rng.choice(len(policy), p=policy / policy.sum()))
+            else:
+                action = int(rng.choice(np.flatnonzero(policy == policy.max())))
+            states[index] = states[index].play(action)
+    return [
+        Example(position, policy, final.outcome(position.player))
+        for final, history in zip(states, histories, strict=True)
+        for position, policy in history
+    ]
+
+
 @ray.remote(num_cpus=1, num_gpus=0)
 class SelfPlayWorker:
-    def __init__(self, width: int, depth: int, config: SearchConfig, seed: int):
+    def __init__(
+        self,
+        width: int,
+        depth: int,
+        config: SearchConfig,
+        seed: int,
+        device: str = "cpu",
+        batch_size: int = 1,
+    ):
         torch.set_num_threads(1)
-        self.module = module_spec(width=width, depth=depth).build()
+        if device == "cuda":
+            total = torch.cuda.get_device_properties(0).total_memory
+            torch.cuda.set_per_process_memory_fraction(1024**3 / total)
+        self.module = module_spec(width=width, depth=depth).build().to(device)
+        self.batch_size = batch_size
         self.search = MCTS(NeuralEvaluator(self.module), config, seed)
         self.rng = np.random.default_rng(seed)
 
@@ -51,7 +89,11 @@ class SelfPlayWorker:
         self.module.set_state(weights)
         self.search.evaluator.clear_cache()
         samples = []
-        for _ in range(games):
-            size = sizes[int(self.rng.integers(len(sizes)))]
-            samples.extend(play_episode(self.search, size, self.rng, temperature_moves))
+        for start in range(0, games, self.batch_size):
+            count = min(self.batch_size, games - start)
+            selected = [sizes[int(self.rng.integers(len(sizes)))] for _ in range(count)]
+            if count == 1:
+                samples.extend(play_episode(self.search, selected[0], self.rng, temperature_moves))
+            else:
+                samples.extend(play_episodes(self.search, selected, self.rng, temperature_moves))
         return samples

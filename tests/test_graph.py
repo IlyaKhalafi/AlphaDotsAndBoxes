@@ -2,7 +2,21 @@ import numpy as np
 import pytest
 
 from alphaboxes.game import State
-from alphaboxes.graph import encode_batch
+from alphaboxes.graph import encode, encode_batch
+
+
+def test_search_encoding_matches_training_encoding_through_complete_games():
+    rng = np.random.default_rng(55)
+    for size in ((1, 1), (1, 2), (3, 3), (4, 4), (3, 5), (5, 5), (6, 6)):
+        state = State.new(*size)
+        while True:
+            for capacity in (state.board.num_nodes, state.board.num_nodes + 11):
+                single, batch = encode(state, capacity), encode_batch([state], capacity)
+                for key in single:
+                    np.testing.assert_array_equal(single[key], batch[key][0])
+            if state.terminal:
+                break
+            state = state.play(int(rng.choice(state.legal_actions)))
 
 
 def test_mixed_shapes_keep_order_turn_features_and_padding():
