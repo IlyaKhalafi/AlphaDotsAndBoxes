@@ -1,0 +1,99 @@
+{
+  "python": "3.12.3",
+  "software": {
+    "torch": "2.12.1",
+    "ray": "2.58.0",
+    "gymnasium": "1.2.2",
+    "numpy": "2.5.1",
+    "fastapi": "0.143.0"
+  },
+  "runs": [
+    {
+      "label": "wide-20261010",
+      "config": {
+        "sizes": [
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            5,
+            5
+          ]
+        ],
+        "iterations": 10000,
+        "games_per_iteration": 128,
+        "workers": 4,
+        "selfplay_device": "cuda",
+        "selfplay_batch_size": 32,
+        "selfplay_cuda_graphs": true,
+        "selfplay_gpu_workers": 4,
+        "games_per_worker": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "updates_per_iteration": 16,
+        "batch_size": 12288,
+        "replay_capacity": 500000,
+        "learning_rate": 0.0001,
+        "width": 288,
+        "depth": 6,
+        "seed": 45,
+        "temperature_moves": 12,
+        "device": "cuda",
+        "gpu_memory_gb": 72.0,
+        "gpu_duty_cycle": 0.5,
+        "checkpoint_every": 5,
+        "max_seconds": 28799.999874364003,
+        "search": {
+          "simulations": 512,
+          "cpuct": 1.5,
+          "noise_fraction": 0.25,
+          "dirichlet_alpha": 0.3,
+          "exact_threshold": 12
+        }
+      },
+      "first_iteration": 1,
+      "last_iteration": 60,
+      "games_total": 7680,
+      "positions_total": 340828,
+      "initialization": {
+        "checkpoint_sha256": "4c8fef4d79105518182c42c00d2bfd0af5d9169c421b6ff928ee672c5b94bbae",
+        "training_games": 320,
+        "training_positions": 13934,
+        "expansion": {
+          "method": "channel_replication_with_zero_sum_outgoing_noise",
+          "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+          "source_width": 96,
+          "width": 288,
+          "depth": 6,
+          "factor": 3,
+          "noise": 0.01,
+          "seed": 45,
+          "source_parameters": 272648,
+          "parameters": 2421512
+        }
+      },
+      "stop_reason": null,
+      "elapsed_seconds": 14065.369726239005,
+      "median_iteration_seconds": 227.76986669551115,
+      "peak_allocated_mb": 59335.1640625,
+      "last10_mean_policy_loss": 2.11800639629364,
+      "last10_mean_value_loss": 0.6073410868644714
+    }
+  ]
+}

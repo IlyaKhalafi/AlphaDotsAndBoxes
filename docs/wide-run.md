@@ -1,5 +1,8 @@
 # Wider graph network
 
+[Loss curves and checkpoint comparisons at 19:30 UTC](wide-progress.md) provide
+a dated snapshot of the running experiment.
+
 This experiment expands the validated six-layer residual GIN from 96 to 288
 channels. Parameter count increases from **272,648** to **2,421,512** (8.88×).
 The graph representation, legal-action masks, board-size support and policy/value
