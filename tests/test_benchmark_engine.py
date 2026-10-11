@@ -64,6 +64,9 @@ def test_parallel_pairs_match_serial_oracle_games_and_preserve_progress(tmp_path
             assert summary["receipt_sha256"] == hashlib.sha256(output.read_bytes()).hexdigest()
             assert summary["results"][0]["games"] == 4
             assert summary["results"][0]["players"]["candidate"]["neural_moves"] == 0
+            assert summary["results"][0]["players"]["candidate"]["opening_positions"] == 2
+            assert summary["results"][0]["players"]["reference"]["opening_positions"] == 2
+            assert summary["results"][0]["players"]["candidate"]["opening_depth_counts"] == {"6": 2}
             damaged = json.loads(output.read_text())
             damaged["games"][0]["scores"][0] += 1
             corrupt = tmp_path / "corrupt.json"

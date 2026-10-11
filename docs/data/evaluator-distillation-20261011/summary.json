@@ -1,7 +1,7 @@
 {
   "validation": "Full legal replays, final scores and seat-swapped openings checked",
   "timing": "Only moves with more than 12 remaining edges enter search-work statistics",
-  "source_sha256": "3a2d5041999c87443ef1805eec51529aec58c85dd420f659ae2716cbcf4cd3df",
+  "source_sha256": "d6ced1e40f39fbeadc0b7b8ba68d054fad059de683d44f5942fd583e718f9d74",
   "reports": [
     {
       "receipt": "alpha-matches.json",
@@ -43,7 +43,13 @@
                 "15": 1
               },
               "median_nodes": 6463.0,
-              "median_simulations": 0.0
+              "median_simulations": 0.0,
+              "opening_positions": 10,
+              "opening_depth_counts": {
+                "2": 9,
+                "3": 1
+              },
+              "opening_median_nodes": 4404.0
             },
             "reference": {
               "neural_moves": 227,
@@ -66,7 +72,12 @@
                 "15": 1
               },
               "median_nodes": 3354.0,
-              "median_simulations": 0.0
+              "median_simulations": 0.0,
+              "opening_positions": 10,
+              "opening_depth_counts": {
+                "2": 10
+              },
+              "opening_median_nodes": 2625.5
             }
           }
         },
@@ -103,7 +114,12 @@
                 "15": 2
               },
               "median_nodes": 5259.5,
-              "median_simulations": 0.0
+              "median_simulations": 0.0,
+              "opening_positions": 10,
+              "opening_depth_counts": {
+                "2": 10
+              },
+              "opening_median_nodes": 4307.5
             },
             "reference": {
               "neural_moves": 414,
@@ -130,7 +146,127 @@
                 "18": 1
               },
               "median_nodes": 2398.5,
-              "median_simulations": 0.0
+              "median_simulations": 0.0,
+              "opening_positions": 10,
+              "opening_depth_counts": {
+                "2": 10
+              },
+              "opening_median_nodes": 1932.5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "mcts-matches.json",
+      "receipt_sha256": "3bf2a37ed1fbd31f551535c905a9aff8f6df61f14a56bf46a419333508ce40bf",
+      "candidate_sha256": "730c2ba93c94d6de5ca7388b063313d2139169729b753fd13b3959ea946f2206",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            4,
+            4
+          ],
+          "games": 20,
+          "wins": 9,
+          "draws": 2,
+          "losses": 9,
+          "score": 0.5,
+          "mean_box_margin": 0.6,
+          "players": {
+            "candidate": {
+              "neural_moves": 218,
+              "mean_seconds": 1.9492761917714534,
+              "median_depth": 4.0,
+              "depth_counts": {
+                "2": 21,
+                "3": 61,
+                "4": 40,
+                "5": 16,
+                "6": 18,
+                "7": 19,
+                "8": 13,
+                "9": 9,
+                "10": 5,
+                "11": 2,
+                "12": 1,
+                "13": 8,
+                "14": 5
+              },
+              "median_nodes": 6109.0,
+              "median_simulations": 0.0,
+              "opening_positions": 10,
+              "opening_depth_counts": {
+                "2": 9,
+                "3": 1
+              },
+              "opening_median_nodes": 4301.0
+            },
+            "reference": {
+              "neural_moves": 222,
+              "mean_seconds": 1.7979798884690017,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 3897.0,
+              "opening_positions": 10,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        },
+        {
+          "board": [
+            5,
+            5
+          ],
+          "games": 20,
+          "wins": 7,
+          "draws": 0,
+          "losses": 13,
+          "score": 0.35,
+          "mean_box_margin": -1.7,
+          "players": {
+            "candidate": {
+              "neural_moves": 417,
+              "mean_seconds": 1.9730511123224606,
+              "median_depth": 3.0,
+              "depth_counts": {
+                "2": 132,
+                "3": 88,
+                "4": 35,
+                "5": 28,
+                "6": 36,
+                "7": 30,
+                "8": 23,
+                "9": 14,
+                "10": 11,
+                "11": 5,
+                "12": 3,
+                "13": 6,
+                "14": 4,
+                "15": 2
+              },
+              "median_nodes": 5007.0,
+              "median_simulations": 0.0,
+              "opening_positions": 10,
+              "opening_depth_counts": {
+                "2": 10
+              },
+              "opening_median_nodes": 3602.0
+            },
+            "reference": {
+              "neural_moves": 423,
+              "mean_seconds": 1.8133022726026868,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 2647.0,
+              "opening_positions": 10,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
             }
           }
         }

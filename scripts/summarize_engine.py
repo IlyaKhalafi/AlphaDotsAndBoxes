@@ -71,6 +71,8 @@ def summarize(receipt):
                 if move["side"] == side and move["remaining_edges"] > 12
             ]
             alpha = [move for move in neural if move["engine"] == "alpha_beta"]
+            openings = [game["moves"][0] for game in games if game["moves"][0]["side"] == side]
+            alpha_openings = [move for move in openings if move["engine"] == "alpha_beta"]
             row["players"][side] = {
                 "neural_moves": len(neural),
                 "mean_seconds": float(np.mean([move["seconds"] for move in neural]))
@@ -85,6 +87,13 @@ def summarize(receipt):
                 else None,
                 "median_simulations": float(np.median([move["simulations"] for move in neural]))
                 if neural
+                else None,
+                "opening_positions": len(openings),
+                "opening_depth_counts": dict(
+                    sorted(Counter(move["depth"] for move in alpha_openings).items())
+                ),
+                "opening_median_nodes": float(np.median([move["nodes"] for move in alpha_openings]))
+                if alpha_openings
                 else None,
             }
         rows.append(row)

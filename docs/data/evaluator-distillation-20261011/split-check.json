@@ -1,0 +1,13 @@
+{
+  "validation_positions": 685,
+  "equivalent_graph_overlap": 8,
+  "key": "Current-player-relative CachedEvaluator key",
+  "audited_positions": 677,
+  "selected_checkpoint_metrics_excluding_overlap": {
+    "policy_kl": 0.0342634046447506,
+    "value_mse": 0.031577962275974154,
+    "value_mae": 0.10395563159418598,
+    "policy_agreement": 0.6528803545051699
+  },
+  "selection": "Post-hoc audit only; original selection used all 685 validation rows"
+}
