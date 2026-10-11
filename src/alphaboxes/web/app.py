@@ -5,6 +5,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 from fastapi import FastAPI, HTTPException
@@ -13,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from alphaboxes.checkpoint import load_evaluator
+from alphaboxes.engine import AlphaBeta, EngineConfig
 from alphaboxes.game import State
 from alphaboxes.opponents import tactical_action
 from alphaboxes.search import MCTS, SearchConfig
@@ -37,6 +39,8 @@ class Move(Revision):
 
 class SearchRequest(Revision):
     simulations: int = Field(default=128, ge=8, le=512)
+    time_limit: float | None = Field(default=None, ge=0.05, le=10, allow_inf_nan=False)
+    engine: Literal["mcts", "alpha_beta"] = "mcts"
 
 
 @dataclass
@@ -95,17 +99,47 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
         if session.revision != revision:
             raise HTTPException(409, "The board has changed. Refresh this game.")
 
-    def search(session: Session, simulations: int) -> tuple[int, float | None]:
+    def search(session: Session, request: SearchRequest) -> tuple[int, float | None, dict]:
         if session.state.terminal:
             raise HTTPException(409, "The game has finished.")
         with search_lock:
+            started = time.monotonic()
             if evaluator is None:
-                return tactical_action(session.state, rng), None
-            # Exact search is a clearly identified playing aid, never training data.
-            planner = MCTS(evaluator, SearchConfig(simulations=simulations, exact_threshold=12))
+                return tactical_action(session.state, rng), None, {
+                    "method": "tactical", "simulations": 0
+                }
+            exact = len(session.state.legal_actions) <= 12
+            limit = request.time_limit or (0.5 if request.engine == "alpha_beta" else None)
+            if request.engine == "alpha_beta":
+                planner = AlphaBeta(evaluator, EngineConfig(time_limit=limit))
+            else:
+                planner = MCTS(
+                    evaluator,
+                    SearchConfig(
+                        simulations=8192 if request.time_limit else request.simulations,
+                        time_limit=request.time_limit,
+                        exact_threshold=12,
+                    ),
+                )
             policy, value = planner.policy(session.state)
             action = int(rng.choice(np.flatnonzero(policy == policy.max())))
-            return action, value
+            details = {
+                "method": "exact_endgame"
+                if exact
+                else "alpha_beta"
+                if request.engine == "alpha_beta"
+                else "graph_search",
+                "engine": request.engine,
+                "time_limit": limit,
+                "thinking_seconds": time.monotonic() - started,
+                "simulations": planner.completed_simulations if isinstance(planner, MCTS) else 0,
+            }
+            if isinstance(planner, AlphaBeta):
+                details.update(
+                    depth=planner.depth, nodes=planner.nodes,
+                    cutoffs=planner.cutoffs, table_hits=planner.table_hits,
+                )
+            return action, value, details
 
     @app.get("/")
     def index():
@@ -123,6 +157,7 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             else None,
             "training": metadata,
             "exact_endgame_edges": 12 if evaluator else 0,
+            "search_engines": ["mcts", "alpha_beta"],
         }
 
     @app.post("/api/games", status_code=201)
@@ -195,14 +230,12 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             if not session.demo and session.state.player == session.human:
                 raise HTTPException(409, "It is your turn.")
             started = time.monotonic()
-            exact = evaluator is not None and len(session.state.legal_actions) <= 12
-            action, value = search(session, request.simulations)
+            action, value, details = search(session, request)
             analysis = {
                 "action": action,
                 "value": value,
                 "seconds": time.monotonic() - started,
-                "simulations": request.simulations if evaluator and not exact else 0,
-                "method": "exact_endgame" if exact else "graph_search" if evaluator else "tactical",
+                **details,
             }
             session.play(action, analysis)
             return session.snapshot() | {"analysis": analysis}
@@ -212,8 +245,10 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
         session = get_session(game_id)
         with session.lock:
             check_revision(session, request.revision)
-            action, value = search(session, request.simulations)
-            return {"action": action, "value": value, "revision": session.revision}
+            action, value, details = search(session, request)
+            return {
+                "action": action, "value": value, "revision": session.revision, "analysis": details
+            }
 
     @app.post("/api/games/{game_id}/undo")
     def undo(game_id: str, request: Revision):

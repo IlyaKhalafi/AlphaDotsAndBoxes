@@ -278,7 +278,8 @@ async function agentTurns(token) {
       busy = true;
       render();
       const next = await api(`/api/games/${gameId}/agent`, {
-        simulations: Number($("budget").value),
+        time_limit: Number($("budget").value),
+        engine: $("engine").value,
         revision: game.revision,
       });
       if (token !== generation) return;
@@ -344,7 +345,8 @@ $("hint").addEventListener("click", async () => {
   render();
   try {
     const result = await api(`/api/games/${gameId}/hint`, {
-      simulations: Number($("budget").value),
+      time_limit: Number($("budget").value),
+      engine: $("engine").value,
       revision: game.revision,
     });
     if (token !== generation) return;

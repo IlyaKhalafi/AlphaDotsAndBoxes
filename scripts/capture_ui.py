@@ -43,7 +43,7 @@ def main():
             "document.getElementById('board-label').textContent.startsWith('3 × 3 boxes')"
         )
         # Verify hint, a real human move, the agent response, and undo.
-        page.locator("#budget").select_option("32")
+        page.locator("#budget").select_option("0.15")
         page.locator("#hint").click()
         page.wait_for_selector(".hinted")
         page.locator(".hinted").click()

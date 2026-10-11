@@ -73,9 +73,16 @@
           <div class="setting-field">
             <label class="field-label" for="budget">Thinking time</label>
             <select id="budget">
-              <option value="32">Quick</option>
-              <option value="128" selected>Standard</option>
-              <option value="512">Deep</option>
+              <option value="0.15">Quick · 0.15 s</option>
+              <option value="0.5" selected>Standard · 0.5 s</option>
+              <option value="2">Deep · 2 s</option>
+            </select>
+          </div>
+          <div class="setting-field">
+            <label class="field-label" for="engine">Search</label>
+            <select id="engine">
+              <option value="mcts" selected>Graph search</option>
+              <option value="alpha_beta">Alpha–beta (experimental)</option>
             </select>
           </div>
           <div class="setting-field">

@@ -171,6 +171,7 @@ class Node:
     player: int = 0
     action: int = -1
     solved_value: float | None = None
+    evaluation: float = 0.0
 
     @property
     def value(self) -> float:
@@ -233,7 +234,8 @@ class MCTS:
             )
             for action, prior in zip(legal, priors, strict=True)
         }
-        return float(value)
+        node.evaluation = float(value)
+        return node.evaluation
 
     def policy(self, state: State, *, explore: bool = False) -> tuple[np.ndarray, float]:
         return self.policies([state], explore=explore)[0]
@@ -305,10 +307,7 @@ class MCTS:
         self.inherited_visits = sum(root.visits for _, root in roots)
         self._roots = [root for _, root in roots] if self.config.reuse_tree else []
         fresh = [root for _, root in roots if root.children is None]
-        initial_values = {
-            id(root): value
-            for root, value in zip(fresh, self._expand_many(fresh), strict=True)
-        }
+        self._expand_many(fresh)
         if not roots:
             return results
         for _, root in roots:
@@ -367,7 +366,7 @@ class MCTS:
             total = sum(child.visits for child in root.children.values())
             for action, child in root.children.items():
                 results[index][0][action] = child.visits / total if total else child.prior
-            value = root.value if root.visits else initial_values[id(root)]
+            value = root.value if root.visits else root.evaluation
             results[index] = results[index][0], value
         return results
 

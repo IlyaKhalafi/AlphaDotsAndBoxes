@@ -29,6 +29,25 @@ def test_time_budget_stops_search_and_preserves_legal_fallback(monkeypatch):
             assert value == 0.4 and policy.argmax() == 10
 
 
+def test_repeated_expired_search_retains_value_with_tree_reuse(monkeypatch):
+    clock = [0.0]
+
+    def tick():
+        clock[0] += 1
+        return clock[0]
+
+    monkeypatch.setattr("alphaboxes.search.monotonic", tick)
+    search = MCTS(
+        lambda state: (np.ones(state.board.num_edges), 0.7),
+        SearchConfig(time_limit=0.01, reuse_tree=True),
+    )
+    state = State.new(2, 2)
+    for _ in range(2):
+        policy, value = search.policy(state)
+        assert np.isclose(policy.sum(), 1) and value == 0.7
+        assert search.completed_simulations == 0
+
+
 def test_backups_keep_sign_on_extra_turn():
     assert perspective(0.8, 0, 0) == 0.8
     assert perspective(0.8, 0, 1) == -0.8
