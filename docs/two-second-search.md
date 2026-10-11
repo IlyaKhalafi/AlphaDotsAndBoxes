@@ -65,5 +65,75 @@ remain opt-in until their own playing-strength tests justify enabling them.
 
 ## Results
 
-Receipts and validated summaries are in `docs/data/two-second-20261011/`.
-Confirmation results will be recorded after all planned games finish.
+All 80 planned confirmation games finished. Full replay validation and every
+predeclared release gate passed. The selected search is deployed by the web UI;
+checkpoint weights are unchanged. Training and historical fixed-simulation CLI
+evaluation retain their original search defaults.
+
+| Board | Wins–draws–losses | Score | Paired 95% interval | Mean box margin | Slowest candidate move |
+| --- | --- | --- | --- | --- | --- |
+| 4×4 | 24–5–11 | 66.25% | 53.75%–78.75% | +1.90 | 1.788 s |
+| 5×5 | 33–0–7 | 82.50% | 70.00%–95.00% | +7.80 | 1.806 s |
+
+Across 1,962 candidate decisions, none reached two seconds and none
+used the tactical fallback. The reference kept its original two-second soft
+budget; its longest move was 2.063 seconds. Both sides used deterministic
+`argmax` tie breaking in the benchmark. The former UI randomized tied maxima;
+the released UI uses the benchmark tie rule. Exact-root ties have equal optimal
+box margins. These results compare a common tie protocol and the retained
+checkpoint/search configuration, not every possible UI random seed.
+
+### Screening decisions
+
+Each row is a separate exploratory arm with its own opening seeds; do not pool
+rows as a controlled comparison of changes. Score includes half a point per draw.
+
+| Change | Budget (candidate/reference) | Games per board | 4×4 score | 5×5 score | Decision |
+| --- | --- | --- | --- | --- | --- |
+| 32-channel student with MCTS | 0.5/0.5 s | 12 | 62.5% | 33.33% | Reject: 5×5 regression |
+| First-play reduction 0.33 | 0.5/0.5 s | 12 | 62.5% | 75% | Advance |
+| Degree-two oracle + proof propagation | 0.5/0.5 s | 12 | 41.67% | 66.67% | Keep experimental |
+| First-play reduction 0.33 | 1.85/2 s | 20 | 77.5% | 80% | Select for fresh confirmation |
+
+### Observations
+
+The useful improvement came from assigning unvisited actions a value relative
+to the parent's neural evaluation. This changes where the limited search effort
+goes. It does not increase model size, request more thinking time, or add training
+games. More neural capacity or more traversals alone did not solve the earlier
+strength/latency tradeoff. The smaller evaluator runs faster but lost on 5×5;
+correct exact endgame values and proof propagation also failed the 4×4 screening.
+Those features remain available for experiments and are disabled in the release.
+
+### Runtime validation
+
+An initial 60-position/repeat probe across 4×4, 5×5 and 10×10 took at most
+1.781 seconds, without fallback. After runtime cleanup, the final 36-decision
+probe took at most 1.805 seconds, again without fallback.
+Both cover opening, midgame, 13-edge late positions and exact 12-edge roots.
+
+A clean installation without Torch, Ray, Gymnasium or compiled extensions
+completed API decisions on 1×1, 4×4, 5×5 and 10×10. The slowest complete
+TestClient HTTP request took 1.775 seconds. Deliberately stalled evaluator
+and queue-wait tests verify that supervision returns legal moves and replaces
+only the owned worker. Runtime bookkeeping/formatting was refined during the
+campaign; weights, first-play rule, exploration constant and match budgets were
+fixed throughout confirmation. The final probes exercise the cleaned runtime.
+
+### Reproduce
+
+```bash
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+ALPHABOXES_PURE_NUMPY=1 python scripts/benchmark_engine.py \
+  --candidate-engine mcts --search-options '{"fpu_reduction":0.33}' \
+  --match-seconds 1.75 --reference-seconds 2 --response-deadline 1.9 \
+  --games 40 --workers 8 --seed 4201 --skip-latency \
+  --output runs/fpu-confirmation.json --progress runs/fpu-confirmation.jsonl
+python scripts/summarize_engine.py --receipts runs/fpu-confirmation.json \
+  --output runs/fpu-summary.json
+```
+
+[Full replays, checkpoint/source hashes, summaries and gate receipt](data/two-second-20261011/).
+Wall-clock search can change game traces across runs. A 10×10 latency check is
+not evidence of 10×10 playing superiority, and engine matches do not establish
+expert-human strength.

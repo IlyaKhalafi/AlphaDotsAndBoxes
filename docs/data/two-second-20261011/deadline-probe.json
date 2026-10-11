@@ -1,0 +1,1216 @@
+{
+  "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "internal_seconds": 1.75,
+  "response_deadline": 1.9,
+  "fpu_reduction": 0.33,
+  "threads": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "records": [
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "opening",
+      "repeat": 0,
+      "seconds": 1.7548943060683087,
+      "remaining_edges": 40,
+      "action": 9,
+      "value": -0.01023955358484356,
+      "timed_out": false,
+      "completed_simulations": 1231,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "opening",
+      "repeat": 1,
+      "seconds": 1.7563147350447252,
+      "remaining_edges": 40,
+      "action": 9,
+      "value": -0.009016116554417133,
+      "timed_out": false,
+      "completed_simulations": 1413,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "opening",
+      "repeat": 2,
+      "seconds": 1.7579301400110126,
+      "remaining_edges": 40,
+      "action": 9,
+      "value": -0.009178685448575715,
+      "timed_out": false,
+      "completed_simulations": 977,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "opening",
+      "repeat": 3,
+      "seconds": 1.7558335369685665,
+      "remaining_edges": 40,
+      "action": 9,
+      "value": -0.008893642122192041,
+      "timed_out": false,
+      "completed_simulations": 1435,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "opening",
+      "repeat": 4,
+      "seconds": 1.756006107898429,
+      "remaining_edges": 40,
+      "action": 9,
+      "value": -0.008789483928665996,
+      "timed_out": false,
+      "completed_simulations": 1343,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "midgame",
+      "repeat": 0,
+      "seconds": 1.5404525850899518,
+      "remaining_edges": 20,
+      "action": 29,
+      "value": 0.9757244477423228,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "midgame",
+      "repeat": 1,
+      "seconds": 1.4021104070125148,
+      "remaining_edges": 20,
+      "action": 29,
+      "value": 0.9757244477423228,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "midgame",
+      "repeat": 2,
+      "seconds": 1.76333115901798,
+      "remaining_edges": 20,
+      "action": 29,
+      "value": 0.9752530918226197,
+      "timed_out": false,
+      "completed_simulations": 7526,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "midgame",
+      "repeat": 3,
+      "seconds": 1.763290666975081,
+      "remaining_edges": 20,
+      "action": 29,
+      "value": 0.9754204213277519,
+      "timed_out": false,
+      "completed_simulations": 6105,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "midgame",
+      "repeat": 4,
+      "seconds": 1.768215688993223,
+      "remaining_edges": 20,
+      "action": 29,
+      "value": 0.9750658327775502,
+      "timed_out": false,
+      "completed_simulations": 7313,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "late",
+      "repeat": 0,
+      "seconds": 1.2963763229781762,
+      "remaining_edges": 13,
+      "action": 38,
+      "value": 0.9999243367565214,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "late",
+      "repeat": 1,
+      "seconds": 1.2857618600828573,
+      "remaining_edges": 13,
+      "action": 38,
+      "value": 0.9999243367565214,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "late",
+      "repeat": 2,
+      "seconds": 1.1921370310010388,
+      "remaining_edges": 13,
+      "action": 38,
+      "value": 0.9999243367565214,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "late",
+      "repeat": 3,
+      "seconds": 0.9533948979806155,
+      "remaining_edges": 13,
+      "action": 38,
+      "value": 0.9999243367565214,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "late",
+      "repeat": 4,
+      "seconds": 1.1176061099395156,
+      "remaining_edges": 13,
+      "action": 38,
+      "value": 0.9999243367565214,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "exact_root",
+      "repeat": 0,
+      "seconds": 0.019968779990449548,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "exact_root",
+      "repeat": 1,
+      "seconds": 0.01775058696512133,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "exact_root",
+      "repeat": 2,
+      "seconds": 0.021907871938310564,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "exact_root",
+      "repeat": 3,
+      "seconds": 0.018825831008143723,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "phase": "exact_root",
+      "repeat": 4,
+      "seconds": 0.01797206501942128,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "opening",
+      "repeat": 0,
+      "seconds": 1.7565096439793706,
+      "remaining_edges": 60,
+      "action": 45,
+      "value": -0.0024146682353622002,
+      "timed_out": false,
+      "completed_simulations": 955,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "opening",
+      "repeat": 1,
+      "seconds": 1.7586933929705992,
+      "remaining_edges": 60,
+      "action": 45,
+      "value": -0.0023031522024513046,
+      "timed_out": false,
+      "completed_simulations": 909,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "opening",
+      "repeat": 2,
+      "seconds": 1.7598144359653816,
+      "remaining_edges": 60,
+      "action": 45,
+      "value": -0.0025857582151868016,
+      "timed_out": false,
+      "completed_simulations": 855,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "opening",
+      "repeat": 3,
+      "seconds": 1.7545540040591732,
+      "remaining_edges": 60,
+      "action": 45,
+      "value": -0.002945635096675912,
+      "timed_out": false,
+      "completed_simulations": 810,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "opening",
+      "repeat": 4,
+      "seconds": 1.7556376970605925,
+      "remaining_edges": 60,
+      "action": 45,
+      "value": -0.0021392772269181537,
+      "timed_out": false,
+      "completed_simulations": 1094,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "midgame",
+      "repeat": 0,
+      "seconds": 1.7756537279346958,
+      "remaining_edges": 30,
+      "action": 11,
+      "value": 0.9025087581467233,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "midgame",
+      "repeat": 1,
+      "seconds": 1.77338265592698,
+      "remaining_edges": 30,
+      "action": 11,
+      "value": 0.900544397689864,
+      "timed_out": false,
+      "completed_simulations": 6742,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "midgame",
+      "repeat": 2,
+      "seconds": 1.776960706920363,
+      "remaining_edges": 30,
+      "action": 11,
+      "value": 0.9005957389858057,
+      "timed_out": false,
+      "completed_simulations": 6762,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "midgame",
+      "repeat": 3,
+      "seconds": 1.7805418389616534,
+      "remaining_edges": 30,
+      "action": 11,
+      "value": 0.9012161270221141,
+      "timed_out": false,
+      "completed_simulations": 7158,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "midgame",
+      "repeat": 4,
+      "seconds": 1.7761168699944392,
+      "remaining_edges": 30,
+      "action": 11,
+      "value": 0.8999614526496577,
+      "timed_out": false,
+      "completed_simulations": 6352,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "late",
+      "repeat": 0,
+      "seconds": 1.1824563179397956,
+      "remaining_edges": 13,
+      "action": 2,
+      "value": 0.9865313148693531,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "late",
+      "repeat": 1,
+      "seconds": 1.2348402620991692,
+      "remaining_edges": 13,
+      "action": 2,
+      "value": 0.9865313148693531,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "late",
+      "repeat": 2,
+      "seconds": 1.1645811819471419,
+      "remaining_edges": 13,
+      "action": 2,
+      "value": 0.9865313148693531,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "late",
+      "repeat": 3,
+      "seconds": 1.1981519950786605,
+      "remaining_edges": 13,
+      "action": 2,
+      "value": 0.9865313148693531,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "late",
+      "repeat": 4,
+      "seconds": 1.1703317780047655,
+      "remaining_edges": 13,
+      "action": 2,
+      "value": 0.9865313148693531,
+      "timed_out": false,
+      "completed_simulations": 8192,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "exact_root",
+      "repeat": 0,
+      "seconds": 0.025735134026035666,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "exact_root",
+      "repeat": 1,
+      "seconds": 0.025453511043451726,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "exact_root",
+      "repeat": 2,
+      "seconds": 0.02571677602827549,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "exact_root",
+      "repeat": 3,
+      "seconds": 0.03212042897939682,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "phase": "exact_root",
+      "repeat": 4,
+      "seconds": 0.027632785961031914,
+      "remaining_edges": 12,
+      "action": 2,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "opening",
+      "repeat": 0,
+      "seconds": 1.7544840880436823,
+      "remaining_edges": 220,
+      "action": 43,
+      "value": 0.001989923950007608,
+      "timed_out": false,
+      "completed_simulations": 163,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "opening",
+      "repeat": 1,
+      "seconds": 1.7621780900517479,
+      "remaining_edges": 220,
+      "action": 43,
+      "value": 0.0014039026357820078,
+      "timed_out": false,
+      "completed_simulations": 208,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "opening",
+      "repeat": 2,
+      "seconds": 1.7585386940045282,
+      "remaining_edges": 220,
+      "action": 43,
+      "value": 0.001581441866759841,
+      "timed_out": false,
+      "completed_simulations": 201,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "opening",
+      "repeat": 3,
+      "seconds": 1.7571282079443336,
+      "remaining_edges": 220,
+      "action": 43,
+      "value": 0.0016721670023308924,
+      "timed_out": false,
+      "completed_simulations": 195,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "opening",
+      "repeat": 4,
+      "seconds": 1.7535296849673614,
+      "remaining_edges": 220,
+      "action": 43,
+      "value": 0.0015298265139694865,
+      "timed_out": false,
+      "completed_simulations": 190,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "midgame",
+      "repeat": 0,
+      "seconds": 1.7625236640451476,
+      "remaining_edges": 110,
+      "action": 161,
+      "value": 0.8861005859715598,
+      "timed_out": false,
+      "completed_simulations": 350,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "midgame",
+      "repeat": 1,
+      "seconds": 1.7637860620161518,
+      "remaining_edges": 110,
+      "action": 161,
+      "value": 0.8859884585954446,
+      "timed_out": false,
+      "completed_simulations": 339,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "midgame",
+      "repeat": 2,
+      "seconds": 1.7596385100623593,
+      "remaining_edges": 110,
+      "action": 161,
+      "value": 0.8871871430415085,
+      "timed_out": false,
+      "completed_simulations": 317,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "midgame",
+      "repeat": 3,
+      "seconds": 1.763270290917717,
+      "remaining_edges": 110,
+      "action": 161,
+      "value": 0.8863380986967204,
+      "timed_out": false,
+      "completed_simulations": 405,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "midgame",
+      "repeat": 4,
+      "seconds": 1.7594193810364231,
+      "remaining_edges": 110,
+      "action": 161,
+      "value": 0.8868680232410491,
+      "timed_out": false,
+      "completed_simulations": 321,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "late",
+      "repeat": 0,
+      "seconds": 1.7556430971017107,
+      "remaining_edges": 13,
+      "action": 17,
+      "value": 0.9990868343812663,
+      "timed_out": false,
+      "completed_simulations": 820,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "late",
+      "repeat": 1,
+      "seconds": 1.7612269470700994,
+      "remaining_edges": 13,
+      "action": 17,
+      "value": 0.9991194228755265,
+      "timed_out": false,
+      "completed_simulations": 1312,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "late",
+      "repeat": 2,
+      "seconds": 1.757024990976788,
+      "remaining_edges": 13,
+      "action": 17,
+      "value": 0.9991245172744574,
+      "timed_out": false,
+      "completed_simulations": 1419,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "late",
+      "repeat": 3,
+      "seconds": 1.7601886059856042,
+      "remaining_edges": 13,
+      "action": 17,
+      "value": 0.9990962959142752,
+      "timed_out": false,
+      "completed_simulations": 916,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "late",
+      "repeat": 4,
+      "seconds": 1.7560099340043962,
+      "remaining_edges": 13,
+      "action": 17,
+      "value": 0.9990837911932546,
+      "timed_out": false,
+      "completed_simulations": 829,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "exact_root",
+      "repeat": 0,
+      "seconds": 0.048544771037995815,
+      "remaining_edges": 12,
+      "action": 3,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "exact_root",
+      "repeat": 1,
+      "seconds": 0.02875715505797416,
+      "remaining_edges": 12,
+      "action": 3,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "exact_root",
+      "repeat": 2,
+      "seconds": 0.03184351895470172,
+      "remaining_edges": 12,
+      "action": 3,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "exact_root",
+      "repeat": 3,
+      "seconds": 0.03663173096720129,
+      "remaining_edges": 12,
+      "action": 3,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "phase": "exact_root",
+      "repeat": 4,
+      "seconds": 0.03491467994172126,
+      "remaining_edges": 12,
+      "action": 3,
+      "value": 1.0,
+      "timed_out": false,
+      "completed_simulations": 0,
+      "endgame_hits": 0,
+      "proven_nodes": 0,
+      "depth": null,
+      "nodes": null,
+      "cutoffs": null,
+      "table_hits": null
+    }
+  ],
+  "max_seconds": 1.7805418389616534,
+  "fallbacks": 0,
+  "passed": true
+}

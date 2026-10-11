@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "boards": {
+    "[4, 4]": {
+      "score": 0.6625,
+      "paired_lower_bound": 0.5375,
+      "max_seconds": 1.7879939379636198,
+      "passed": true
+    },
+    "[5, 5]": {
+      "score": 0.825,
+      "paired_lower_bound": 0.7,
+      "max_seconds": 1.8059714859118685,
+      "passed": true
+    }
+  },
+  "latency_probe_max_seconds": 1.7805418389616534,
+  "games": 80,
+  "weights_changed": false,
+  "candidate_fpu_reduction": 0.33,
+  "response_deadline": 1.9
+}

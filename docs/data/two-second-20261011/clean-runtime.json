@@ -1,0 +1,143 @@
+{
+  "health": {
+    "status": "ok",
+    "agent": "graph",
+    "inference": "numpy",
+    "training": {
+      "games_total": 320,
+      "initialization": {
+        "checkpoint_sha256": "4aa5558673f9a10061724301cff13ad240e97271c4aa11f350b19540a45ac930",
+        "training_games": 3200,
+        "training_positions": 128614
+      },
+      "iteration": 10,
+      "positions_total": 13934,
+      "seed": 44,
+      "simulations": 256,
+      "sizes": [
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          5
+        ]
+      ],
+      "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+      "training_exact_threshold": 12,
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0"
+    },
+    "exact_endgame_edges": 12,
+    "search_engines": [
+      "mcts",
+      "alpha_beta"
+    ],
+    "search": {
+      "fpu_reduction": 0.33,
+      "max_internal_seconds": 1.75,
+      "response_deadline": 1.9
+    }
+  },
+  "records": [
+    {
+      "board": [
+        1,
+        1
+      ],
+      "http_seconds": 0.008541772025637329,
+      "analysis": {
+        "action": 0,
+        "value": -1.0,
+        "seconds": 0.002055640099570155,
+        "method": "exact_endgame",
+        "engine": "mcts",
+        "time_limit": 1.75,
+        "requested_time_limit": 2.0,
+        "response_deadline": 1.9,
+        "thinking_seconds": 0.0020248410291969776,
+        "simulations": 0,
+        "timed_out": false,
+        "fpu_reduction": 0.33
+      }
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "http_seconds": 1.7626285549486056,
+      "analysis": {
+        "action": 9,
+        "value": -0.008855169597213601,
+        "seconds": 1.757727020070888,
+        "method": "graph_search",
+        "engine": "mcts",
+        "time_limit": 1.75,
+        "requested_time_limit": 2.0,
+        "response_deadline": 1.9,
+        "thinking_seconds": 1.7576987009961158,
+        "simulations": 1449,
+        "timed_out": false,
+        "fpu_reduction": 0.33
+      }
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "http_seconds": 1.7641919499728829,
+      "analysis": {
+        "action": 45,
+        "value": -0.0020002439964811295,
+        "seconds": 1.7577934140572324,
+        "method": "graph_search",
+        "engine": "mcts",
+        "time_limit": 1.75,
+        "requested_time_limit": 2.0,
+        "response_deadline": 1.9,
+        "thinking_seconds": 1.757771985954605,
+        "simulations": 869,
+        "timed_out": false,
+        "fpu_reduction": 0.33
+      }
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "http_seconds": 1.7746430529514328,
+      "analysis": {
+        "action": 43,
+        "value": 0.0025041889144411084,
+        "seconds": 1.7607033740496263,
+        "method": "graph_search",
+        "engine": "mcts",
+        "time_limit": 1.75,
+        "requested_time_limit": 2.0,
+        "response_deadline": 1.9,
+        "thinking_seconds": 1.7606757420580834,
+        "simulations": 132,
+        "timed_out": false,
+        "fpu_reduction": 0.33
+      }
+    }
+  ],
+  "training_packages_installed": false,
+  "compiled_extensions": false,
+  "max_http_seconds": 1.7746430529514328
+}

@@ -357,3 +357,11 @@ Before claiming expert strength, run multiple independent training seeds,
 larger-board training, held-out sizes and rectangles, independent chain-aware
 opponents, and balanced matches with experienced human players. Long-range
 chain decisions and rectangular transfer are the clearest current weaknesses.
+
+## Timed search upgrade
+
+The [two-second search experiment](two-second-search.md) retained the same GNN
+weights and improved move selection. Fresh 40-game tests per board scored
+66.25% on 4×4 and 82.5% on 5×5 against the previous two-second agent, with all
+candidate decisions below two seconds. Exact endgame proofs and a smaller
+evaluator were screened separately and are not enabled in the release.
