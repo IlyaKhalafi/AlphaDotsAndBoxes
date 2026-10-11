@@ -1,6 +1,6 @@
 # Search and teaching results
 
-Updated 2026-10-11 14:24 UTC. Stage: search screening.
+Updated 2026-10-11 14:24 UTC. Stage: search screening complete.
 
 [Recorded protocol](next-experiments.md) separates screening from fresh confirmation.
 All match inference uses NumPy with Python search and solving.
