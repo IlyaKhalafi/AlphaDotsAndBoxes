@@ -1,0 +1,1031 @@
+{
+  "common_rounds": [
+    10,
+    20,
+    35
+  ],
+  "candidates": [
+    {
+      "label": "control-00010",
+      "arm": "control",
+      "iteration": 10,
+      "checkpoint": "runs/improvement-20261011/control/agent-00010.pt",
+      "numpy": "runs/improvement-20261011/control/agent-00010.npz",
+      "results": [
+        {
+          "simulations": 128,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 9,
+          "draws": 2,
+          "losses": 9,
+          "score_rate": 0.5,
+          "mean_move_seconds": [
+            0.06251003990093103,
+            0.061084596623837105
+          ],
+          "latency_ratio": 1.0233355601228227,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 128,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 5,
+          "draws": 0,
+          "losses": 15,
+          "score_rate": 0.25,
+          "mean_move_seconds": [
+            0.10624286053226141,
+            0.08828122211926172
+          ],
+          "latency_ratio": 1.2034593312350703,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 9,
+          "draws": 3,
+          "losses": 8,
+          "score_rate": 0.525,
+          "mean_move_seconds": [
+            0.18093504126315377,
+            0.19834322066534069
+          ],
+          "latency_ratio": 0.912232042296221,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 10,
+          "draws": 0,
+          "losses": 10,
+          "score_rate": 0.5,
+          "mean_move_seconds": [
+            0.31802215582741333,
+            0.32095262194069524
+          ],
+          "latency_ratio": 0.9908694744552565,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "mean_score": 0.44375,
+      "selection_gate": {
+        "passed": false,
+        "failures": [
+          "Score below gate for 5x5 / 128 simulations",
+          "Score below gate for 5x5 / 512 simulations"
+        ],
+        "limitation": "Limited seeded regression check; no expert-human strength claim."
+      }
+    },
+    {
+      "label": "control-00020",
+      "arm": "control",
+      "iteration": 20,
+      "checkpoint": "runs/improvement-20261011/control/agent-00020.pt",
+      "numpy": "runs/improvement-20261011/control/agent-00020.npz",
+      "results": [
+        {
+          "simulations": 128,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 9,
+          "draws": 2,
+          "losses": 9,
+          "score_rate": 0.5,
+          "mean_move_seconds": [
+            0.06937183056480105,
+            0.07397032339406921
+          ],
+          "latency_ratio": 0.9378332739635303,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 128,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 9,
+          "draws": 0,
+          "losses": 11,
+          "score_rate": 0.45,
+          "mean_move_seconds": [
+            0.11779613017834498,
+            0.10709117210686193
+          ],
+          "latency_ratio": 1.099961162632537,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 9,
+          "draws": 3,
+          "losses": 8,
+          "score_rate": 0.525,
+          "mean_move_seconds": [
+            0.1895434297290603,
+            0.20051087720295122
+          ],
+          "latency_ratio": 0.9453024812075906,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 12,
+          "draws": 0,
+          "losses": 8,
+          "score_rate": 0.6,
+          "mean_move_seconds": [
+            0.31919177369742113,
+            0.32898880497268557
+          ],
+          "latency_ratio": 0.970220776126173,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "mean_score": 0.51875,
+      "selection_gate": {
+        "passed": false,
+        "failures": [
+          "Score below gate for 5x5 / 128 simulations"
+        ],
+        "limitation": "Limited seeded regression check; no expert-human strength claim."
+      }
+    },
+    {
+      "label": "control-00035",
+      "arm": "control",
+      "iteration": 35,
+      "checkpoint": "runs/improvement-20261011/control/agent-00035.pt",
+      "numpy": "runs/improvement-20261011/control/agent-00035.npz",
+      "results": [
+        {
+          "simulations": 128,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 8,
+          "draws": 2,
+          "losses": 10,
+          "score_rate": 0.45,
+          "mean_move_seconds": [
+            0.07292603733376353,
+            0.06693346970156873
+          ],
+          "latency_ratio": 1.0895302105047506,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 128,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 8,
+          "draws": 0,
+          "losses": 12,
+          "score_rate": 0.4,
+          "mean_move_seconds": [
+            0.1124442938580543,
+            0.10215964659827909
+          ],
+          "latency_ratio": 1.1006723065538526,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 10,
+          "draws": 1,
+          "losses": 9,
+          "score_rate": 0.525,
+          "mean_move_seconds": [
+            0.18822330463444814,
+            0.19801654575789784
+          ],
+          "latency_ratio": 0.9505433190647449,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 11,
+          "draws": 0,
+          "losses": 9,
+          "score_rate": 0.55,
+          "mean_move_seconds": [
+            0.3015118753192447,
+            0.33319915393927096
+          ],
+          "latency_ratio": 0.9048998827115822,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "mean_score": 0.48125,
+      "selection_gate": {
+        "passed": false,
+        "failures": [
+          "Score below gate for 4x4 / 128 simulations",
+          "Score below gate for 5x5 / 128 simulations"
+        ],
+        "limitation": "Limited seeded regression check; no expert-human strength claim."
+      }
+    },
+    {
+      "label": "ratio-00010",
+      "arm": "ratio",
+      "iteration": 10,
+      "checkpoint": "runs/improvement-20261011/ratio/agent-00010.pt",
+      "numpy": "runs/improvement-20261011/ratio/agent-00010.npz",
+      "results": [
+        {
+          "simulations": 128,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 8,
+          "draws": 1,
+          "losses": 11,
+          "score_rate": 0.425,
+          "mean_move_seconds": [
+            0.06596654490567744,
+            0.06042795611906755
+          ],
+          "latency_ratio": 1.0916560668657505,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 128,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 10,
+          "draws": 0,
+          "losses": 10,
+          "score_rate": 0.5,
+          "mean_move_seconds": [
+            0.09456258520911943,
+            0.10238046451331337
+          ],
+          "latency_ratio": 0.9236389545470629,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 5,
+          "draws": 4,
+          "losses": 11,
+          "score_rate": 0.35,
+          "mean_move_seconds": [
+            0.20291544784800158,
+            0.20255160056925525
+          ],
+          "latency_ratio": 1.0017963189514365,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 14,
+          "draws": 0,
+          "losses": 6,
+          "score_rate": 0.7,
+          "mean_move_seconds": [
+            0.28659605859153237,
+            0.36032705631518136
+          ],
+          "latency_ratio": 0.7953775703727455,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "mean_score": 0.49374999999999997,
+      "selection_gate": {
+        "passed": false,
+        "failures": [
+          "Score below gate for 4x4 / 128 simulations",
+          "Score below gate for 4x4 / 512 simulations"
+        ],
+        "limitation": "Limited seeded regression check; no expert-human strength claim."
+      }
+    },
+    {
+      "label": "ratio-00020",
+      "arm": "ratio",
+      "iteration": 20,
+      "checkpoint": "runs/improvement-20261011/ratio/agent-00020.pt",
+      "numpy": "runs/improvement-20261011/ratio/agent-00020.npz",
+      "results": [
+        {
+          "simulations": 128,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 12,
+          "draws": 1,
+          "losses": 7,
+          "score_rate": 0.625,
+          "mean_move_seconds": [
+            0.06112550789386862,
+            0.068911705073333
+          ],
+          "latency_ratio": 0.8870119790073598,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 128,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 11,
+          "draws": 0,
+          "losses": 9,
+          "score_rate": 0.55,
+          "mean_move_seconds": [
+            0.10346403566424453,
+            0.11045203960384242
+          ],
+          "latency_ratio": 0.9367326853839756,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 8,
+          "draws": 2,
+          "losses": 10,
+          "score_rate": 0.45,
+          "mean_move_seconds": [
+            0.1933941570918471,
+            0.18963955709910285
+          ],
+          "latency_ratio": 1.0197986119044886,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 11,
+          "draws": 0,
+          "losses": 9,
+          "score_rate": 0.55,
+          "mean_move_seconds": [
+            0.28877123796448817,
+            0.35661701301797455
+          ],
+          "latency_ratio": 0.8097517152103263,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "mean_score": 0.5437500000000001,
+      "selection_gate": {
+        "passed": false,
+        "failures": [
+          "Score below gate for 4x4 / 512 simulations"
+        ],
+        "limitation": "Limited seeded regression check; no expert-human strength claim."
+      }
+    },
+    {
+      "label": "ratio-00035",
+      "arm": "ratio",
+      "iteration": 35,
+      "checkpoint": "runs/improvement-20261011/ratio/agent-00035.pt",
+      "numpy": "runs/improvement-20261011/ratio/agent-00035.npz",
+      "results": [
+        {
+          "simulations": 128,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 7,
+          "draws": 0,
+          "losses": 13,
+          "score_rate": 0.35,
+          "mean_move_seconds": [
+            0.06725745568152254,
+            0.05863624292319807
+          ],
+          "latency_ratio": 1.1470287373223513,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 128,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 12,
+          "draws": 0,
+          "losses": 8,
+          "score_rate": 0.6,
+          "mean_move_seconds": [
+            0.0904212393536968,
+            0.10222082490431719
+          ],
+          "latency_ratio": 0.8845676938953948,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 9,
+          "draws": 3,
+          "losses": 8,
+          "score_rate": 0.525,
+          "mean_move_seconds": [
+            0.18943148650103234,
+            0.19329763582226095
+          ],
+          "latency_ratio": 0.9799989828909053,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 11,
+          "draws": 0,
+          "losses": 9,
+          "score_rate": 0.55,
+          "mean_move_seconds": [
+            0.29833489128748025,
+            0.31799569289465973
+          ],
+          "latency_ratio": 0.9381727424412243,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "mean_score": 0.50625,
+      "selection_gate": {
+        "passed": false,
+        "failures": [
+          "Score below gate for 4x4 / 128 simulations"
+        ],
+        "limitation": "Limited seeded regression check; no expert-human strength claim."
+      }
+    },
+    {
+      "label": "midgame-00010",
+      "arm": "midgame",
+      "iteration": 10,
+      "checkpoint": "runs/improvement-20261011/midgame/agent-00010.pt",
+      "numpy": "runs/improvement-20261011/midgame/agent-00010.npz",
+      "results": [
+        {
+          "simulations": 128,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 7,
+          "draws": 3,
+          "losses": 10,
+          "score_rate": 0.425,
+          "mean_move_seconds": [
+            0.07455286549655005,
+            0.06905798760314905
+          ],
+          "latency_ratio": 1.0795690416723125,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 128,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 6,
+          "draws": 0,
+          "losses": 14,
+          "score_rate": 0.3,
+          "mean_move_seconds": [
+            0.11053128788828331,
+            0.09027627089884706
+          ],
+          "latency_ratio": 1.224367010154104,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 9,
+          "draws": 5,
+          "losses": 6,
+          "score_rate": 0.575,
+          "mean_move_seconds": [
+            0.17801599932381962,
+            0.20946897423002295
+          ],
+          "latency_ratio": 0.8498442310045207,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 12,
+          "draws": 0,
+          "losses": 8,
+          "score_rate": 0.6,
+          "mean_move_seconds": [
+            0.2887324244033265,
+            0.3263314702290391
+          ],
+          "latency_ratio": 0.8847826542768821,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "mean_score": 0.475,
+      "selection_gate": {
+        "passed": false,
+        "failures": [
+          "Score below gate for 4x4 / 128 simulations",
+          "Score below gate for 5x5 / 128 simulations"
+        ],
+        "limitation": "Limited seeded regression check; no expert-human strength claim."
+      }
+    },
+    {
+      "label": "midgame-00020",
+      "arm": "midgame",
+      "iteration": 20,
+      "checkpoint": "runs/improvement-20261011/midgame/agent-00020.pt",
+      "numpy": "runs/improvement-20261011/midgame/agent-00020.npz",
+      "results": [
+        {
+          "simulations": 128,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 10,
+          "draws": 2,
+          "losses": 8,
+          "score_rate": 0.55,
+          "mean_move_seconds": [
+            0.06926812733351988,
+            0.0739261902449928
+          ],
+          "latency_ratio": 0.9369903562453845,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 128,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 9,
+          "draws": 0,
+          "losses": 11,
+          "score_rate": 0.45,
+          "mean_move_seconds": [
+            0.09713260058612962,
+            0.09749368411708915
+          ],
+          "latency_ratio": 0.9962963392528497,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 13,
+          "draws": 3,
+          "losses": 4,
+          "score_rate": 0.725,
+          "mean_move_seconds": [
+            0.16770076604981748,
+            0.20889046239292905
+          ],
+          "latency_ratio": 0.8028167687922844,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 11,
+          "draws": 0,
+          "losses": 9,
+          "score_rate": 0.55,
+          "mean_move_seconds": [
+            0.2914537874381415,
+            0.31226427398081097
+          ],
+          "latency_ratio": 0.9333561720738239,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "mean_score": 0.56875,
+      "selection_gate": {
+        "passed": false,
+        "failures": [
+          "Score below gate for 5x5 / 128 simulations"
+        ],
+        "limitation": "Limited seeded regression check; no expert-human strength claim."
+      }
+    },
+    {
+      "label": "midgame-00035",
+      "arm": "midgame",
+      "iteration": 35,
+      "checkpoint": "runs/improvement-20261011/midgame/agent-00035.pt",
+      "numpy": "runs/improvement-20261011/midgame/agent-00035.npz",
+      "results": [
+        {
+          "simulations": 128,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 8,
+          "draws": 2,
+          "losses": 10,
+          "score_rate": 0.45,
+          "mean_move_seconds": [
+            0.06547285152872,
+            0.06793376153991258
+          ],
+          "latency_ratio": 0.9637748601665941,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 128,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 10,
+          "draws": 0,
+          "losses": 10,
+          "score_rate": 0.5,
+          "mean_move_seconds": [
+            0.09731174300605845,
+            0.10152969373308157
+          ],
+          "latency_ratio": 0.9584559888645781,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            4,
+            4
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 13,
+          "draws": 2,
+          "losses": 5,
+          "score_rate": 0.7,
+          "mean_move_seconds": [
+            0.16234304995177454,
+            0.19407538782458497
+          ],
+          "latency_ratio": 0.8364947857196003,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "simulations": 512,
+          "size": [
+            5,
+            5
+          ],
+          "seeds": [
+            3160
+          ],
+          "games": 20,
+          "wins": 15,
+          "draws": 0,
+          "losses": 5,
+          "score_rate": 0.75,
+          "mean_move_seconds": [
+            0.25103214768381904,
+            0.34198828465166264
+          ],
+          "latency_ratio": 0.7340372724741482,
+          "mean_inherited_visits": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "mean_score": 0.6,
+      "selection_gate": {
+        "passed": false,
+        "failures": [
+          "Score below gate for 4x4 / 128 simulations"
+        ],
+        "limitation": "Limited seeded regression check; no expert-human strength claim."
+      }
+    }
+  ],
+  "winner": null
+}

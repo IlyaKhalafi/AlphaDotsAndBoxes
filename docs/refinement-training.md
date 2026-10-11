@@ -1,6 +1,6 @@
 # Controlled training refinement
 
-Updated 2026-10-11 12:34 UTC.
+Updated 2026-10-11 12:54 UTC.
 
 All arms start from the same released 96-channel, six-layer checkpoint.
 Search uses 512 simulations and a root-only 12-edge solver. Batch size is
@@ -23,6 +23,11 @@ They do not establish strength. Compare equal-round snapshots across arms.
 ![ratio loss](data/refinement-training-20261011/ratio-loss.svg)
 
 ![midgame loss](data/refinement-training-20261011/midgame-loss.svg)
+
+Selection used seed 3160, [10, 20, 35] common saved rounds,
+20 games per board and budget, balanced seats and six random opening moves.
+The highest mean four-condition score above the recorded selection gate
+advances to independent confirmation; this selection score is optimistic.
 
 **Deployment:** Released model retained.
 
