@@ -1,5 +1,8 @@
 # Thinking time on a 10×10 board
 
+This records the earlier fixed-work search. The UI now uses elapsed-time budgets;
+see [the timed-search measurements](engine-search.md) for current behavior.
+
 Measured 2026-10-11 using the released 96-channel, six-layer model in the
 NumPy-only deployment environment. A 10×10-box board has 220 playable edges
 and 320 graph nodes. The UI supports this size through its custom board controls.
@@ -19,13 +22,13 @@ One CPU thread performs inference and search. Shared host load affects timing;
 GPU training performance is unrelated to these deployment measurements.
 
 Times exclude human thinking, UI animations, intentional spectator delays and
-requests waiting for another game. The current UI offers budgets up to 512;
-8,192 is an experimental comparison, not a selectable deployed setting.
+requests waiting for another game. At measurement time, the UI offered budgets
+up to 512; 8,192 was an experimental comparison.
 
 These are **per-agent-move** measurements, not full-game durations. A completed
 game draws all 220 edges; the number drawn by each player varies because
 capturing a box preserves the turn. The model accepts this board size, but
-strong 10×10 play has not been established. A slower budget should be optional
-or limited by elapsed time on large boards.
+strong 10×10 play has not been established. The subsequent UI update limits
+thinking by elapsed time on every board size.
 
 [Raw timings and provenance](data/next-experiments-20261011/latency-10x10.json).

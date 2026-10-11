@@ -65,9 +65,20 @@ The [larger-board export receipt](data/numpy-larger-parity.json) checks the same
 Use one server process: games live in its memory, expire after an hour of
 inactivity, and reset on a restart. The service allows 128 simultaneous sessions
 and serializes CPU search. Multiple replicas need sticky routing or a shared
-session store; neither is included. Large boards and Deep thinking cost more CPU
-time. The CLI defaults to one OpenBLAS/OMP thread unless you set those environment
+session store; neither is included. The UI sets soft thinking budgets of 0.15,
+0.5, or 2 seconds per move, independently of board size. One inference call or
+the exact 12-edge root solver can overrun the budget; waiting for another
+session's serialized search and the animation delay are separate. The CLI
+defaults to one OpenBLAS/OMP thread unless you set those environment
 variables explicitly.
+
+Agent and hint requests accept `time_limit` (0.05–10 seconds) and `engine`
+(`mcts` or `alpha_beta`). Alpha–beta is experimental and defaults to 0.5 seconds
+when no time is supplied. Legacy MCTS requests with only `simulations` retain
+their fixed-work behavior (8–512 traversals); timed MCTS has an 8,192-traversal
+ceiling. Replays record actual completed traversals or alpha–beta depth, node
+count, cutoffs, and transposition hits. [Search measurements](engine-search.md)
+explain why graph search remains the default.
 
 For move-by-move debugging, `GET /api/games/{id}/replay` exports the active
 game's moves, players, agent search settings, checkpoint metadata, and final

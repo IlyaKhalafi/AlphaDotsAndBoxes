@@ -41,6 +41,10 @@ and an agent-versus-agent watch mode. Select **Agent vs Agent** under Players to
 watch both sides, adjust **Move delay**, and pause or resume. Board dimensions
 count **boxes**, not dots.
 
+Thinking time ranges from **0.15 to 2 seconds per move**. Graph search is the
+default; an experimental alpha–beta engine is also available. See
+[the search comparison](docs/engine-search.md) for measured timings and results.
+
 The included model has trained on boards through 5×5. The UI also uses
 perfect search for the last 12 available edges. Launching `adb serve` without a
 checkpoint selects a clearly labeled tactical opponent.
