@@ -1,4 +1,4 @@
-"""Compare timed alpha-beta and MCTS using the same NumPy checkpoint.
+"""Compare timed search engines with independently selected NumPy checkpoints.
 
 Run with one BLAS thread for reproducible CPU resource use. Matches swap seats
 on identical random openings; wall-clock budgets make exact traces nondeterministic.
@@ -92,9 +92,10 @@ def play_pair(evaluators, args, size, pair_index):
         alpha_player = index % 2
         moves = []
         while not state.terminal:
-            engine = "alpha_beta" if state.player == alpha_player else "mcts"
-            step = measure(planner(evaluators[engine], engine, args.match_seconds), state)
-            moves.append({"player": state.player, "engine": engine, **step})
+            side = "candidate" if state.player == alpha_player else "reference"
+            engine = "alpha_beta" if side == "candidate" else args.reference_engine
+            step = measure(planner(evaluators[side], engine, args.match_seconds), state)
+            moves.append({"player": state.player, "side": side, "engine": engine, **step})
             state = state.play(step["action"])
         margin = state.scores[alpha_player] - state.scores[1 - alpha_player]
         games.append(
@@ -112,9 +113,15 @@ def play_pair(evaluators, args, size, pair_index):
     return games
 
 
+def load_players(args):
+    return {
+        "candidate": load_evaluator(args.checkpoint)[0],
+        "reference": load_evaluator(args.reference_checkpoint or args.checkpoint)[0],
+    }
+
+
 def worker_pair(args, size, pair_index):
-    evaluators = {engine: load_evaluator(args.checkpoint)[0] for engine in ("mcts", "alpha_beta")}
-    return play_pair(evaluators, args, size, pair_index)
+    return play_pair(load_players(args), args, size, pair_index)
 
 
 def matches(evaluators, args):
@@ -142,6 +149,8 @@ def matches(evaluators, args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkpoint", type=Path, default=Path("models/larger.npz"))
+    parser.add_argument("--reference-checkpoint", type=Path)
+    parser.add_argument("--reference-engine", choices=("mcts", "alpha_beta"), default="mcts")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--boards", type=int, nargs="+", default=[4, 5, 10])
     parser.add_argument("--seconds", type=float, nargs="+", default=[0.5, 2])
@@ -166,7 +175,7 @@ def main():
         parser.error("Benchmark board sizes must be 2..12.")
     for seconds in args.seconds + [args.match_seconds]:
         EngineConfig(time_limit=seconds)
-    evaluators = {engine: load_evaluator(args.checkpoint)[0] for engine in ("mcts", "alpha_beta")}
+    evaluators = load_players(args)
     modules = [
         sys.modules[f"alphaboxes.{name}"]
         for name in (
@@ -183,6 +192,10 @@ def main():
     report = {
         "started_utc": datetime.now(UTC).isoformat(),
         "checkpoint_sha256": hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
+        "reference_checkpoint_sha256": hashlib.sha256(
+            (args.reference_checkpoint or args.checkpoint).read_bytes()
+        ).hexdigest(),
+        "reference_engine": args.reference_engine,
         "python": platform.python_version(),
         "numpy": np.__version__,
         "threads": {
@@ -205,7 +218,7 @@ def main():
                 *(Path(module.__file__) for module in modules + extensions),
             )
         },
-        "latency": [] if args.skip_latency else latency(evaluators["mcts"], args),
+        "latency": [] if args.skip_latency else latency(evaluators["candidate"], args),
         "games": matches(evaluators, args),
     }
     report["completed_utc"] = datetime.now(UTC).isoformat()
