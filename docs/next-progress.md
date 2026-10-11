@@ -1,6 +1,6 @@
 # Search and teaching results
 
-Updated 2026-10-11 16:06 UTC. Stage: policy teaching screened.
+Updated 2026-10-11 16:06 UTC. Stage: search and teaching complete; no teaching candidate passed release checks.
 
 [Recorded protocol](next-experiments.md) separates screening from fresh confirmation.
 All match inference uses NumPy with Python search and solving.
