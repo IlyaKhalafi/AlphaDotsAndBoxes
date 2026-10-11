@@ -1,6 +1,6 @@
 # Search and teaching results
 
-Updated 2026-10-11 15:54 UTC. Stage: critic teaching confirmed.
+Updated 2026-10-11 16:06 UTC. Stage: policy teaching screened.
 
 [Recorded protocol](next-experiments.md) separates screening from fresh confirmation.
 All match inference uses NumPy with Python search and solving.
@@ -50,6 +50,25 @@ Fresh confirmation:
 | 512 | 5×5 | 80 | 53–0–27 | 66.2% |
 
 Release gate: failed.
+
+## Exact policy teaching
+
+| Update | Simulations | Board | W–D–L | Score |
+| --- | --- | --- | --- | --- |
+| 25 | 128 | 4×4 | 9–0–11 | 45.0% |
+| 25 | 128 | 5×5 | 12–0–8 | 60.0% |
+| 25 | 512 | 4×4 | 10–0–10 | 50.0% |
+| 25 | 512 | 5×5 | 12–0–8 | 60.0% |
+| 100 | 128 | 4×4 | 14–1–5 | 72.5% |
+| 100 | 128 | 5×5 | 9–0–11 | 45.0% |
+| 100 | 512 | 4×4 | 8–4–8 | 50.0% |
+| 100 | 512 | 5×5 | 9–0–11 | 45.0% |
+| 300 | 128 | 4×4 | 8–1–11 | 42.5% |
+| 300 | 128 | 5×5 | 12–0–8 | 60.0% |
+| 300 | 512 | 4×4 | 7–1–12 | 37.5% |
+| 300 | 512 | 5×5 | 12–0–8 | 60.0% |
+
+Screening winner: none.
 
 **Deployment:** previous released weights retained.
 
