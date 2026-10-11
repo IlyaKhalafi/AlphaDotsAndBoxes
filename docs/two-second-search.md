@@ -120,6 +120,10 @@ only the owned worker. Runtime bookkeeping/formatting was refined during the
 campaign; weights, first-play rule, exploration constant and match budgets were
 fixed throughout confirmation. The final probes exercise the cleaned runtime.
 
+The live port-9003 service was also checked with Deep requests on 4×4, 5×5 and
+10×10; the slowest full HTTP request took 1.768 seconds. All 122 tests
+passed, and Ruff reported no errors.
+
 ### Reproduce
 
 ```bash

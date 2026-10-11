@@ -5,7 +5,7 @@
   "reports": [
     {
       "receipt": "fpu-confirmation.json",
-      "receipt_sha256": "ce47bc6f5b915cb50b7e1c8aed5616f740362fe2ec7bcf530fff3524ec101f4f",
+      "receipt_sha256": "e2c21684c73aa74627c78619bfb601b24336ef794d31114de34bd4d4c7aa9f1c",
       "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
       "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
       "reference_engine": "mcts",

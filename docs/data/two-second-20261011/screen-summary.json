@@ -1,11 +1,11 @@
 {
   "validation": "Full legal replays, final scores and seat-swapped openings checked",
   "timing": "Only moves with more than 12 remaining edges enter search-work statistics",
-  "source_sha256": "0676e8ec2d5c9fcc6ec9c61b3f37e6f1cf45b622522a8cc24287f59a07e00853",
+  "source_sha256": "f33f37d6a46323089db7bb6c8a2f9e7fc3a2dd57a5daf93028ba36b13f8baa1e",
   "reports": [
     {
       "receipt": "student-mcts-screen.json",
-      "receipt_sha256": "db5af8a4c5e6a6465bed7bec8a38d5c26c883893d3af6f33b5bb2ade4c7ec762",
+      "receipt_sha256": "1eed62ea4404c9b8b87a8d4749551b4d98a548b045e6717573a8b10191a7f639",
       "candidate_sha256": "730c2ba93c94d6de5ca7388b063313d2139169729b753fd13b3959ea946f2206",
       "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
       "reference_engine": "mcts",
@@ -21,10 +21,15 @@
           "draws": 1,
           "losses": 4,
           "score": 0.625,
+          "paired_bootstrap_95pct": [
+            0.5,
+            0.7916666666666666
+          ],
           "mean_box_margin": 0.8333333333333334,
           "players": {
             "candidate": {
               "max_seconds": 0.5233888960210606,
+              "deadline_fallbacks": 0,
               "neural_moves": 131,
               "mean_seconds": 0.5051899548790609,
               "median_depth": null,
@@ -37,6 +42,7 @@
             },
             "reference": {
               "max_seconds": 0.5222097429214045,
+              "deadline_fallbacks": 0,
               "neural_moves": 133,
               "mean_seconds": 0.5042478389043669,
               "median_depth": null,
@@ -59,10 +65,15 @@
           "draws": 0,
           "losses": 8,
           "score": 0.3333333333333333,
+          "paired_bootstrap_95pct": [
+            0.08333333333333333,
+            0.6666666666666666
+          ],
           "mean_box_margin": -1.0,
           "players": {
             "candidate": {
               "max_seconds": 0.5246957300696522,
+              "deadline_fallbacks": 0,
               "neural_moves": 249,
               "mean_seconds": 0.5057473087395321,
               "median_depth": null,
@@ -75,6 +86,7 @@
             },
             "reference": {
               "max_seconds": 0.520310427993536,
+              "deadline_fallbacks": 0,
               "neural_moves": 255,
               "mean_seconds": 0.5040004169331024,
               "median_depth": null,
@@ -91,7 +103,7 @@
     },
     {
       "receipt": "fpu-screen.json",
-      "receipt_sha256": "71cbb5863938ff136aa62ec474c9c4b341abcf3fc73fbd15858fed877fec681f",
+      "receipt_sha256": "1c0df9b63717e275018e664fb0b45781cb26d67f9497afe9005e50059a4ffda4",
       "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
       "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
       "reference_engine": "mcts",
@@ -107,10 +119,15 @@
           "draws": 1,
           "losses": 4,
           "score": 0.625,
+          "paired_bootstrap_95pct": [
+            0.4166666666666667,
+            0.8333333333333334
+          ],
           "mean_box_margin": 0.6666666666666666,
           "players": {
             "candidate": {
               "max_seconds": 0.5125798529479653,
+              "deadline_fallbacks": 0,
               "neural_moves": 126,
               "mean_seconds": 0.5035357448782417,
               "median_depth": null,
@@ -123,6 +140,7 @@
             },
             "reference": {
               "max_seconds": 0.5145637559471652,
+              "deadline_fallbacks": 0,
               "neural_moves": 138,
               "mean_seconds": 0.5037573413810342,
               "median_depth": null,
@@ -145,10 +163,15 @@
           "draws": 0,
           "losses": 3,
           "score": 0.75,
+          "paired_bootstrap_95pct": [
+            0.5833333333333334,
+            0.9166666666666666
+          ],
           "mean_box_margin": 3.6666666666666665,
           "players": {
             "candidate": {
               "max_seconds": 0.5285113130230457,
+              "deadline_fallbacks": 0,
               "neural_moves": 269,
               "mean_seconds": 0.5042411479869594,
               "median_depth": null,
@@ -161,6 +184,7 @@
             },
             "reference": {
               "max_seconds": 0.5347032130230218,
+              "deadline_fallbacks": 0,
               "neural_moves": 235,
               "mean_seconds": 0.5038931716208722,
               "median_depth": null,

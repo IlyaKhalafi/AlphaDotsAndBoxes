@@ -1,11 +1,11 @@
 {
   "validation": "Full legal replays, final scores and seat-swapped openings checked",
   "timing": "Only moves with more than 12 remaining edges enter search-work statistics",
-  "source_sha256": "be6b8e96d8fb1b1fc4934578e2c944505dc20212936d2afd9328761718845e46",
+  "source_sha256": "f33f37d6a46323089db7bb6c8a2f9e7fc3a2dd57a5daf93028ba36b13f8baa1e",
   "reports": [
     {
       "receipt": "fpu-deep-screen.json",
-      "receipt_sha256": "f2fc3e18a9003f471e927e45321989e642db71e04867b9d00370145ebc882598",
+      "receipt_sha256": "2bcea5d2a5b29fe6dda2c4e264058914f255a99499f7ae550c6edfc0fd53e2c0",
       "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
       "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
       "reference_engine": "mcts",
@@ -103,7 +103,7 @@
     },
     {
       "receipt": "endgame-screen.json",
-      "receipt_sha256": "b3ff4ff6c62298b58042828b0f6b618f1ec639e7d8038775d0432bdbf93f6d31",
+      "receipt_sha256": "cf5b29e0bd125de970b771fc8a85ad491600aeeec49e89614a6b3b6df927de01",
       "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
       "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
       "reference_engine": "mcts",
