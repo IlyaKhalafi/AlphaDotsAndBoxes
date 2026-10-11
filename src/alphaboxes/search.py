@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from dataclasses import dataclass
+from time import monotonic
 from typing import TYPE_CHECKING, Protocol
 
 import numpy as np
@@ -143,8 +144,13 @@ class SearchConfig:
     exact_threshold: int = 0
     leaf_exact_threshold: int = 0
     reuse_tree: bool = False
+    time_limit: float | None = None
 
     def __post_init__(self):
+        if self.time_limit is not None and (
+            not np.isfinite(self.time_limit) or self.time_limit <= 0
+        ):
+            raise ValueError("Thinking time must be finite and positive.")
         if self.simulations < 1 or self.cpuct <= 0 or self.dirichlet_alpha <= 0:
             raise ValueError("Search budgets and exploration constants must be positive.")
         if (
@@ -183,6 +189,7 @@ class MCTS:
         self._solved: OrderedDict[tuple, float] = OrderedDict()
         self._roots: list[Node] = []
         self.inherited_visits = 0
+        self.completed_simulations = 0
 
     def clear_tree(self) -> None:
         """Discard visits when weights change; exact game-rule values remain valid."""
@@ -269,6 +276,8 @@ class MCTS:
         """Search independent games together, with one leaf per tree per simulation."""
         if any(state.terminal for state in states):
             raise ValueError("Cannot search a finished game.")
+        deadline = monotonic() + self.config.time_limit if self.config.time_limit else None
+        self.completed_simulations = 0
         results = [(np.zeros(state.board.num_edges, dtype=np.float32), 0.0) for state in states]
         roots = []
         reused = set()
@@ -295,7 +304,11 @@ class MCTS:
                 roots.append((index, root))
         self.inherited_visits = sum(root.visits for _, root in roots)
         self._roots = [root for _, root in roots] if self.config.reuse_tree else []
-        self._expand_many([root for _, root in roots if root.children is None])
+        fresh = [root for _, root in roots if root.children is None]
+        initial_values = {
+            id(root): value
+            for root, value in zip(fresh, self._expand_many(fresh), strict=True)
+        }
         if not roots:
             return results
         for _, root in roots:
@@ -320,6 +333,8 @@ class MCTS:
             for child, sample in zip(root.children.values(), noise, strict=True):
                 child.prior = (1 - fraction) * child.prior + fraction * float(sample)
         for _ in range(self.config.simulations):
+            if deadline is not None and monotonic() >= deadline:
+                break
             paths = []
             for _, root in roots:
                 node, path = root, [root]
@@ -347,11 +362,13 @@ class MCTS:
                 for ancestor in path:
                     ancestor.visits += 1
                     ancestor.value_sum += perspective(value, path[-1].player, ancestor.player)
+            self.completed_simulations += 1
         for index, root in roots:
             total = sum(child.visits for child in root.children.values())
             for action, child in root.children.items():
-                results[index][0][action] = child.visits / total
-            results[index] = results[index][0], root.value
+                results[index][0][action] = child.visits / total if total else child.prior
+            value = root.value if root.visits else initial_values[id(root)]
+            results[index] = results[index][0], value
         return results
 
     def action(self, state: State) -> int:

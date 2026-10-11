@@ -9,6 +9,26 @@ def uniform(state):
     return np.ones(state.board.num_edges), 0.0
 
 
+def test_time_budget_stops_search_and_preserves_legal_fallback(monkeypatch):
+    clock = [0.0]
+    monkeypatch.setattr("alphaboxes.search.monotonic", lambda: clock[0])
+
+    def slow(state):
+        clock[0] += 0.1
+        return np.arange(1, state.board.num_edges + 1), 0.4
+
+    state = State.new(2, 2).play(11)
+    for limit, count in ((0.05, 0), (0.25, 2)):
+        clock[0] = 0
+        search = MCTS(slow, SearchConfig(simulations=100, time_limit=limit))
+        policy, value = search.policy(state)
+        assert search.completed_simulations == count
+        assert np.isclose(policy.sum(), 1) and policy[11] == 0
+        assert -1 <= value <= 1
+        if count == 0:
+            assert value == 0.4 and policy.argmax() == 10
+
+
 def test_backups_keep_sign_on_extra_turn():
     assert perspective(0.8, 0, 0) == 0.8
     assert perspective(0.8, 0, 1) == -0.8
