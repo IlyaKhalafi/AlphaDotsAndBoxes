@@ -97,6 +97,10 @@ seed 3511. Improving the evaluation cost and its behavior under minimax is a
 better next experiment than deploying this slower-searching alternative as
 the default. Expert-human strength and 10×10 strength remain unproven.
 
+A fresh [40-game Deep comparison](engine-deep-benchmark.md) uses the ordinary
+deployment backends and a two-second budget for both players. Alpha–beta scored
+25% on 4×4 and 10% on 5×5 against the retained model's graph search.
+
 ## Reproduce
 
 The benchmark needs ordinary deployment dependencies only. Its default run
