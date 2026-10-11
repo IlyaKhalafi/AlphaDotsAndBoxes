@@ -47,6 +47,35 @@ def test_parallel_pairs_match_serial_oracle_games_and_preserve_progress(tmp_path
         )
         receipt = json.loads(output.read_text())
         receipts.append(receipt)
+        if workers == 1:
+            summary_path = tmp_path / "summary.json"
+            summarize = [
+                sys.executable,
+                str(root / "scripts/summarize_engine.py"),
+                "--receipts",
+                str(output),
+                "--output",
+                str(summary_path),
+            ]
+            subprocess.run(
+                summarize, cwd=root, env=environment, check=True, capture_output=True, timeout=30
+            )
+            summary = json.loads(summary_path.read_text())["reports"][0]
+            assert summary["receipt_sha256"] == hashlib.sha256(output.read_bytes()).hexdigest()
+            assert summary["results"][0]["games"] == 4
+            assert summary["results"][0]["players"]["candidate"]["neural_moves"] == 0
+            damaged = json.loads(output.read_text())
+            damaged["games"][0]["scores"][0] += 1
+            corrupt = tmp_path / "corrupt.json"
+            corrupt.write_text(json.dumps(damaged))
+            invalid = subprocess.run(
+                [*summarize[:3], str(corrupt), *summarize[4:]],
+                cwd=root,
+                env=environment,
+                capture_output=True,
+                timeout=30,
+            )
+            assert invalid.returncode != 0
         assert receipt["workers"] == workers and receipt["latency"] == []
         assert [game["index"] for game in receipt["games"]] == list(range(4))
         records = [json.loads(line) for line in progress.read_text().splitlines()]
