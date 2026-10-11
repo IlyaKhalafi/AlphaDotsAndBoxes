@@ -42,8 +42,33 @@ gate requires at least 50% score against that model on both boards at Standard
 and strictly more than 50% on 5×5 Deep. This is a practical regression check,
 not statistical proof or an expert-human strength claim.
 
-**Status: training in progress.** Port 9003 retains the validated 96-channel
-model pending fresh comparisons. [Initial receipts](data/wide-initialization/)
+**Status: training and fresh evaluation complete.** [Initial receipts](data/wide-initialization/)
 preserve hashes, dimensions, timings and numerical errors.
 
 ![Wider network architecture](assets/network-wide.svg)
+
+
+Training completed 119 rounds, 15,232 new games and 676,530 new positions in 8.020 hours. Selection chose `agent-00060`. Later or larger networks need not improve play.
+
+| Test | Board | Opponent | Wins–draws–losses | Score |
+| --- | --- | --- | --- | --- |
+| baseline-duel | 4×4 | checkpoint | 32–0–8 | 80.0% |
+| baseline-duel | 5×5 | checkpoint | 33–0–7 | 82.5% |
+| preview-duel | 4×4 | checkpoint | 16–5–19 | 46.2% |
+| preview-duel | 5×5 | checkpoint | 19–0–21 | 47.5% |
+| deep-preview-duel | 4×4 | checkpoint | 22–3–15 | 58.8% |
+| deep-preview-duel | 5×5 | checkpoint | 22–0–18 | 55.0% |
+| scripted | 4×4 | tactical_endgame | 37–2–1 | 95.0% |
+| scripted | 4×4 | chain_control | 32–6–2 | 87.5% |
+| scripted | 5×5 | tactical_endgame | 37–0–3 | 92.5% |
+| scripted | 5×5 | chain_control | 34–0–6 | 85.0% |
+| transfer | 3×3 | tactical_endgame | 36–0–4 | 90.0% |
+| transfer | 3×3 | chain_control | 34–0–6 | 85.0% |
+| transfer | 2×5 | tactical_endgame | 34–3–3 | 88.8% |
+| transfer | 2×5 | chain_control | 25–5–10 | 68.8% |
+| heldout-6x6 | 6×6 | tactical_endgame | 20–0–0 | 100.0% |
+| heldout-6x6 | 6×6 | chain_control | 19–0–1 | 95.0% |
+
+**Promotion gate: failed.** These limited seeded tests do not establish statistical superiority or expert-human strength. [Raw results and settings](data/wide-campaign/).
+
+![Training loss](assets/wide-training.svg)

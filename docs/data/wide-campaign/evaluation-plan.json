@@ -1,0 +1,26 @@
+{
+  "selection_seed": 3050,
+  "fresh_seed": 3051,
+  "sizes": [
+    [
+      4,
+      4
+    ],
+    [
+      5,
+      5
+    ]
+  ],
+  "games_per_opponent": 40,
+  "selection_games_per_opponent": 20,
+  "selection_every": 20,
+  "standard_simulations": 128,
+  "standard_exact_threshold": 0,
+  "deep_simulations": 512,
+  "deep_exact_threshold": 12,
+  "opening_moves": 6,
+  "baseline_checkpoint": "runs/wide-20261010/baseline.npz",
+  "baseline_checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "gate": "Both boards >= 0.5 at Standard and Deep; 5x5 Deep > 0.5; selection label differs from baseline",
+  "limitation": "Practical regression gate, not statistical superiority or expert-human proof."
+}
