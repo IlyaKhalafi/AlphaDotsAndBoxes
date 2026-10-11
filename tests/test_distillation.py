@@ -9,6 +9,24 @@ import pytest
 
 from alphaboxes.distillation import distill, frozen_examples, split_positions
 from alphaboxes.game import State
+from alphaboxes.search import CachedEvaluator
+from alphaboxes.teaching import TeachingDataset
+
+
+def test_equivalent_positions_cannot_cross_validation_split():
+    initial = State.new(2, 2)
+    other_player = State(initial.board, initial.edges, initial.owners, 1)
+    states = [initial, other_player, initial.play(0), initial.play(1)]
+    policies = np.zeros((4, initial.board.num_edges), np.float32)
+    values = np.zeros(4, np.float32)
+    dataset = TeachingDataset(states, policies, values, policies, values, 0, {})
+    assert CachedEvaluator._key(initial) == CachedEvaluator._key(other_player)
+    for seed in range(20):
+        training, validation = split_positions(dataset, seed, fraction=0.5)
+        assert set(training) | set(validation) == set(range(4))
+        assert not {CachedEvaluator._key(states[i]) for i in training} & {
+            CachedEvaluator._key(states[i]) for i in validation
+        }
 
 
 def test_frozen_distillation_targets_and_rllib_compression(tmp_path, monkeypatch):

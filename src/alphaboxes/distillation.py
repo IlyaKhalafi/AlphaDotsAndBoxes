@@ -7,11 +7,12 @@ from pathlib import Path
 
 import numpy as np
 
+from alphaboxes.search import CachedEvaluator
 from alphaboxes.teaching import TeachingDataset, load_dataset
 
 
 def split_positions(dataset: TeachingDataset, seed: int, fraction: float = 0.1):
-    """Hold out distinct positions within each board size, before any updates.
+    """Keep identical evaluator keys together within each board size.
 
     This is an imitation validation split, not an independent playing-strength
     test: nearby positions can still come from the same source game.
@@ -20,16 +21,18 @@ def split_positions(dataset: TeachingDataset, seed: int, fraction: float = 0.1):
         raise ValueError("Holdout fraction must be in (0, 1).")
     groups = {}
     for index, state in enumerate(dataset.states):
-        groups.setdefault((state.board.rows, state.board.cols), []).append(index)
+        board_groups = groups.setdefault((state.board.rows, state.board.cols), {})
+        board_groups.setdefault(CachedEvaluator._key(state), []).append(index)
     rng = np.random.default_rng(seed)
     training, validation = [], []
-    for indices in groups.values():
-        if len(indices) < 2:
-            raise ValueError("Each board size needs at least two positions.")
-        shuffled = rng.permutation(indices)
-        count = min(len(indices) - 1, max(1, round(len(indices) * fraction)))
-        validation.extend(shuffled[:count])
-        training.extend(shuffled[count:])
+    for board_groups in groups.values():
+        equivalent = list(board_groups.values())
+        if len(equivalent) < 2:
+            raise ValueError("Each board size needs at least two distinct evaluator positions.")
+        shuffled = rng.permutation(len(equivalent))
+        count = min(len(equivalent) - 1, max(1, round(len(equivalent) * fraction)))
+        validation.extend(index for group in shuffled[:count] for index in equivalent[group])
+        training.extend(index for group in shuffled[count:] for index in equivalent[group])
     return np.array(training), np.array(validation)
 
 
@@ -131,6 +134,7 @@ def distill(
         "dataset": dataset.metadata,
         "training_indices": training.tolist(),
         "validation_indices": validation.tolist(),
+        "split_mode": "Board-stratified groups of identical evaluator keys",
         "steps": steps,
         "batch_size": batch_size,
         "validate_every": validate_every,
