@@ -1,0 +1,118 @@
+{
+  "receipts": [
+    "reuse-128-3130.json",
+    "reuse-128-3131.json",
+    "reuse-512-3130.json",
+    "reuse-512-3131.json"
+  ],
+  "results": [
+    {
+      "simulations": 128,
+      "size": [
+        4,
+        4
+      ],
+      "seeds": [
+        3130,
+        3131
+      ],
+      "games": 80,
+      "wins": 27,
+      "draws": 10,
+      "losses": 43,
+      "score_rate": 0.4,
+      "mean_move_seconds": [
+        0.06942688925024683,
+        0.05728674784531291
+      ],
+      "latency_ratio": 1.2119188444370246,
+      "mean_inherited_visits": [
+        20.165123456790123,
+        0.0
+      ]
+    },
+    {
+      "simulations": 128,
+      "size": [
+        5,
+        5
+      ],
+      "seeds": [
+        3130,
+        3131
+      ],
+      "games": 80,
+      "wins": 42,
+      "draws": 0,
+      "losses": 38,
+      "score_rate": 0.525,
+      "mean_move_seconds": [
+        0.10207631463403613,
+        0.09164102838578081
+      ],
+      "latency_ratio": 1.113871335056673,
+      "mean_inherited_visits": [
+        37.359550561797754,
+        0.0
+      ]
+    },
+    {
+      "simulations": 512,
+      "size": [
+        4,
+        4
+      ],
+      "seeds": [
+        3130,
+        3131
+      ],
+      "games": 80,
+      "wins": 39,
+      "draws": 8,
+      "losses": 33,
+      "score_rate": 0.5375,
+      "mean_move_seconds": [
+        0.1951525675248027,
+        0.18669342235073416
+      ],
+      "latency_ratio": 1.0453103546314377,
+      "mean_inherited_visits": [
+        95.89473684210526,
+        0.0
+      ]
+    },
+    {
+      "simulations": 512,
+      "size": [
+        5,
+        5
+      ],
+      "seeds": [
+        3130,
+        3131
+      ],
+      "games": 80,
+      "wins": 37,
+      "draws": 0,
+      "losses": 43,
+      "score_rate": 0.4625,
+      "mean_move_seconds": [
+        0.3371439996734697,
+        0.3072248083526491
+      ],
+      "latency_ratio": 1.0973853364292045,
+      "mean_inherited_visits": [
+        159.15607476635515,
+        0.0
+      ]
+    }
+  ],
+  "deployment_gate": {
+    "passed": false,
+    "failures": [
+      "Score below gate for 4x4 / 128 simulations",
+      "Score below gate for 5x5 / 512 simulations"
+    ],
+    "limitation": "Limited seeded regression check; no expert-human strength claim."
+  }
+}

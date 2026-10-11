@@ -70,11 +70,24 @@ fixture score did not predict a universal full-game improvement.
 
 ## Experiment 2: tree reuse
 
-**Status: running.** [Recorded plan](data/search-refinement-20261011/tree-evaluation-plan.json).
+**Status: complete; deployment gate failed.** [Recorded plan](data/search-refinement-20261011/tree-evaluation-plan.json).
 Seeds 3130 and 3131 repeat the same four board/budget combinations. Exact leaf
 solving stays disabled for both players. The candidate retains visited
 descendants across moves while both players still receive the same number of
 fresh simulations. Receipts measure inherited visits and move latency.
+
+| Thinking | Board | Wins–draws–losses | Score | Mean move seconds, candidate/opponent | Mean inherited visits |
+| --- | --- | --- | --- | --- | --- |
+| 128 | 4×4 | 27–10–43 | 40.000% | 0.069 / 0.057 | 20.2 |
+| 128 | 5×5 | 42–0–38 | 52.500% | 0.102 / 0.092 | 37.4 |
+| 512 | 4×4 | 39–8–33 | 53.750% | 0.195 / 0.187 | 95.9 |
+| 512 | 5×5 | 37–0–43 | 46.250% | 0.337 / 0.307 | 159.2 |
+
+**Decision: retain fresh-tree search as the default.** Standard 4×4 and Deep
+5×5 fail the recorded gate. Inherited work is measurable, but it did not produce
+a consistent playing-strength gain. More search or memory reuse need not improve
+results with a learned leaf evaluator. These matches test behavior rather than
+prove why the regression occurs.
 
 Reuse is optional and defaults to false. Tests cover changes of board, undo,
 independent batched games, weight updates and removal of exploration noise
