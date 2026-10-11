@@ -23,13 +23,19 @@ from alphaboxes.engine import AlphaBeta, EngineConfig
 from alphaboxes.game import State
 from alphaboxes.opponents import solve_remaining
 from alphaboxes.search import MCTS, SearchConfig, choose_child
+from alphaboxes.timed_search import BoundedSearch
 
 
 def planner(evaluator, engine, seconds, search_options=None):
-    if engine == "alpha_beta":
-        return AlphaBeta(evaluator, EngineConfig(time_limit=seconds))
     options = {"simulations": 8192, "time_limit": seconds, "exact_threshold": 12}
     options.update(search_options or {})
+    if isinstance(evaluator, BoundedSearch):
+        evaluator.config = (
+            EngineConfig(time_limit=seconds) if engine == "alpha_beta" else SearchConfig(**options)
+        )
+        return evaluator
+    if engine == "alpha_beta":
+        return AlphaBeta(evaluator, EngineConfig(time_limit=seconds))
     return MCTS(evaluator, SearchConfig(**options))
 
 
@@ -42,6 +48,9 @@ def measure(search, state):
         "action": int(policy.argmax()),
         "value": value,
         "simulations": getattr(search, "completed_simulations", 0),
+        "endgame_hits": getattr(search, "endgame_hits", 0),
+        "proven_nodes": getattr(search, "proven_nodes", 0),
+        "timed_out": getattr(search, "timed_out", False),
         "depth": getattr(search, "depth", None),
         "nodes": getattr(search, "nodes", None),
         "cutoffs": getattr(search, "cutoffs", None),
@@ -118,14 +127,23 @@ def play_pair(evaluators, args, size, pair_index):
 
 
 def load_players(args):
-    return {
+    players = {
         "candidate": load_evaluator(args.checkpoint)[0],
         "reference": load_evaluator(args.reference_checkpoint or args.checkpoint)[0],
     }
+    if args.response_deadline:
+        players["candidate"] = BoundedSearch(players["candidate"], timeout=args.response_deadline)
+    return players
 
 
 def worker_pair(args, size, pair_index):
-    return play_pair(load_players(args), args, size, pair_index)
+    players = load_players(args)
+    try:
+        return play_pair(players, args, size, pair_index)
+    finally:
+        for player in players.values():
+            if isinstance(player, BoundedSearch):
+                player.close()
 
 
 def matches(evaluators, args):
@@ -158,6 +176,7 @@ def main():
     parser.add_argument("--candidate-engine", choices=("mcts", "alpha_beta"), default="alpha_beta")
     parser.add_argument("--search-options", type=json.loads, default={}, help="Candidate MCTS config JSON")
     parser.add_argument("--reference-seconds", type=float)
+    parser.add_argument("--response-deadline", type=float, help="Supervise candidate in a warm process")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--boards", type=int, nargs="+", default=[4, 5, 10])
     parser.add_argument("--seconds", type=float, nargs="+", default=[0.5, 2])
@@ -172,6 +191,8 @@ def main():
     args = parser.parse_args()
     if args.reference_seconds is None:
         args.reference_seconds = args.match_seconds
+    if args.response_deadline is not None and not 0 < args.response_deadline < 2:
+        parser.error("Response deadline must be positive and below two seconds.")
     if not isinstance(args.search_options, dict):
         parser.error("Search options must be a JSON object.")
     try:
@@ -201,6 +222,8 @@ def main():
             "opponents",
             "search",
             "checkpoint",
+            "endgame",
+            "timed_search",
         )
     ]
     extensions = [sys.modules[fn.__module__] for fn in (choose_child, solve_remaining) if fn]
@@ -222,6 +245,7 @@ def main():
         "seed": args.seed,
         "match_seconds": args.match_seconds,
         "reference_seconds": args.reference_seconds,
+        "response_deadline": args.response_deadline,
         "games_per_board": args.games,
         "workers": args.workers,
         "root_exact_edges": 12,
@@ -242,6 +266,9 @@ def main():
     report["completed_utc"] = datetime.now(UTC).isoformat()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n")
+    for player in evaluators.values():
+        if isinstance(player, BoundedSearch):
+            player.close()
 
 
 if __name__ == "__main__":

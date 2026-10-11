@@ -5,6 +5,16 @@ from fastapi.testclient import TestClient
 from alphaboxes.web.app import create_app
 
 
+class UniformEvaluator:
+    def __call__(self, state):
+        import numpy as np
+
+        return np.ones(state.board.num_edges), 0.0
+
+    def clear_cache(self):
+        pass
+
+
 def test_playable_api_and_stale_move_protection():
     client = TestClient(create_app())
     assert client.get("/").status_code == 200
@@ -93,26 +103,24 @@ def test_solved_endgame_does_not_report_neural_simulations(tmp_path):
 
 
 def test_timed_engines_and_replay_report_actual_work(monkeypatch):
-    import numpy as np
-
     monkeypatch.setattr(
         "alphaboxes.web.app.load_evaluator",
-        lambda path: (lambda state: (np.ones(state.board.num_edges), 0.0), {}),
+        lambda path: (UniformEvaluator(), {}),
     )
-    client = TestClient(create_app(Path("test.npz")))
-    for engine in ("mcts", "alpha_beta"):
-        game = client.post("/api/games", json={"rows": 4, "cols": 4, "demo": True}).json()
-        path = f"/api/games/{game['id']}"
-        result = client.post(
-            path + "/agent", json={"revision": 0, "engine": engine, "time_limit": 0.05}
-        )
-        assert result.status_code == 200
-        analysis = result.json()["analysis"]
-        assert analysis["engine"] == engine and analysis["time_limit"] == 0.05
-        if engine == "mcts":
-            assert 0 < analysis["simulations"] <= 8192
-        else:
-            assert analysis["simulations"] == 0 and analysis["nodes"] > 0
-        assert client.get(path + "/replay").json()["moves"][0]["analysis"] == analysis
-        for invalid in ({"time_limit": 0}, {"time_limit": 11}, {"engine": "chess"}):
-            assert client.post(path + "/hint", json={"revision": 1, **invalid}).status_code == 422
+    with TestClient(create_app(Path("test.npz"))) as client:
+        for engine in ("mcts", "alpha_beta"):
+            game = client.post("/api/games", json={"rows": 4, "cols": 4, "demo": True}).json()
+            path = f"/api/games/{game['id']}"
+            result = client.post(
+                path + "/agent", json={"revision": 0, "engine": engine, "time_limit": 0.05}
+            )
+            assert result.status_code == 200
+            analysis = result.json()["analysis"]
+            assert analysis["engine"] == engine and analysis["time_limit"] == 0.05
+            if engine == "mcts":
+                assert 0 < analysis["simulations"] <= 8192
+            else:
+                assert analysis["simulations"] == 0 and analysis["nodes"] > 0
+            assert client.get(path + "/replay").json()["moves"][0]["analysis"] == analysis
+            for invalid in ({"time_limit": 0}, {"time_limit": 2.1}, {"engine": "chess"}):
+                assert client.post(path + "/hint", json={"revision": 1, **invalid}).status_code == 422

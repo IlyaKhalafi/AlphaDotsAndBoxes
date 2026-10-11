@@ -3,6 +3,7 @@
 import threading
 import time
 import uuid
+from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
@@ -18,8 +19,10 @@ from alphaboxes.engine import AlphaBeta, EngineConfig
 from alphaboxes.game import State
 from alphaboxes.opponents import tactical_action
 from alphaboxes.search import MCTS, SearchConfig
+from alphaboxes.timed_search import BoundedSearch
 
 STATIC = Path(__file__).parent / "static"
+FPU_REDUCTION = 0.0
 
 
 class NewGame(BaseModel):
@@ -39,7 +42,7 @@ class Move(Revision):
 
 class SearchRequest(Revision):
     simulations: int = Field(default=128, ge=8, le=512)
-    time_limit: float | None = Field(default=None, ge=0.05, le=10, allow_inf_nan=False)
+    time_limit: float | None = Field(default=None, ge=0.05, le=2, allow_inf_nan=False)
     engine: Literal["mcts", "alpha_beta"] = "mcts"
 
 
@@ -83,8 +86,21 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
     sessions: dict[str, Session] = {}
     sessions_lock = threading.Lock()
     search_lock = threading.Lock()
+    bounded = None
     rng = np.random.default_rng(2026)
-    app = FastAPI(title="Alpha Dots & Boxes", docs_url=None, redoc_url=None)
+
+    @asynccontextmanager
+    async def lifespan(app):
+        nonlocal bounded
+        if evaluator is not None and checkpoint.suffix == ".npz":
+            bounded = BoundedSearch(evaluator)
+        try:
+            yield
+        finally:
+            if bounded is not None:
+                bounded.close()
+
+    app = FastAPI(title="Alpha Dots & Boxes", docs_url=None, redoc_url=None, lifespan=lifespan)
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
     def get_session(game_id: str) -> Session:
@@ -99,9 +115,51 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
         if session.revision != revision:
             raise HTTPException(409, "The board has changed. Refresh this game.")
 
+    @contextmanager
+    def decision_lock(session: Session):
+        if not session.lock.acquire(blocking=False):
+            raise HTTPException(409, "This game is already processing a move. Try again.")
+        try:
+            yield
+        finally:
+            session.lock.release()
+
     def search(session: Session, request: SearchRequest) -> tuple[int, float | None, dict]:
         if session.state.terminal:
             raise HTTPException(409, "The game has finished.")
+        if evaluator is not None and checkpoint.suffix == ".npz":
+            if bounded is None:
+                raise HTTPException(503, "The agent is starting. Try again shortly.")
+            started = time.monotonic()
+            limit = min(request.time_limit or 0.5, 1.75)
+            config = (
+                EngineConfig(time_limit=limit)
+                if request.engine == "alpha_beta"
+                else SearchConfig(
+                    simulations=8192 if request.time_limit else request.simulations,
+                    time_limit=limit, exact_threshold=12, fpu_reduction=FPU_REDUCTION,
+                )
+            )
+            policy, value = bounded.policy(session.state, config=config)
+            action = int(policy.argmax())
+            details = {
+                "method": "deadline_fallback" if bounded.timed_out
+                else "exact_endgame" if len(session.state.legal_actions) <= 12
+                else "alpha_beta" if request.engine == "alpha_beta" else "graph_search",
+                "engine": request.engine, "time_limit": limit,
+                "requested_time_limit": request.time_limit,
+                "response_deadline": bounded.timeout,
+                "thinking_seconds": time.monotonic() - started,
+                "simulations": bounded.completed_simulations,
+                "timed_out": bounded.timed_out,
+                "fpu_reduction": FPU_REDUCTION if request.engine == "mcts" else None,
+            }
+            if request.engine == "alpha_beta":
+                details.update(
+                    depth=bounded.depth, nodes=bounded.nodes,
+                    cutoffs=bounded.cutoffs, table_hits=bounded.table_hits,
+                )
+            return action, value, details
         with search_lock:
             started = time.monotonic()
             if evaluator is None:
@@ -158,6 +216,11 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             "training": metadata,
             "exact_endgame_edges": 12 if evaluator else 0,
             "search_engines": ["mcts", "alpha_beta"],
+            "search": {
+                "fpu_reduction": FPU_REDUCTION,
+                "max_internal_seconds": 1.75,
+                "response_deadline": 1.9 if checkpoint and checkpoint.suffix == ".npz" else None,
+            },
         }
 
     @app.post("/api/games", status_code=201)
@@ -225,7 +288,7 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
     @app.post("/api/games/{game_id}/agent")
     def agent_move(game_id: str, request: SearchRequest):
         session = get_session(game_id)
-        with session.lock:
+        with decision_lock(session):
             check_revision(session, request.revision)
             if not session.demo and session.state.player == session.human:
                 raise HTTPException(409, "It is your turn.")
@@ -243,7 +306,7 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
     @app.post("/api/games/{game_id}/hint")
     def hint(game_id: str, request: SearchRequest):
         session = get_session(game_id)
-        with session.lock:
+        with decision_lock(session):
             check_revision(session, request.revision)
             action, value, details = search(session, request)
             return {

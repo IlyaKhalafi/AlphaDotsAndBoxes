@@ -136,6 +136,8 @@ def test_distinct_checkpoints_and_search_algorithms(tmp_path, candidate_engine):
             "alpha_beta",
             "--candidate-engine",
             candidate_engine,
+            "--response-deadline",
+            "1.5",
             "--match-boards",
             "2",
             "--games",
