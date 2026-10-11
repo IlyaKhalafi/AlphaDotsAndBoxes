@@ -1,0 +1,38 @@
+{
+  "recorded_utc": "2026-10-11T06:08:14.731778+00:00",
+  "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "experiment": "Tree reuse only; same weights, fresh simulations and root oracle for both players",
+  "seeds": [
+    3130,
+    3131
+  ],
+  "sizes": [
+    [
+      4,
+      4
+    ],
+    [
+      5,
+      5
+    ]
+  ],
+  "games_per_seed_and_board": 40,
+  "budgets": [
+    128,
+    512
+  ],
+  "root_exact_threshold_both": 12,
+  "leaf_exact_threshold_both": 0,
+  "candidate_reuse_tree": true,
+  "opponent_reuse_tree": false,
+  "opening_moves": 6,
+  "inference": "NumPy only; optional C extensions absent",
+  "numpy": "2.5.3",
+  "source_commit": "053a4b2",
+  "runtime_sources_sha256": {
+    "alphaboxes.search": "8ee7811e64f573c33ff6c53947f380f197d23016743b7f20376fa017091cfd0e",
+    "alphaboxes.opponents": "06fc201b16710a2396492c3b0ec3825bac3746ccf0eb1064f9172eee87eabb02",
+    "alphaboxes.evaluation": "f30414c50e6ebc1581afdcdd81d0d16bdf3086b6d1956998d0d1ba2a4715f8a2"
+  },
+  "deployment_gate": "80 games per board/budget; score >=50% on both boards at both budgets, >50% on 5x5 Deep; mean thinking time per move <=2 times opponent. Limited practical regression gate, not statistical superiority."
+}

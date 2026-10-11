@@ -1,0 +1,18 @@
+{
+  "diagnostic_backends": {
+    "baseline-root12.json": "cython",
+    "leaf12-root12.json": "cython",
+    "holdout-baseline.json": "cython",
+    "holdout-leaf12.json": "cython",
+    "numpy-holdout-baseline-v2.json": "python",
+    "numpy-holdout-leaf12-v2.json": "python"
+  },
+  "suite_note": "The historical generation string predates six additional component fixtures; each suite includes eight shared fixtures and 48 separately randomized positions.",
+  "leaf_match_runtime": "NumPy 2.5.3, Python 3.12.3; Cython extensions absent",
+  "leaf_match_source_commit": "93ed2a4",
+  "leaf_match_working_sources_sha256": {
+    "src/alphaboxes/search.py": "ee35d6a605e09559e42978f358f7c49b458bee6a9dcc474e300cdfd086bee0c4",
+    "src/alphaboxes/opponents.py": "f90ac28670843b02a37c7fc7e6adc058d76af5c50017e81395aca2cae647271f",
+    "src/alphaboxes/evaluation.py": "b75d0c40a6e46d04165cf12f096e118b010a7f77e510eadbddc30205daa3b1af"
+  }
+}

@@ -112,6 +112,8 @@ Runs save progress, portable agent checkpoints, and a resumable learner state.
 The [training guide](docs/training.md) covers resuming, refinement, and a longer
 campaign with larger boards.
 Local speed measurements are recorded in [the performance notes](docs/performance.md).
+Ongoing improvement experiments and their decisions are recorded in
+[the refinement notes](docs/search-refinement.md).
 
 ## Evaluate and develop
 

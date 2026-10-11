@@ -1,0 +1,105 @@
+{
+  "receipts": [
+    "leaf12-128-3120.json",
+    "leaf12-128-3121.json",
+    "leaf12-512-3120.json",
+    "leaf12-512-3121.json"
+  ],
+  "results": [
+    {
+      "simulations": 128,
+      "size": [
+        4,
+        4
+      ],
+      "seeds": [
+        3120,
+        3121
+      ],
+      "games": 80,
+      "wins": 37,
+      "draws": 9,
+      "losses": 34,
+      "score_rate": 0.51875,
+      "mean_move_seconds": [
+        0.0755849870445715,
+        0.0626732490440357
+      ],
+      "latency_ratio": 1.2060167327764308,
+      "mean_inherited_visits": null
+    },
+    {
+      "simulations": 128,
+      "size": [
+        5,
+        5
+      ],
+      "seeds": [
+        3120,
+        3121
+      ],
+      "games": 80,
+      "wins": 31,
+      "draws": 0,
+      "losses": 49,
+      "score_rate": 0.3875,
+      "mean_move_seconds": [
+        0.10523276794668153,
+        0.09289786888178612
+      ],
+      "latency_ratio": 1.1327791392135351,
+      "mean_inherited_visits": null
+    },
+    {
+      "simulations": 512,
+      "size": [
+        4,
+        4
+      ],
+      "seeds": [
+        3120,
+        3121
+      ],
+      "games": 80,
+      "wins": 40,
+      "draws": 12,
+      "losses": 28,
+      "score_rate": 0.575,
+      "mean_move_seconds": [
+        0.21121632724214917,
+        0.18266295303354646
+      ],
+      "latency_ratio": 1.1563172703299,
+      "mean_inherited_visits": null
+    },
+    {
+      "simulations": 512,
+      "size": [
+        5,
+        5
+      ],
+      "seeds": [
+        3120,
+        3121
+      ],
+      "games": 80,
+      "wins": 42,
+      "draws": 0,
+      "losses": 38,
+      "score_rate": 0.525,
+      "mean_move_seconds": [
+        0.31680775072258927,
+        0.3028458399609564
+      ],
+      "latency_ratio": 1.0461023693224014,
+      "mean_inherited_visits": null
+    }
+  ],
+  "deployment_gate": {
+    "passed": false,
+    "failures": [
+      "Score below gate for 5x5 / 128 simulations"
+    ],
+    "limitation": "Limited seeded regression check; no expert-human strength claim."
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "recorded_utc": "2026-10-11T05:50:31.654178+00:00",
+  "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "experiment": "Exact leaf values only; same weights and root oracle for both players",
+  "seeds": [
+    3120,
+    3121
+  ],
+  "sizes": [
+    [
+      4,
+      4
+    ],
+    [
+      5,
+      5
+    ]
+  ],
+  "games_per_seed_and_board": 40,
+  "budgets": [
+    128,
+    512
+  ],
+  "root_exact_threshold_both": 12,
+  "candidate_leaf_threshold": 12,
+  "opponent_leaf_threshold": 0,
+  "opening_moves": 6,
+  "inference": "NumPy only, optional C extensions absent",
+  "selection_suite_seed": 3100,
+  "holdout_suite_seed": 3101,
+  "shared_fixtures": 8,
+  "deployment_gate": "Pooled score >=50% on both boards at both budgets, >50% on 5x5 Deep; mean thinking time per move <=2 times opponent on each board. Limited practical regression gate, not statistical superiority."
+}
