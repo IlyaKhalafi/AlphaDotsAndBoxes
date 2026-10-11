@@ -163,3 +163,25 @@ def test_reuse_removes_exploration_noise_before_evaluation():
     assert not np.allclose([c.prior for c in search._roots[0].children.values()], 1 / 12)
     search.policy(state, explore=False)
     assert np.allclose([c.prior for c in search._roots[0].children.values()], 1 / 12)
+
+
+def test_materialized_children_preserve_capture_and_turn_perspectives():
+    state = State.new(1, 2)
+    for action in (0, 2, 4):
+        state = state.play(action)
+    search = MCTS(uniform, SearchConfig(simulations=64, reuse_tree=True))
+    search.policy(state)
+    visited = list(search._roots)
+    captures = switches = 0
+    while visited:
+        node = visited.pop()
+        for child in (node.children or {}).values():
+            if child.state is not None:
+                assert child.player == child.state.player
+                assert child.state == node.state.play(child.action)
+                captures += child.player == node.player
+                switches += child.player != node.player
+                visited.append(child)
+            else:
+                assert child.visits == 0
+    assert captures and switches

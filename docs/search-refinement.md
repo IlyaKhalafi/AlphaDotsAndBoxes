@@ -110,12 +110,35 @@ cap is 40 GiB, reserving room for samplers, CUDA contexts and the unrelated job
 already using about 67 GiB on the shared H200. Allocator caps do not reserve
 VRAM or bound all context allocations.
 
-**Status: queued in the sequential controller after tree-reuse matches.**
+**Status: control arm running in the sequential controller; search comparisons complete.**
 [Training plan and progress](refinement-training.md) describe the next phases. The midgame
 implementation passed an actual two-worker RLlib smoke run: two games,
 18 new positions, two midgame starts, six initially drawn edges in total and
 eight learner sample presentations. This verifies execution, not improvement.
 The complete software suite passed 88 tests.
+
+## Search overhead refinement
+
+Unvisited child nodes have zero value, so their player perspective cannot
+affect selection. Computing whether every hypothetical edge captures a box
+before that edge is visited performs unnecessary rule checks. Child expansion
+now determines the next player when the move is materialized; visited values
+and extra-turn backups retain their original perspective.
+
+Forty-eight matched searches across 16 positions, four board shapes and three
+repeats produced bit-identical policies and values with the released network.
+They use 128 simulations, exploration noise and the compiled child selector.
+Summed per-position median times were 2.10 seconds before and 2.04 after, a
+1.03× observation too small to establish an overall throughput gain on this
+shared host. A separate uniform-evaluator probe that excludes neural inference
+took 0.54 and 0.37 seconds (1.44×) and also preserved all 48 policies and values.
+That result measures search overhead, not full training speed or playing strength.
+
+The [network probe](data/search-refinement-20261011/lazy-expansion-probe.json)
+and [overhead probe](data/search-refinement-20261011/lazy-expansion-overhead.json)
+retain settings and numerical results. Capture/turn tests and the complete
+89-test suite pass. The running three-arm campaign keeps its original frozen
+source to preserve its comparison protocol.
 
 [Raw suites, plans, diagnostics and match receipts](data/search-refinement-20261011/)
 include checkpoint and suite hashes, exact targets, per-position decisions and

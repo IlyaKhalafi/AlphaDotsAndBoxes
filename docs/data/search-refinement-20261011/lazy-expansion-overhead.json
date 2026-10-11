@@ -1,0 +1,16 @@
+{
+  "seed": 3200,
+  "positions": 16,
+  "repeats": 3,
+  "simulations": 128,
+  "exploration": true,
+  "evaluator": "uniform priors and zero value; neural inference excluded",
+  "selection": "Cython",
+  "old_seconds": 0.5401755557395518,
+  "lazy_seconds": 0.3745612172642723,
+  "speedup": 1.4421555965801713,
+  "parity": "bit-identical policies and values in all 48 comparisons",
+  "limitation": "Isolated search overhead probe, not neural inference or full training throughput.",
+  "baseline_source_sha256": "8ee7811e64f573c33ff6c53947f380f197d23016743b7f20376fa017091cfd0e",
+  "candidate_source_sha256": "993ea975fccd8ce94ad71d0922bd30b54af6e4bf877306ca5d75b40c0ef6ba1c"
+}

@@ -219,7 +219,9 @@ class MCTS:
             action: Node(
                 None,
                 float(prior),
-                player=node.state.player if node.state.captures(action) else 1 - node.state.player,
+                # Unvisited values are zero regardless of perspective. Determine
+                # the next player only when this edge is actually traversed.
+                player=-1,
                 action=action,
             )
             for action, prior in zip(legal, priors, strict=True)
@@ -336,6 +338,7 @@ class MCTS:
                     )
                     if child.state is None:
                         child.state = node.state.play(child.action)
+                        child.player = child.state.player
                     node = child
                     path.append(node)
                 paths.append(path)

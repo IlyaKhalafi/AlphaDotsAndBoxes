@@ -1,0 +1,165 @@
+{
+  "seed": 3200,
+  "positions": 16,
+  "repeats": 3,
+  "simulations": 128,
+  "root_exact_threshold": 12,
+  "exploration": true,
+  "policy_and_value_parity": "bit-identical on all 48 comparisons",
+  "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "backend": "NumPy inference with Cython child selection and exact solver",
+  "median_time_sums": [
+    2.099421873106621,
+    2.038739560986869
+  ],
+  "speedup": 1.0297646218678262,
+  "results": [
+    {
+      "size": [
+        4,
+        4
+      ],
+      "drawn_edges": 0,
+      "old_seconds": 0.19303144002333283,
+      "lazy_seconds": 0.18587363290134817
+    },
+    {
+      "size": [
+        4,
+        4
+      ],
+      "drawn_edges": 8,
+      "old_seconds": 0.1953714839182794,
+      "lazy_seconds": 0.1857338099507615
+    },
+    {
+      "size": [
+        4,
+        4
+      ],
+      "drawn_edges": 16,
+      "old_seconds": 0.11539465701207519,
+      "lazy_seconds": 0.11421835399232805
+    },
+    {
+      "size": [
+        4,
+        4
+      ],
+      "drawn_edges": 24,
+      "old_seconds": 0.09292231709696352,
+      "lazy_seconds": 0.0924043960403651
+    },
+    {
+      "size": [
+        5,
+        5
+      ],
+      "drawn_edges": 0,
+      "old_seconds": 0.25826366897672415,
+      "lazy_seconds": 0.25088028295431286
+    },
+    {
+      "size": [
+        5,
+        5
+      ],
+      "drawn_edges": 8,
+      "old_seconds": 0.25350240198895335,
+      "lazy_seconds": 0.24835641402751207
+    },
+    {
+      "size": [
+        5,
+        5
+      ],
+      "drawn_edges": 16,
+      "old_seconds": 0.1917253240244463,
+      "lazy_seconds": 0.1866270280443132
+    },
+    {
+      "size": [
+        5,
+        5
+      ],
+      "drawn_edges": 24,
+      "old_seconds": 0.08698078105226159,
+      "lazy_seconds": 0.08380270400084555
+    },
+    {
+      "size": [
+        3,
+        5
+      ],
+      "drawn_edges": 0,
+      "old_seconds": 0.13802432897500694,
+      "lazy_seconds": 0.13208496302831918
+    },
+    {
+      "size": [
+        3,
+        5
+      ],
+      "drawn_edges": 8,
+      "old_seconds": 0.13530252303462476,
+      "lazy_seconds": 0.13152264198288321
+    },
+    {
+      "size": [
+        3,
+        5
+      ],
+      "drawn_edges": 16,
+      "old_seconds": 0.09610117704141885,
+      "lazy_seconds": 0.0948077579960227
+    },
+    {
+      "size": [
+        3,
+        5
+      ],
+      "drawn_edges": 24,
+      "old_seconds": 0.06643873697612435,
+      "lazy_seconds": 0.06549125805031508
+    },
+    {
+      "size": [
+        2,
+        5
+      ],
+      "drawn_edges": 0,
+      "old_seconds": 0.11361854802817106,
+      "lazy_seconds": 0.11038265097886324
+    },
+    {
+      "size": [
+        2,
+        5
+      ],
+      "drawn_edges": 8,
+      "old_seconds": 0.09178346500266343,
+      "lazy_seconds": 0.08775816904380918
+    },
+    {
+      "size": [
+        2,
+        5
+      ],
+      "drawn_edges": 14,
+      "old_seconds": 0.04050755896605551,
+      "lazy_seconds": 0.03966034599579871
+    },
+    {
+      "size": [
+        2,
+        5
+      ],
+      "drawn_edges": 14,
+      "old_seconds": 0.030453460989519954,
+      "lazy_seconds": 0.02913515199907124
+    }
+  ],
+  "limitation": "Shared host, single-process CPU probe. Ongoing training campaign retains its original frozen code.",
+  "baseline_source_sha256": "8ee7811e64f573c33ff6c53947f380f197d23016743b7f20376fa017091cfd0e",
+  "candidate_source_sha256": "993ea975fccd8ce94ad71d0922bd30b54af6e4bf877306ca5d75b40c0ef6ba1c"
+}
