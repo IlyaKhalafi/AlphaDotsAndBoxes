@@ -1,6 +1,6 @@
 # Search and teaching results
 
-Updated 2026-10-11 13:54 UTC. Stage: 2048 screening complete; 8192 screening running.
+Updated 2026-10-11 14:24 UTC. Stage: search screening.
 
 [Recorded protocol](next-experiments.md) separates screening from fresh confirmation.
 All match inference uses NumPy with Python search and solving.
@@ -11,6 +11,8 @@ All match inference uses NumPy with Python search and solving.
 | --- | --- | --- | --- | --- | --- |
 | 2048 | 4x4 | 40 | 23–6–11 | 65.0% | 0.554 / 0.211 |
 | 2048 | 5x5 | 40 | 22–0–18 | 55.0% | 0.938 / 0.350 |
+| 8192 | 4x4 | 40 | 24–7–9 | 68.8% | 1.694 / 0.216 |
+| 8192 | 5x5 | 40 | 27–0–13 | 67.5% | 3.027 / 0.371 |
 
 **Deployment:** previous released weights retained.
 
