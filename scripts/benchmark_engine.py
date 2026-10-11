@@ -10,6 +10,9 @@ import json
 import os
 import platform
 import sys
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from datetime import UTC, datetime
+from multiprocessing import get_context
 from pathlib import Path
 from time import monotonic
 
@@ -32,6 +35,7 @@ def measure(search, state):
     started = monotonic()
     policy, value = search.policy(state)
     return {
+        "remaining_edges": len(state.legal_actions),
         "seconds": monotonic() - started,
         "action": int(policy.argmax()),
         "value": value,
@@ -73,40 +77,66 @@ def latency(evaluator, args):
     return results
 
 
-def matches(evaluators, args):
+def play_pair(evaluators, args, size, pair_index):
     games = []
-    for size in args.match_boards:
-        for index in range(args.games):
-            for evaluator in evaluators.values():
-                evaluator.clear_cache()
-            rng = np.random.default_rng(args.seed + index // 2)
-            state = State.new(size, size)
-            opening = []
-            for _ in range(6):
-                action = int(rng.choice(state.legal_actions))
-                opening.append(action)
-                state = state.play(action)
-            alpha_player = index % 2
-            moves = []
-            while not state.terminal:
-                engine = "alpha_beta" if state.player == alpha_player else "mcts"
-                step = measure(planner(evaluators[engine], engine, args.match_seconds), state)
-                moves.append({"player": state.player, "engine": engine, **step})
-                state = state.play(step["action"])
-            margin = state.scores[alpha_player] - state.scores[1 - alpha_player]
-            games.append(
-                {
-                    "board": [size, size],
-                    "index": index,
-                    "alpha_player": alpha_player,
-                    "opening": opening,
-                    "scores": list(state.scores),
-                    "alpha_margin": margin,
-                    "moves": moves,
-                }
-            )
-            print(f"{size}x{size} game {index + 1}: alpha-beta margin {margin}", flush=True)
+    for index in (pair_index * 2, pair_index * 2 + 1):
+        for evaluator in evaluators.values():
+            evaluator.clear_cache()
+        rng = np.random.default_rng(args.seed + pair_index)
+        state = State.new(size, size)
+        opening = []
+        for _ in range(6):
+            action = int(rng.choice(state.legal_actions))
+            opening.append(action)
+            state = state.play(action)
+        alpha_player = index % 2
+        moves = []
+        while not state.terminal:
+            engine = "alpha_beta" if state.player == alpha_player else "mcts"
+            step = measure(planner(evaluators[engine], engine, args.match_seconds), state)
+            moves.append({"player": state.player, "engine": engine, **step})
+            state = state.play(step["action"])
+        margin = state.scores[alpha_player] - state.scores[1 - alpha_player]
+        games.append(
+            {
+                "board": [size, size],
+                "index": index,
+                "alpha_player": alpha_player,
+                "opening": opening,
+                "scores": list(state.scores),
+                "alpha_margin": margin,
+                "moves": moves,
+            }
+        )
+        print(f"{size}x{size} game {index + 1}: alpha-beta margin {margin}", flush=True)
     return games
+
+
+def worker_pair(args, size, pair_index):
+    evaluators = {engine: load_evaluator(args.checkpoint)[0] for engine in ("mcts", "alpha_beta")}
+    return play_pair(evaluators, args, size, pair_index)
+
+
+def matches(evaluators, args):
+    tasks = [(size, pair) for size in args.match_boards for pair in range(args.games // 2)]
+    games = []
+
+    def record(pair):
+        games.extend(pair)
+        if args.progress:
+            with args.progress.open("a") as output:
+                output.write(json.dumps({"completed_games": len(games), "games": pair}) + "\n")
+
+    if args.workers == 1:
+        for size, pair in tasks:
+            record(play_pair(evaluators, args, size, pair))
+    elif tasks:
+        # Spawn avoids inheriting BLAS state or sharing evaluator caches.
+        with ProcessPoolExecutor(max_workers=args.workers, mp_context=get_context("spawn")) as pool:
+            pending = [pool.submit(worker_pair, args, size, pair) for size, pair in tasks]
+            for future in as_completed(pending):
+                record(future.result())
+    return sorted(games, key=lambda game: (game["board"], game["index"]))
 
 
 def main():
@@ -120,9 +150,18 @@ def main():
     parser.add_argument("--match-seconds", type=float, default=0.1)
     parser.add_argument("--games", type=int, default=8)
     parser.add_argument("--seed", type=int, default=3501)
+    parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--skip-latency", action="store_true")
+    parser.add_argument("--progress", type=Path)
     args = parser.parse_args()
     if args.games < 0 or args.games % 2 or args.repeats < 1:
         parser.error("Use a nonnegative even match count and positive repeats.")
+    if not 1 <= args.workers <= 8:
+        parser.error("Use 1..8 single-threaded match workers.")
+    if args.progress:
+        args.progress.parent.mkdir(parents=True, exist_ok=True)
+        if args.progress.exists():
+            parser.error("Progress output already exists; use a fresh path.")
     if not all(2 <= size <= 12 for size in args.boards + args.match_boards):
         parser.error("Benchmark board sizes must be 2..12.")
     for seconds in args.seconds + [args.match_seconds]:
@@ -142,6 +181,7 @@ def main():
     ]
     extensions = [sys.modules[fn.__module__] for fn in (choose_child, solve_remaining) if fn]
     report = {
+        "started_utc": datetime.now(UTC).isoformat(),
         "checkpoint_sha256": hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
         "python": platform.python_version(),
         "numpy": np.__version__,
@@ -152,6 +192,7 @@ def main():
         "seed": args.seed,
         "match_seconds": args.match_seconds,
         "games_per_board": args.games,
+        "workers": args.workers,
         "root_exact_edges": 12,
         "acceleration": {
             "search": choose_child is not None,
@@ -164,9 +205,10 @@ def main():
                 *(Path(module.__file__) for module in modules + extensions),
             )
         },
-        "latency": latency(evaluators["mcts"], args),
+        "latency": [] if args.skip_latency else latency(evaluators["mcts"], args),
         "games": matches(evaluators, args),
     }
+    report["completed_utc"] = datetime.now(UTC).isoformat()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n")
 

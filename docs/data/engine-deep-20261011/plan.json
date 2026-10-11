@@ -1,0 +1,32 @@
+{
+  "status": "planned before matches",
+  "checkpoint": "models/larger.npz",
+  "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "boards": [
+    [
+      4,
+      4
+    ],
+    [
+      5,
+      5
+    ]
+  ],
+  "games_per_board": 20,
+  "opening_pairs_per_board": 10,
+  "seed": 3521,
+  "opening_edges": 6,
+  "seat_order": [
+    0,
+    1
+  ],
+  "thinking_seconds_per_player": 2.0,
+  "mcts_simulation_ceiling": 8192,
+  "exact_root_edges_both_players": 12,
+  "tree_reuse": false,
+  "leaf_solving": false,
+  "match_workers": 8,
+  "blas_threads_per_worker": 1,
+  "runtime": "training-free installed NumPy package; optional Cython extensions absent",
+  "promotion_decision": "Graph search stays the default unless fresh results support replacing it. This is a comparison, not an expert-human strength claim."
+}
