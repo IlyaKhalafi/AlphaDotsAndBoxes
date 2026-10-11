@@ -1,7 +1,7 @@
 # Controlled training refinement
 
-Started 2026-10-11. The sequential controller waits for the remaining tree-reuse
-comparison before starting GPU training. [Recorded plan and frozen source hashes](data/refinement-training-20261011/plan.json).
+Started 2026-10-11. The control arm began GPU training at 06:24 UTC after
+the tree-reuse comparison finished. [Recorded plan and frozen source hashes](data/refinement-training-20261011/plan.json).
 
 All three arms start from the same released 96-channel, six-layer model. Board
 mix, seed, search settings and batch size match. None enables tree reuse or exact
@@ -41,5 +41,13 @@ the final replay minibatch of each round. Checkpoints and resumable learner
 states are saved throughout; the supervisor handles bounded recovery from
 memory exhaustion. Completed arms publish numerical receipts and loss plots.
 
-**Status: queued behind the final search comparison; no training-strength
-result yet.** The live model on port 9003 remains the previously released model.
+**Status: control arm running on the H200; no training-strength result yet.** The live model on port 9003 remains the previously released model.
+
+Initial progress at 06:33 UTC: two completed rounds, 256 new games and 11,142
+new positions. Final-minibatch policy loss is 2.117, value loss 0.627 and policy
+mismatch 0.230; target entropy is 1.887. The second round sampled for 185.88
+seconds and updated for 6.00 seconds; cumulative peak learner allocation reached
+13.15 GiB. These early replay metrics do not demonstrate stronger play.
+[First round](data/refinement-training-20261011/first-control-round.json) and
+[initial progress](data/refinement-training-20261011/initial-control-progress.json)
+retain the raw counters and metrics.
