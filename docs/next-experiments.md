@@ -128,6 +128,9 @@ These are training-source diagnostics, not held-out results.
 
 [Continuously updated results](next-progress.md) record later stages.
 
+[10×10 deployment timings](large-board-latency.md) quantify the cost of larger
+search budgets on a board outside the evaluated 4×4 and 5×5 sizes.
+
 Verification: the complete suite passed 94 tests. A disposable 4,096-position
 CUDA RLlib update used 6.62 GiB peak learner allocation. Its NumPy export matched
 PyTorch on 206 legal positions over six board shapes with seven padding nodes;

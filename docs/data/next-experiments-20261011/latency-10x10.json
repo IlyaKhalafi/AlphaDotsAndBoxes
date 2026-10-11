@@ -1,0 +1,120 @@
+{
+  "recorded_utc": "2026-10-11T17:20:50.218879+00:00",
+  "size": [
+    10,
+    10
+  ],
+  "num_edges": 220,
+  "num_nodes": 320,
+  "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "software": {
+    "python": "3.12.3",
+    "numpy": "2.5.3"
+  },
+  "seed": 3400,
+  "repetitions": 2,
+  "exact_threshold": 12,
+  "leaf_exact_threshold": 0,
+  "reuse_tree": false,
+  "threads": 1,
+  "positions": [
+    {
+      "position": "opening",
+      "remaining_edges": 220,
+      "simulations": 128,
+      "seconds": [
+        0.8556685280054808,
+        0.8603751579066738
+      ],
+      "mean_seconds": 0.8580218429560773
+    },
+    {
+      "position": "opening",
+      "remaining_edges": 220,
+      "simulations": 512,
+      "seconds": [
+        3.4707179870456457,
+        3.4997632339363918
+      ],
+      "mean_seconds": 3.4852406104910187
+    },
+    {
+      "position": "opening",
+      "remaining_edges": 220,
+      "simulations": 8192,
+      "seconds": [
+        37.59234291710891,
+        38.61121825396549
+      ],
+      "mean_seconds": 38.1017805855372
+    },
+    {
+      "position": "midgame",
+      "remaining_edges": 110,
+      "simulations": 128,
+      "seconds": [
+        0.46662988897878677,
+        0.4669956450816244
+      ],
+      "mean_seconds": 0.4668127670302056
+    },
+    {
+      "position": "midgame",
+      "remaining_edges": 110,
+      "simulations": 512,
+      "seconds": [
+        1.478003786993213,
+        2.1650461320532486
+      ],
+      "mean_seconds": 1.8215249595232308
+    },
+    {
+      "position": "midgame",
+      "remaining_edges": 110,
+      "simulations": 8192,
+      "seconds": [
+        21.974155994015746,
+        20.446003756020218
+      ],
+      "mean_seconds": 21.210079875017982
+    },
+    {
+      "position": "40_edges_remaining",
+      "remaining_edges": 40,
+      "simulations": 128,
+      "seconds": [
+        0.44627895194571465,
+        0.4474244279554114
+      ],
+      "mean_seconds": 0.446851689950563
+    },
+    {
+      "position": "40_edges_remaining",
+      "remaining_edges": 40,
+      "simulations": 512,
+      "seconds": [
+        1.2021303569199517,
+        1.3961663179798052
+      ],
+      "mean_seconds": 1.2991483374498785
+    },
+    {
+      "position": "40_edges_remaining",
+      "remaining_edges": 40,
+      "simulations": 8192,
+      "seconds": [
+        9.38455263292417,
+        8.07580627698917
+      ],
+      "mean_seconds": 8.73017945495667
+    }
+  ],
+  "limitation": "Search timings on three legal sample positions on a shared CPU; excludes UI animation and human thinking. No full 10x10 game or strength evaluation.",
+  "deployment_source_sha256": {
+    "alphaboxes.numpy_network": "5725db458eec7b2aaf2f7561dba1ed1980e0bc6a2fb5f4296963ab32d8829ad6",
+    "alphaboxes.search": "ee35d6a605e09559e42978f358f7c49b458bee6a9dcc474e300cdfd086bee0c4",
+    "alphaboxes.game": "18c33f55b9d990bcfb3792f5ed701c591f90e36f957f6b16c70a7dbd8cafe13a",
+    "alphaboxes.graph": "947e14ae049d95b2d4d935ceaf9bc6e2f88efb650cfcfa4cfb7c64b6cce7b962",
+    "alphaboxes.opponents": "f90ac28670843b02a37c7fc7e6adc058d76af5c50017e81395aca2cae647271f"
+  }
+}
