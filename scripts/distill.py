@@ -9,7 +9,7 @@ from alphaboxes.distillation import distill
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--teacher", type=Path, default=Path("models/larger.npz"))
-    parser.add_argument("--dataset", type=Path, required=True)
+    parser.add_argument("--dataset", dest="dataset_path", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--width", type=int, default=32)
     parser.add_argument("--depth", type=int, default=6)

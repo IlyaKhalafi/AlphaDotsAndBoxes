@@ -1,5 +1,8 @@
 import hashlib
 import json
+import runpy
+import sys
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -8,7 +11,7 @@ from alphaboxes.distillation import distill, frozen_examples, split_positions
 from alphaboxes.game import State
 
 
-def test_frozen_distillation_targets_and_rllib_compression(tmp_path):
+def test_frozen_distillation_targets_and_rllib_compression(tmp_path, monkeypatch):
     from alphaboxes.checkpoint import load_agent, load_evaluator, save_agent
     from alphaboxes.network import module_spec
     from alphaboxes.numpy_network import export_agent
@@ -24,13 +27,13 @@ def test_frozen_distillation_targets_and_rllib_compression(tmp_path):
     source.write_text(
         json.dumps(
             {
-                    "seed": 1,
+                "seed": 1,
                 "results": [
                     {
                         "size": [3, 3],
                         "moves": [list(range(State.new(3, 3).board.num_edges))],
                     }
-                ]
+                ],
             }
         )
     )
@@ -50,17 +53,34 @@ def test_frozen_distillation_targets_and_rllib_compression(tmp_path):
     assert frozen_examples(dataset, [0])[0].value == example.value
     assert np.array_equal(frozen_examples(dataset, [0])[0].policy, example.policy)
     output = tmp_path / "student"
-    result = distill(
-        numpy_teacher,
-        dataset_path,
-        output,
-        width=8,
-        depth=2,
-        steps=2,
-        batch_size=4,
-        validate_every=1,
-        device="cpu",
+    script = Path(__file__).resolve().parents[1] / "scripts/distill.py"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(script),
+            "--teacher",
+            str(numpy_teacher),
+            "--dataset",
+            str(dataset_path),
+            "--output",
+            str(output),
+            "--width",
+            "8",
+            "--depth",
+            "2",
+            "--steps",
+            "2",
+            "--batch-size",
+            "4",
+            "--validate-every",
+            "1",
+            "--device",
+            "cpu",
+        ],
     )
+    runpy.run_path(str(script), run_name="__main__")
+    result = output / "best.npz"
     numpy_student, _ = load_evaluator(result)
     torch_student, _ = load_agent(output / "best.pt")
     assert numpy_student.network.width == 8
