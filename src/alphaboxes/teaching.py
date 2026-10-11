@@ -198,6 +198,7 @@ def fine_tune(
     gpu_memory_gb: float = 28,
 ) -> Path:
     """Use RLlib updates; keep inference format, architecture and search unchanged."""
+    import ray
     import torch
     from ray.rllib.policy.sample_batch import DEFAULT_POLICY_ID
 
@@ -224,7 +225,22 @@ def fine_tune(
         batch_size=batch_size,
         learning_rate=3e-5,
     )
-    learner = build_learner(config)
+    owns_ray = not ray.is_initialized()
+    if owns_ray:
+        ray.init(
+            address="local",
+            num_cpus=2,
+            num_gpus=1 if device == "cuda" else 0,
+            include_dashboard=False,
+            object_store_memory=256 * 1024**2,
+            log_to_driver=False,
+        )
+    try:
+        learner = build_learner(config)
+    except Exception:
+        if owns_ray:
+            ray.shutdown()
+        raise
     learner.set_weights({DEFAULT_POLICY_ID: model.get_state()})
     rng = np.random.default_rng(seed)
     exact_batch = max(1, min(batch_size - 1, round(batch_size * exact_fraction)))
@@ -295,4 +311,6 @@ def fine_tune(
                     print(json.dumps(record), flush=True)
     finally:
         learner.shutdown()
+        if owns_ray:
+            ray.shutdown()
     return output / f"agent-{steps:05d}.pt"

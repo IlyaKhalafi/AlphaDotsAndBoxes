@@ -127,3 +127,12 @@ correction and retention, rather than assuming label errors explain the plateau.
 These are training-source diagnostics, not held-out results.
 
 [Continuously updated results](next-progress.md) record later stages.
+
+Verification: the complete suite passed 94 tests. A disposable 4,096-position
+CUDA RLlib update used 6.62 GiB peak learner allocation. Its NumPy export matched
+PyTorch on 206 legal positions over six board shapes with seven padding nodes;
+maximum value difference was 3.58×10⁻⁷. This checks execution and export, not
+strength. Teaching creates and shuts down its own local Ray instance rather
+than discovering another task's cluster; an already initialized caller's
+instance remains caller-owned. The lifecycle correction also passed the
+three teaching tests. [GPU receipt](data/next-experiments-20261011/teaching-gpu-smoke.json).

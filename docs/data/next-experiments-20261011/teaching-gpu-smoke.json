@@ -1,0 +1,66 @@
+{
+  "verification": "One actual 4096-position CUDA RLlib update; disposable model, not a strength candidate",
+  "metrics": {
+    "step": 1,
+    "num_trainable_parameters": 272648.0,
+    "policy_entropy": 2.2451934814453125,
+    "policy_kl": 0.0,
+    "policy_loss": 2.2451934814453125,
+    "target_entropy": 2.2451934814453125,
+    "value_loss": 0.08090686798095703,
+    "value_mae": 0.07847736775875092,
+    "gradients_default_optimizer_global_norm": 0.6985353231430054,
+    "weights_seq_no": 1.0,
+    "module_train_batch_size_mean": 4096.0,
+    "num_module_steps_trained": 4096.0,
+    "num_module_steps_trained_lifetime": 4096.0,
+    "total_loss": 2.3261003494262695,
+    "default_optimizer_learning_rate": 3e-05,
+    "update_seconds": 1.1023862670408562,
+    "elapsed_seconds": 2.205206935061142,
+    "gpu_peak_mb": 6775.4453125
+  },
+  "numpy_parity": {
+    "source_checkpoint_sha256": "db9df14217f7fe23ed94629edfed33687170b36c6083bd419f871d187c29a369",
+    "numpy_checkpoint_sha256": "8097324b3e3a6af180396483bc4577e9fbe44e46639970ab89159dec0e161d6b",
+    "sizes": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        2,
+        7
+      ]
+    ],
+    "states": 206,
+    "padding_nodes": 7,
+    "seed": 20261009,
+    "numpy": "2.5.1",
+    "torch": "2.12.1",
+    "max_absolute_error": {
+      "logits": 3.814697265625e-06,
+      "value": 3.5762786865234375e-07
+    },
+    "mean_absolute_error": {
+      "logits": 1.0520509145792247e-06,
+      "value": 3.3658156081021414e-08
+    }
+  }
+}
