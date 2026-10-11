@@ -53,6 +53,7 @@ def main():
     duel.set_defaults(sizes="5x5", seed=3031)
     duel.add_argument("--opponent-checkpoint", type=Path, required=True)
     duel.add_argument("--opening-moves", type=int, default=6)
+    duel.add_argument("--opponent-simulations", type=int, help="Independent opponent search budget")
     duel.add_argument("--opponent-leaf-exact-threshold", type=int, default=0)
     duel.add_argument("--opponent-reuse-tree", action="store_true")
     export = commands.add_parser(
@@ -124,7 +125,11 @@ def main():
                 reuse_tree=args.reuse_tree,
             ),
             opponent_search_config=SearchConfig(
-                simulations=args.simulations,
+                simulations=(
+                    args.simulations
+                    if args.opponent_simulations is None
+                    else args.opponent_simulations
+                ),
                 exact_threshold=args.exact_threshold,
                 leaf_exact_threshold=args.opponent_leaf_exact_threshold,
                 reuse_tree=args.opponent_reuse_tree,

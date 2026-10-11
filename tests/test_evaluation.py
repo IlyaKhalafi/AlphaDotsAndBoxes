@@ -107,3 +107,45 @@ def test_checkpoint_duel_balances_seats_and_records_replay(tmp_path):
             state = state.play(action)
         assert state.terminal
         assert state.scores[seat] - state.scores[1 - seat] == margin
+
+
+def test_duel_records_and_uses_independent_budgets(tmp_path, monkeypatch):
+    import numpy as np
+
+    from alphaboxes import evaluation
+    from alphaboxes.search import SearchConfig
+
+    budgets = []
+
+    class Search:
+        inherited_visits = 0
+
+        def __init__(self, evaluator, config, seed):
+            budgets.append(config.simulations)
+
+        def policy(self, state):
+            policy = np.zeros(state.board.num_edges)
+            policy[list(state.legal_actions)] = 1 / len(state.legal_actions)
+            return policy, 0
+
+    monkeypatch.setattr(evaluation, "MCTS", Search)
+    monkeypatch.setattr(
+        evaluation, "load_evaluator", lambda path: (None, {"checkpoint_sha256": "x"})
+    )
+    receipt = evaluation.compare_agents(
+        tmp_path / "agent.npz",
+        tmp_path / "agent.npz",
+        tmp_path / "duel.json",
+        [(1, 1)],
+        games=2,
+        opening_moves=0,
+        search_config=SearchConfig(simulations=2048, exact_threshold=4),
+        opponent_search_config=SearchConfig(simulations=512, exact_threshold=4),
+    )
+    assert budgets == [2048, 512, 2048, 512]
+    assert receipt["search_config"]["simulations"] == 2048
+    assert receipt["opponent_search_config"]["simulations"] == 512
+    assert (
+        receipt["search_config"]["exact_threshold"]
+        == receipt["opponent_search_config"]["exact_threshold"]
+    )

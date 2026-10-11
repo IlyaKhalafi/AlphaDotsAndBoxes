@@ -110,8 +110,9 @@ cap is 40 GiB, reserving room for samplers, CUDA contexts and the unrelated job
 already using about 67 GiB on the shared H200. Allocator caps do not reserve
 VRAM or bound all context allocations.
 
-**Status: control arm running in the sequential controller; search comparisons complete.**
-[Training plan and progress](refinement-training.md) describe the next phases. The midgame
+**Status: all three training arms complete; no candidate passed screening.**
+[Training results](refinement-training.md) and the [next experiments](next-experiments.md)
+describe the measured results and follow-up protocol. The midgame
 implementation passed an actual two-worker RLlib smoke run: two games,
 18 new positions, two midgame starts, six initially drawn edges in total and
 eight learner sample presentations. This verifies execution, not improvement.

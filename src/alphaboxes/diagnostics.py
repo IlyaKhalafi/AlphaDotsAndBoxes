@@ -159,6 +159,9 @@ def benchmark_suite(checkpoint: Path, suite_path: Path, output: Path, config: Se
     for index, record in enumerate(suite["positions"]):
         state = restore_position(record)
         evaluator.clear_cache()
+        raw_policy, raw_value = evaluator(state)
+        # Keep search timing independent of the extra diagnostic prediction.
+        evaluator.clear_cache()
         search = MCTS(evaluator, config, suite["seed"] + index)
         started = time.perf_counter()
         policy, value = search.policy(state)
@@ -183,6 +186,9 @@ def benchmark_suite(checkpoint: Path, suite_path: Path, output: Path, config: Se
                 "optimal_outcome_mass": float(policy[optimal_outcome].sum()),
                 "value": value,
                 "value_absolute_error": abs(value - record["best_outcome"]),
+                "network_value": float(raw_value),
+                "network_value_absolute_error": abs(raw_value - record["best_outcome"]),
+                "network_optimal_outcome_mass": float(raw_policy[optimal_outcome].sum()),
                 "seconds": seconds,
                 "policy": policy.tolist(),
             }
@@ -199,6 +205,9 @@ def benchmark_suite(checkpoint: Path, suite_path: Path, output: Path, config: Se
             "margin_accuracy": float(np.mean([r["margin_optimal"] for r in group])),
             "mean_margin_regret_boxes": float(np.mean([r["margin_regret_boxes"] for r in group])),
             "mean_value_absolute_error": float(np.mean([r["value_absolute_error"] for r in group])),
+            "mean_network_value_absolute_error": float(
+                np.mean([r["network_value_absolute_error"] for r in group])
+            ),
             "seconds": sum(r["seconds"] for r in group),
         }
         for tag, group in grouped.items()
