@@ -132,3 +132,7 @@ class DegreeTwoSolver:
             if abs(child_value - value) < 1e-10:
                 actions.append(action)
         return value, tuple(actions)
+
+
+# Keys describe game structure, independent of board size, score and weights.
+shared_solver = DegreeTwoSolver()

@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Protocol
 import numpy as np
 
 from alphaboxes.game import State
+from alphaboxes.endgame import EndgameTimeout, shared_solver
 from alphaboxes.graph import encode, encode_batch
 from alphaboxes.opponents import solve
 
@@ -149,6 +150,8 @@ class SearchConfig:
     reuse_tree: bool = False
     time_limit: float | None = None
     fpu_reduction: float = 0.0
+    degree_two: bool = False
+    prove_results: bool = False
 
     def __post_init__(self):
         if self.time_limit is not None and (
@@ -197,6 +200,9 @@ class MCTS:
         self._roots: list[Node] = []
         self.inherited_visits = 0
         self.completed_simulations = 0
+        self.endgame_hits = 0
+        self.proven_nodes = 0
+        self._deadline = None
 
     def clear_tree(self) -> None:
         """Discard visits when weights change; exact game-rule values remain valid."""
@@ -246,12 +252,13 @@ class MCTS:
     def policy(self, state: State, *, explore: bool = False) -> tuple[np.ndarray, float]:
         return self.policies([state], explore=explore)[0]
 
-    def _expand_many(self, nodes: list[Node]) -> list[float]:
+    def _expand_many(self, nodes: list[Node], *, allow_solve: bool = True) -> list[float]:
         values: list[float | None] = [None] * len(nodes)
         pending = []
         for index, node in enumerate(nodes):
             if node.state.terminal:
                 values[index] = node.state.outcome(node.player)
+                node.solved_value = values[index]
             elif node.solved_value is not None:
                 values[index] = node.solved_value
             elif (
@@ -268,7 +275,21 @@ class MCTS:
                 node.solved_value = self._solved[key]
                 values[index] = node.solved_value
             else:
-                pending.append(index)
+                margin = None
+                if self.config.degree_two and allow_solve:
+                    deadline = monotonic() + 0.003
+                    if self._deadline is not None:
+                        deadline = min(deadline, self._deadline)
+                    try:
+                        margin = shared_solver.value(node.state, deadline)
+                    except EndgameTimeout:
+                        pass
+                if margin is None:
+                    pending.append(index)
+                else:
+                    self.endgame_hits += 1
+                    node.solved_value = float(np.sign(margin))
+                    values[index] = node.solved_value
         nonterminal = [nodes[index].state for index in pending]
         batch = getattr(self.evaluator, "evaluate_many", None)
         predictions = (
@@ -278,6 +299,38 @@ class MCTS:
             values[index] = self._expand(nodes[index], prediction)
         return values
 
+    def _prove(self, path: list[Node]) -> None:
+        """Propagate exact outcomes, respecting captures that retain the turn."""
+        for node in reversed(path):
+            if node.solved_value is not None or not node.children:
+                continue
+            known = [
+                perspective(child.solved_value, child.player, node.player)
+                for child in node.children.values()
+                if child.solved_value is not None
+            ]
+            if 1.0 in known or len(known) == len(node.children):
+                node.solved_value = max(known)
+                self.proven_nodes += 1
+
+    def _select(self, node: Node, scale: float) -> Node:
+        children = node.children.values()
+        if self.config.prove_results:
+            unresolved = [child for child in children if child.solved_value is None]
+            if unresolved:
+                children = unresolved
+        return max(
+            children,
+            key=lambda child: (
+                (
+                    perspective(child.value, child.player, node.player)
+                    if child.visits or not self.config.fpu_reduction
+                    else node.evaluation - self.config.fpu_reduction
+                )
+                + scale * child.prior / (1 + child.visits)
+            ),
+        )
+
     def policies(
         self, states: list[State], *, explore: bool = False
     ) -> list[tuple[np.ndarray, float]]:
@@ -285,11 +338,28 @@ class MCTS:
         if any(state.terminal for state in states):
             raise ValueError("Cannot search a finished game.")
         deadline = monotonic() + self.config.time_limit if self.config.time_limit else None
+        self._deadline = deadline
         self.completed_simulations = 0
+        self.endgame_hits = self.proven_nodes = 0
         results = [(np.zeros(state.board.num_edges, dtype=np.float32), 0.0) for state in states]
         roots = []
         reused = set()
         for index, state in enumerate(states):
+            if self.config.degree_two:
+                exact = None
+                root_deadline = monotonic() + 0.05
+                if deadline is not None:
+                    root_deadline = min(root_deadline, deadline)
+                try:
+                    exact = shared_solver.solve(state, root_deadline)
+                except EndgameTimeout:
+                    pass
+                if exact is not None:
+                    margin, actions = exact
+                    results[index][0][list(actions)] = 1 / len(actions)
+                    results[index] = results[index][0], float(np.sign(margin))
+                    self.endgame_hits += 1
+                    continue
             if max(self.config.exact_threshold, self.config.leaf_exact_threshold) and len(
                 state.legal_actions
             ) <= max(self.config.exact_threshold, self.config.leaf_exact_threshold):
@@ -313,7 +383,7 @@ class MCTS:
         self.inherited_visits = sum(root.visits for _, root in roots)
         self._roots = [root for _, root in roots] if self.config.reuse_tree else []
         fresh = [root for _, root in roots if root.children is None]
-        self._expand_many(fresh)
+        self._expand_many(fresh, allow_solve=False)
         if not roots:
             return results
         for _, root in roots:
@@ -342,23 +412,16 @@ class MCTS:
                 break
             paths = []
             for _, root in roots:
+                if self.config.prove_results and root.solved_value is not None:
+                    continue
                 node, path = root, [root]
                 while node.children:
                     scale = self.config.cpuct * np.sqrt(node.visits + 1)
                     child = (
                         choose_child(node.children, node.player, float(scale))
                         if choose_child and not self.config.fpu_reduction
-                        else max(
-                            node.children.values(),
-                            key=lambda child: (
-                                (
-                                    perspective(child.value, child.player, node.player)
-                                    if child.visits or not self.config.fpu_reduction
-                                    else node.evaluation - self.config.fpu_reduction
-                                )
-                                + scale * child.prior / (1 + child.visits)
-                            ),
-                        )
+                        and not self.config.prove_results
+                        else self._select(node, scale)
                     )
                     if child.state is None:
                         child.state = node.state.play(child.action)
@@ -366,17 +429,42 @@ class MCTS:
                     node = child
                     path.append(node)
                 paths.append(path)
+            if not paths:
+                break
             values = self._expand_many([path[-1] for path in paths])
             for path, value in zip(paths, values, strict=True):
                 for ancestor in path:
                     ancestor.visits += 1
                     ancestor.value_sum += perspective(value, path[-1].player, ancestor.player)
+                if self.config.prove_results:
+                    self._prove(path)
             self.completed_simulations += 1
         for index, root in roots:
-            total = sum(child.visits for child in root.children.values())
-            for action, child in root.children.items():
+            eligible = root.children
+            if self.config.prove_results and root.solved_value is not None:
+                eligible = {
+                    action: child for action, child in root.children.items()
+                    if child.solved_value is not None and perspective(
+                        child.solved_value, child.player, root.player
+                    ) == root.solved_value
+                }
+            elif self.config.prove_results:
+                safe = {
+                    action: child for action, child in root.children.items()
+                    if child.solved_value is None or perspective(
+                        child.solved_value, child.player, root.player
+                    ) >= 0
+                }
+                eligible = safe or eligible
+            total = sum(child.visits for child in eligible.values())
+            prior_total = sum(child.prior for child in eligible.values())
+            for action, child in eligible.items():
                 results[index][0][action] = child.visits / total if total else child.prior
+                if not total:
+                    results[index][0][action] /= prior_total
             value = root.value if root.visits else root.evaluation
+            if self.config.prove_results and root.solved_value is not None:
+                value = root.solved_value
             results[index] = results[index][0], value
         return results
 

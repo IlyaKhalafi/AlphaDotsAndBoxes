@@ -2,7 +2,7 @@ import numpy as np
 
 from alphaboxes.game import State
 from alphaboxes.opponents import solve
-from alphaboxes.search import MCTS, CachedEvaluator, SearchConfig, perspective
+from alphaboxes.search import MCTS, CachedEvaluator, Node, SearchConfig, perspective
 
 
 def uniform(state):
@@ -224,3 +224,47 @@ def test_materialized_children_preserve_capture_and_turn_perspectives():
             else:
                 assert child.visits == 0
     assert captures and switches
+
+
+def test_degree_two_root_returns_exact_actions_without_network():
+    state = State.new(3, 3)
+    for edge, (r1, _, r2, _) in enumerate(state.board.edges):
+        if r1 == r2:
+            state = state.play(edge)
+
+    def forbidden(state):
+        raise AssertionError("Recognized endgame should not use the network")
+
+    search = MCTS(forbidden, SearchConfig(degree_two=True, prove_results=True))
+    policy, value = search.policy(state)
+    margin, actions = solve(state)
+    assert set(np.flatnonzero(policy)) == set(actions)
+    assert value == np.sign(margin) and search.endgame_hits == 1
+
+
+def test_proof_backups_respect_captures_and_require_all_losing_alternatives():
+    search = MCTS(uniform, SearchConfig(prove_results=True))
+    root = Node(None, player=0)
+    capture = Node(None, player=0, solved_value=1.0)
+    root.children = {0: capture, 1: Node(None, player=-1)}
+    search._prove([root, capture])
+    assert root.solved_value == 1
+    root = Node(None, player=0)
+    losing = Node(None, player=1, solved_value=1.0)
+    unknown = Node(None, player=-1)
+    root.children = {0: losing, 1: unknown}
+    search._prove([root, losing])
+    assert root.solved_value is None
+    assert search._select(root, 1.0) is unknown
+    unknown.player, unknown.solved_value = 0, -1.0
+    search._prove([root, unknown])
+    assert root.solved_value == -1
+
+
+def test_proof_search_finishes_small_game_before_simulation_budget():
+    search = MCTS(uniform, SearchConfig(simulations=10000, prove_results=True))
+    state = State.new(1, 1)
+    policy, value = search.policy(state)
+    assert search.completed_simulations < 10000
+    assert policy.argmax() in solve(state)[1]
+    assert value == -1 and search.proven_nodes > 0
