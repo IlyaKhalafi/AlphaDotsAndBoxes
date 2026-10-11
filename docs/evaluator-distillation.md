@@ -1,8 +1,9 @@
 # A smaller evaluator for timed alpha–beta
 
 A narrower GIN evaluates positions about 2–2.8 times faster with NumPy on the
-tested boards. Paired strength matches are still running. The released model and
-default MCTS agent on port 9003 remain unchanged.
+tested boards, but scored below 50% against the full-size alpha–beta agent on
+both boards. Matches against deployed MCTS are still running. The released
+model and default MCTS agent on port 9003 remain unchanged.
 
 ## Controlled change
 
@@ -90,9 +91,35 @@ retains its depth ceiling of 64; MCTS retains its 8,192-traversal ceiling. Timed
 cutoffs depend on shared machine load. Benchmark ties choose the lowest-index
 maximum, while the web service randomizes tied maxima.
 
-Results will be added after every planned opening pair is complete and replayed.
 Ten opening pairs per board are exploratory evidence, not a release gate or an
 expert-human strength claim.
+
+## Control results: student versus teacher alpha–beta
+
+All forty games completed and passed legal-history, seat-pairing and score
+replay checks. Scores and margins are from the student's perspective; a draw
+contributes half a point.
+
+| Board | Games | Student wins / draws / losses | Student score | Mean box margin |
+| --- | ---: | ---: | ---: | ---: |
+| 4×4 | 20 | 7 / 1 / 12 | 37.5% | −1.9 |
+| 5×5 | 20 | 7 / 0 / 13 | 35% | −1.6 |
+
+Moves with more than twelve free edges, excluding the exact root solver:
+
+| Board | Median nodes, student / teacher | Median completed depth, student / teacher |
+| --- | ---: | ---: |
+| 4×4 | 6,463 / 3,354 | 4 / 4 |
+| 5×5 | 5,259.5 / 2,398.5 | 3 / 3 |
+
+The student searches more nodes within the deadline, but does not improve the
+median completed depth or match score in this sample. Players visit different
+positions, so these counters describe their games rather than a common-position
+depth comparison. The result does not establish whether imitation error, move
+ordering or another factor dominates the strength loss.
+
+The second, forty-game arm against deployed MCTS is in progress. The same
+selected student is used regardless of the control results.
 
 ## Receipts and reproduction
 
@@ -105,6 +132,9 @@ The [frozen targets](data/evaluator-distillation-20261011/frozen-targets.npz),
 [complete latency samples](data/evaluator-distillation-20261011/latency.json)
 preserve the numerical results. The [student NumPy weights](data/evaluator-distillation-20261011/student.npz)
 are retained for reproduction and are not the recommended deployment checkpoint.
+The [control game histories](data/evaluator-distillation-20261011/alpha-matches.json)
+and [validated match summary](data/evaluator-distillation-20261011/summary.json)
+include weights, code hashes, runtime settings and search counters.
 
 Training requires the `train` extra. Match and latency commands require ordinary
 deployment dependencies only. For the recorded match backends, use an
@@ -129,6 +159,9 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
   --output runs/distilled-alpha-matches.json
 
 # Second arm: use --reference-engine mcts and --seed 3603.
+
+python scripts/summarize_engine.py --receipts runs/distilled-alpha-matches.json \
+  --output runs/distilled-match-summary.json
 ```
 
 The full suite passed 106 tests. The later replay-summary checks also passed,
