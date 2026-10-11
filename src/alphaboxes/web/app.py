@@ -22,7 +22,7 @@ from alphaboxes.search import MCTS, SearchConfig
 from alphaboxes.timed_search import BoundedSearch
 
 STATIC = Path(__file__).parent / "static"
-FPU_REDUCTION = 0.0
+FPU_REDUCTION = 0.33
 
 
 class NewGame(BaseModel):

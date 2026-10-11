@@ -41,12 +41,14 @@ and an agent-versus-agent watch mode. Select **Agent vs Agent** under Players to
 watch both sides, adjust **Move delay**, and pause or resume. Board dimensions
 count **boxes**, not dots.
 
-Thinking time ranges from **0.15 to 2 seconds per move**. Graph search is the
-default; an experimental alpha–beta engine is also available. See
-[the search comparison](docs/engine-search.md) for measured timings and results.
+Choose Quick, Standard, or Deep thinking. NumPy play uses a supervised
+**1.9-second decision deadline**, including on 10×10 boards. Improved search
+scored **66.25% on 4×4 and 82.5% on 5×5** against the previous agent in fresh
+matches. See [the results and timing checks](docs/two-second-search.md).
+An experimental alpha–beta engine is also available.
 
-The included model has trained on boards through 5×5. The UI also uses
-perfect search for the last 12 available edges. Launching `adb serve` without a
+The included model has trained on boards through 5×5. The UI also solves small
+endgames exactly when time allows. Launching `adb serve` without a
 checkpoint selects a clearly labeled tactical opponent.
 
 Or deploy the included model with Docker:

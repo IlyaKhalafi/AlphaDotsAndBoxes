@@ -17,6 +17,13 @@ legacy artifacts; export one with `adb export` to deploy it with NumPy.
 
 The recommended model is deeper-self-play iteration 10, training seed 44, warm-started from larger-board iteration 200. This phase contributes 320 games and 13,934 positions; its selected snapshot uses 256 self-play simulations and exact 12-edge root endgames. It passed the pre-recorded NumPy deployment regression gate against the earlier preview on 4×4 and 5×5. [Fresh results and complete provenance](../docs/deep-run.md) describe the comparisons and their limits; expert-human strength is unproven.
 
+The October 11 search update keeps these weights and changes the web agent's
+first-play reduction to 0.33. In 80 fresh paired-opening games, supervised NumPy
+search scored 66.25% on 4×4 and 82.5% on 5×5 against the previous two-second web
+agent. Every candidate decision took less than two seconds. This is a search
+upgrade, not additional training or a new checkpoint. [Protocol, confidence
+intervals and full replays](../docs/two-second-search.md) describe the evidence.
+
 Before larger-board training, bootstrap was retained because it scored slightly
 higher against the stronger endgame opponent averaged across 3×3 and 4×4 in the
 selection sample. Refinement improved small-board play and simple tactical

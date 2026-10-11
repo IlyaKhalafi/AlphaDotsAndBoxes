@@ -16,7 +16,9 @@ def main():
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as browser_api:
-        browser = browser_api.chromium.launch(headless=True)
+        browser = browser_api.chromium.launch(
+            headless=True, args=["--disable-gpu", "--disable-dev-shm-usage"]
+        )
         page = browser.new_page(viewport={"width": 1280, "height": 820}, device_scale_factor=1)
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))

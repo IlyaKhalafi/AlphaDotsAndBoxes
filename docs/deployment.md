@@ -63,22 +63,32 @@ The [larger-board export receipt](data/numpy-larger-parity.json) checks the same
 ## Hosting behavior
 
 Use one server process: games live in its memory, expire after an hour of
-inactivity, and reset on a restart. The service allows 128 simultaneous sessions
-and serializes CPU search. Multiple replicas need sticky routing or a shared
-session store; neither is included. The UI sets soft thinking budgets of 0.15,
-0.5, or 2 seconds per move, independently of board size. One inference call or
-the exact 12-edge root solver can overrun the budget; waiting for another
-session's serialized search and the animation delay are separate. The CLI
-defaults to one OpenBLAS/OMP thread unless you set those environment
-variables explicitly.
+inactivity, and reset on a restart. The service allows 128 sessions. Multiple
+replicas need sticky routing or a shared session store; neither is included.
 
-Agent and hint requests accept `time_limit` (0.05–10 seconds) and `engine`
-(`mcts` or `alpha_beta`). Alpha–beta is experimental and defaults to 0.5 seconds
-when no time is supplied. Legacy MCTS requests with only `simulations` retain
-their fixed-work behavior (8–512 traversals); timed MCTS has an 8,192-traversal
-ceiling. Replays record actual completed traversals or alpha–beta depth, node
-count, cutoffs, and transposition hits. [Search measurements](engine-search.md)
-explain why graph search remains the default.
+For NumPy checkpoints, CPU search runs in a warm child process. Agent and hint
+requests have a **1.9-second response deadline**, including waiting for another
+game's search. Internal thinking is capped at 1.75 seconds. If the worker stalls,
+the caller returns a legal tactical move and replaces its own worker on the next
+request. Waiting requests receive only the search time left in their response
+budget. Replays mark fallback moves and omit an unavailable value estimate.
+Concurrent agent/hint requests on the same game receive a 409 response instead
+of waiting for a stale move. OS scheduling and network transport can still affect
+observed HTTP latency; [measured timings](two-second-search.md) include 10×10
+positions and clean installations. Legacy PyTorch serving uses the older search
+path; export `.npz` weights for supervised NumPy deployment.
+
+The UI offers Quick (0.15 s), Standard (0.5 s), and Deep (up to the internal cap).
+Agent/hint requests accept `time_limit` from 0.05 to 2 seconds and `engine`
+(`mcts` or `alpha_beta`). Timed MCTS has an 8,192-traversal ceiling; requests with
+only `simulations` retain their 8–512-traversal ceiling within the deadline.
+Alpha–beta is experimental. The released MCTS uses first-play reduction 0.33,
+with exact root solving at 12 remaining edges. The experimental degree-two
+solver and proof propagation are disabled in the released agent.
+
+`/api/health` reports the checkpoint hash, search setting and deadline. Replays
+record actual completed traversals or alpha–beta depth, nodes, cutoffs and table
+hits. The CLI sets one OpenBLAS/OMP thread unless explicitly overridden.
 
 For move-by-move debugging, `GET /api/games/{id}/replay` exports the active
 game's moves, players, agent search settings, checkpoint metadata, and final

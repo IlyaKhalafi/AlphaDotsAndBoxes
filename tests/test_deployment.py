@@ -16,13 +16,13 @@ class BlockTraining(importlib.abc.MetaPathFinder):
 sys.meta_path.insert(0, BlockTraining())
 from fastapi.testclient import TestClient
 from alphaboxes.web.app import create_app
-client = TestClient(create_app(Path(sys.argv[1])))
-assert client.get("/api/health").json()["inference"] == "numpy"
-game = client.post("/api/games", json={"rows": 4, "cols": 4, "demo": True}).json()
-result = client.post(f"/api/games/{game['id']}/agent",
-                     json={"revision": 0, "simulations": 8})
-assert result.status_code == 200, result.text
-assert result.json()["analysis"]["method"] == "graph_search"
-assert not {"torch", "ray", "gymnasium"}.intersection(sys.modules)
+with TestClient(create_app(Path(sys.argv[1]))) as client:
+    assert client.get("/api/health").json()["inference"] == "numpy"
+    game = client.post("/api/games", json={"rows": 4, "cols": 4, "demo": True}).json()
+    result = client.post(f"/api/games/{game['id']}/agent",
+                         json={"revision": 0, "simulations": 8})
+    assert result.status_code == 200, result.text
+    assert result.json()["analysis"]["method"] == "graph_search"
+    assert not {"torch", "ray", "gymnasium"}.intersection(sys.modules)
 """
     subprocess.run([sys.executable, "-c", program, str(output)], check=True, timeout=30)
