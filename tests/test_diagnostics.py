@@ -1,7 +1,12 @@
 import numpy as np
 import pytest
 
-from alphaboxes.diagnostics import exact_actions, position_record, restore_position
+from alphaboxes.diagnostics import (
+    component_position,
+    exact_actions,
+    position_record,
+    restore_position,
+)
 from alphaboxes.game import State
 from alphaboxes.opponents import solve
 
@@ -29,3 +34,10 @@ def test_diagnostics_reject_oversized_or_finished_positions():
         state = state.play(action)
     with pytest.raises(ValueError):
         position_record(state, "finished")
+
+
+def test_unopened_chain_fixture_is_reachable_and_has_no_capture():
+    state = component_position((3, 5), paths=[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9, 14, 13, 12, 11, 10]])
+    assert len(state.legal_actions) == 17
+    assert state.scores == (0, 0)
+    assert not any(state.captures(a) for a in state.legal_actions)

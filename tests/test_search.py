@@ -92,3 +92,33 @@ def test_search_only_constructs_states_for_visited_moves(monkeypatch):
     monkeypatch.setattr(State, "play", counted)
     MCTS(uniform, SearchConfig(simulations=32)).policy(State.new(5, 5))
     assert len(moves) <= 32
+
+
+def test_solved_leaves_do_not_use_neural_values_and_keep_capture_perspective():
+    state = State.new(1, 2)
+    calls = []
+
+    def wrong_value(position):
+        calls.append(len(position.legal_actions))
+        return np.ones(position.board.num_edges), -1.0
+
+    config = SearchConfig(simulations=256, leaf_exact_threshold=5)
+    search = MCTS(wrong_value, config)
+    action = search.action(state)
+    assert action in solve(state)[1]
+    assert calls and min(calls) > 5
+    before = len(search._solved)
+    search.action(state)
+    assert len(search._solved) == before
+    assert all(-1 <= value <= 1 for value in search._solved.values())
+
+
+def test_leaf_solver_covers_root_when_root_aid_is_disabled():
+    def forbidden(state):
+        raise AssertionError("Solved root should not call the network.")
+
+    state = State.new(1, 1).play(0)
+    policy, value = MCTS(forbidden, SearchConfig(leaf_exact_threshold=3)).policy(state)
+    margin, optimal = solve(state)
+    assert set(np.flatnonzero(policy)) == set(optimal)
+    assert value == np.sign(margin)

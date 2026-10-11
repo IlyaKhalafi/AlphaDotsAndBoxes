@@ -141,11 +141,16 @@ class SearchConfig:
     noise_fraction: float = 0.25
     dirichlet_alpha: float = 0.3
     exact_threshold: int = 0
+    leaf_exact_threshold: int = 0
 
     def __post_init__(self):
         if self.simulations < 1 or self.cpuct <= 0 or self.dirichlet_alpha <= 0:
             raise ValueError("Search budgets and exploration constants must be positive.")
-        if not 0 <= self.noise_fraction <= 1 or not 0 <= self.exact_threshold <= 18:
+        if (
+            not 0 <= self.noise_fraction <= 1
+            or not 0 <= self.exact_threshold <= 18
+            or not 0 <= self.leaf_exact_threshold <= 18
+        ):
             raise ValueError("Invalid noise fraction or exact endgame threshold (0..18).")
 
 
@@ -158,6 +163,7 @@ class Node:
     children: dict[int, Node] | None = None
     player: int = 0
     action: int = -1
+    solved_value: float | None = None
 
     @property
     def value(self) -> float:
@@ -173,6 +179,7 @@ class MCTS:
         self.evaluator = evaluator
         self.config = config or SearchConfig()
         self.rng = np.random.default_rng(seed)
+        self._solved: OrderedDict[tuple, float] = OrderedDict()
 
     def _expand(self, node: Node, prediction=None) -> float:
         if node.state.terminal:
@@ -196,14 +203,36 @@ class MCTS:
         return self.policies([state], explore=explore)[0]
 
     def _expand_many(self, nodes: list[Node]) -> list[float]:
-        nonterminal = [node.state for node in nodes if not node.state.terminal]
+        values: list[float | None] = [None] * len(nodes)
+        pending = []
+        for index, node in enumerate(nodes):
+            if node.state.terminal:
+                values[index] = node.state.outcome(node.player)
+            elif node.solved_value is not None:
+                values[index] = node.solved_value
+            elif (
+                self.config.leaf_exact_threshold
+                and len(node.state.legal_actions) <= self.config.leaf_exact_threshold
+            ):
+                key = CachedEvaluator._key(node.state)
+                if key not in self._solved:
+                    margin, _ = solve(node.state)
+                    self._solved[key] = float(np.sign(margin))
+                    if len(self._solved) > 4096:
+                        self._solved.popitem(last=False)
+                self._solved.move_to_end(key)
+                node.solved_value = self._solved[key]
+                values[index] = node.solved_value
+            else:
+                pending.append(index)
+        nonterminal = [nodes[index].state for index in pending]
         batch = getattr(self.evaluator, "evaluate_many", None)
-        predictions = iter(
+        predictions = (
             batch(nonterminal) if batch else [self.evaluator(state) for state in nonterminal]
         )
-        return [
-            self._expand(node, None if node.state.terminal else next(predictions)) for node in nodes
-        ]
+        for index, prediction in zip(pending, predictions, strict=True):
+            values[index] = self._expand(nodes[index], prediction)
+        return values
 
     def policies(
         self, states: list[State], *, explore: bool = False
@@ -214,10 +243,9 @@ class MCTS:
         results = [(np.zeros(state.board.num_edges, dtype=np.float32), 0.0) for state in states]
         roots = []
         for index, state in enumerate(states):
-            if (
-                self.config.exact_threshold
-                and len(state.legal_actions) <= self.config.exact_threshold
-            ):
+            if max(self.config.exact_threshold, self.config.leaf_exact_threshold) and len(
+                state.legal_actions
+            ) <= max(self.config.exact_threshold, self.config.leaf_exact_threshold):
                 margin, actions = solve(state)
                 results[index][0][list(actions)] = 1 / len(actions)
                 results[index] = results[index][0], float(np.sign(margin))

@@ -20,6 +20,8 @@ def main():
     parser.add_argument("--checkpoint", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--simulations", type=int, default=128)
+    parser.add_argument("--exact-threshold", type=int, default=0)
+    parser.add_argument("--leaf-exact-threshold", type=int, default=0)
     args = parser.parse_args()
     if args.checkpoint is None:
         if args.suite.exists():
@@ -32,7 +34,14 @@ def main():
         if args.output is None:
             parser.error("Checkpoint comparisons require --output.")
         result = benchmark_suite(
-            args.checkpoint, args.suite, args.output, SearchConfig(simulations=args.simulations)
+            args.checkpoint,
+            args.suite,
+            args.output,
+            SearchConfig(
+                simulations=args.simulations,
+                exact_threshold=args.exact_threshold,
+                leaf_exact_threshold=args.leaf_exact_threshold,
+            ),
         )
         print(json.dumps(result["summary"]))
 

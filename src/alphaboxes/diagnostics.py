@@ -56,6 +56,38 @@ def position_record(state: State, label: str) -> dict:
     }
 
 
+def component_position(size, paths=(), loops=()) -> State:
+    """Build reachable unopened components; every box has exactly two free sides."""
+    state = State.new(*size)
+    free = set()
+    for groups, closed in ((paths, False), (loops, True)):
+        for group in groups:
+            pairs = list(zip(group[:-1], group[1:], strict=True))
+            if closed:
+                pairs.append((group[-1], group[0]))
+            for first, second in pairs:
+                shared = set(state.board.boxes[first]) & set(state.board.boxes[second])
+                if len(shared) != 1:
+                    raise ValueError("Component boxes must be adjacent.")
+                free.update(shared)
+            if not closed:
+                for endpoint in (group[0], group[-1]):
+                    external = [
+                        e
+                        for e in state.board.boxes[endpoint]
+                        if len(state.board.edge_boxes[e]) == 1 and e not in free
+                    ]
+                    if not external:
+                        raise ValueError("A path endpoint must reach the board boundary.")
+                    free.add(min(external))
+    if any(sum(e in free for e in box) != 2 for box in state.board.boxes):
+        raise ValueError("Components must partition every box into paths or loops.")
+    for action in range(state.board.num_edges):
+        if action not in free:
+            state = state.play(action)
+    return state
+
+
 def generate_suite(seed: int = 3100, repetitions: int = 4) -> dict:
     if repetitions < 1:
         raise ValueError("Use at least one position per board and remaining-edge count.")
@@ -87,6 +119,21 @@ def generate_suite(seed: int = 3100, repetitions: int = 4) -> dict:
             state = state.play(action)
     state = state.play(min(loop_edges))
     records.append(position_record(state, "loop_handout_four"))
+    structured = [
+        ("chains_5_10", (3, 5), [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9, 14, 13, 12, 11, 10]], []),
+        ("chains_4_12", (4, 4), [[0, 1, 2, 3], [4, 5, 6, 7, 11, 10, 9, 8, 12, 13, 14, 15]], []),
+        ("loops_6_4_chain_5", (3, 5), [[10, 11, 12, 13, 14]], [[0, 1, 2, 7, 6, 5], [3, 4, 9, 8]]),
+        ("loop_8_chains_2_5", (3, 5), [[4, 9], [10, 11, 12, 13, 14]], [[0, 1, 2, 3, 8, 7, 6, 5]]),
+        (
+            "loops_4_4_chain_8",
+            (4, 4),
+            [[8, 9, 10, 11, 15, 14, 13, 12]],
+            [[0, 1, 5, 4], [2, 3, 7, 6]],
+        ),
+        ("long_chain_15", (3, 5), [[0, 1, 2, 3, 4, 9, 8, 7, 6, 5, 10, 11, 12, 13, 14]], []),
+    ]
+    for label, size, paths, loops in structured:
+        records.append(position_record(component_position(size, paths, loops), label))
     return {
         "format_version": 1,
         "seed": seed,
@@ -161,7 +208,9 @@ def benchmark_suite(checkpoint: Path, suite_path: Path, output: Path, config: Se
         "search": asdict(config),
         "summary": summary,
         "positions": rows,
-        "limitation": "Fixed simulation count; solver time is additional. Fixtures shared across seeds.",
+        "limitation": (
+            "Fixed simulation count; solver time is additional. Fixtures shared across seeds."
+        ),
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2) + "\n")

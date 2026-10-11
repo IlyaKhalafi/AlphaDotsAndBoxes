@@ -12,6 +12,7 @@ def match_arguments(parser, output: str) -> None:
     parser.add_argument("--games", type=int, default=40)
     parser.add_argument("--simulations", type=int, default=128)
     parser.add_argument("--exact-threshold", type=int, default=0)
+    parser.add_argument("--leaf-exact-threshold", type=int, default=0)
     parser.add_argument("--seed", type=int, default=2026)
 
 
@@ -51,6 +52,7 @@ def main():
     duel.set_defaults(sizes="5x5", seed=3031)
     duel.add_argument("--opponent-checkpoint", type=Path, required=True)
     duel.add_argument("--opening-moves", type=int, default=6)
+    duel.add_argument("--opponent-leaf-exact-threshold", type=int, default=0)
     export = commands.add_parser(
         "export", help="Convert training weights to NumPy deployment weights"
     )
@@ -100,6 +102,7 @@ def main():
         )
     elif args.command == "duel":
         from alphaboxes.evaluation import compare_agents
+        from alphaboxes.search import SearchConfig
 
         sizes = [tuple(map(int, size.split("x"))) for size in args.sizes.split(",")]
         compare_agents(
@@ -112,6 +115,16 @@ def main():
             args.exact_threshold,
             args.seed,
             args.opening_moves,
+            search_config=SearchConfig(
+                simulations=args.simulations,
+                exact_threshold=args.exact_threshold,
+                leaf_exact_threshold=args.leaf_exact_threshold,
+            ),
+            opponent_search_config=SearchConfig(
+                simulations=args.simulations,
+                exact_threshold=args.exact_threshold,
+                leaf_exact_threshold=args.opponent_leaf_exact_threshold,
+            ),
         )
     else:
         from alphaboxes.evaluation import evaluate
@@ -127,6 +140,7 @@ def main():
             args.seed,
             args.policy_only,
             args.opponents,
+            args.leaf_exact_threshold,
         )
 
 

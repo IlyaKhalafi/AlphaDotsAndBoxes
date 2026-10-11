@@ -5,6 +5,7 @@ import json
 import math
 import platform
 import time
+from dataclasses import asdict
 from pathlib import Path
 
 import numpy as np
@@ -64,6 +65,7 @@ def evaluate(
     seed: int = 2026,
     policy_only: bool = False,
     opponent_names: list[str] | None = None,
+    leaf_exact_threshold: int = 0,
 ) -> dict:
     if games < 2 or games % 2:
         raise ValueError("Use an even number of games >= 2 for balanced seats.")
@@ -99,7 +101,11 @@ def evaluate(
                 state = State.new(*size)
                 search = MCTS(
                     neural,
-                    SearchConfig(simulations=simulations, exact_threshold=exact_threshold),
+                    SearchConfig(
+                        simulations=simulations,
+                        exact_threshold=exact_threshold,
+                        leaf_exact_threshold=leaf_exact_threshold,
+                    ),
                     seed + game,
                 )
                 while not state.terminal:
@@ -128,6 +134,7 @@ def evaluate(
         "seed": seed,
         "simulations": 0 if policy_only else simulations,
         "exact_threshold": 0 if policy_only else exact_threshold,
+        "leaf_exact_threshold": 0 if policy_only else leaf_exact_threshold,
         "mode": "policy" if policy_only else "search",
         "opponents": opponent_names,
         "results": rows,
@@ -147,6 +154,8 @@ def compare_agents(
     exact_threshold: int = 0,
     seed: int = 3031,
     opening_moves: int = 6,
+    search_config: SearchConfig | None = None,
+    opponent_search_config: SearchConfig | None = None,
 ) -> dict:
     """Seat-balanced checkpoint matches with reproducible randomized openings."""
     if games < 2 or games % 2 or opening_moves < 0:
@@ -154,6 +163,8 @@ def compare_agents(
     neural, metadata = load_evaluator(checkpoint)
     opponent, opponent_metadata = load_evaluator(opponent_checkpoint)
     evaluators = [neural, opponent]
+    config = search_config or SearchConfig(simulations=simulations, exact_threshold=exact_threshold)
+    opponent_config = opponent_search_config or config
     rows = []
     for size in sizes:
         started = time.monotonic()
@@ -166,8 +177,10 @@ def compare_agents(
             move_rng = [
                 np.random.default_rng(np.random.SeedSequence([seed, game, i + 1])) for i in range(2)
             ]
-            config = SearchConfig(simulations=simulations, exact_threshold=exact_threshold)
-            searches = [MCTS(evaluator, config, seed + game) for evaluator in evaluators]
+            searches = [
+                MCTS(evaluator, settings, seed + game)
+                for evaluator, settings in zip(evaluators, (config, opponent_config), strict=True)
+            ]
             moves = []
             for _ in range(min(opening_moves, state.board.num_edges)):
                 action = int(opening_rng.choice(state.legal_actions))
@@ -198,8 +211,10 @@ def compare_agents(
         "inference": "numpy" if checkpoint.suffix == ".npz" else "torch",
         "opponent_inference": "numpy" if opponent_checkpoint.suffix == ".npz" else "torch",
         "seed": seed,
-        "simulations": simulations,
-        "exact_threshold": exact_threshold,
+        "simulations": config.simulations,
+        "exact_threshold": config.exact_threshold,
+        "search_config": asdict(config),
+        "opponent_search_config": asdict(opponent_config),
         "opening_moves": opening_moves,
         "results": rows,
     }
