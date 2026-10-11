@@ -1,0 +1,88 @@
+{
+  "python": "3.12.3",
+  "software": {
+    "torch": "2.12.1",
+    "ray": "2.58.0",
+    "gymnasium": "1.2.2",
+    "numpy": "2.5.1",
+    "fastapi": "0.143.0"
+  },
+  "runs": [
+    {
+      "label": "ratio",
+      "config": {
+        "sizes": [
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            5,
+            5
+          ]
+        ],
+        "iterations": 64,
+        "games_per_iteration": 128,
+        "workers": 4,
+        "selfplay_device": "cuda",
+        "selfplay_batch_size": 32,
+        "selfplay_cuda_graphs": true,
+        "selfplay_gpu_workers": 4,
+        "games_per_worker": null,
+        "updates_per_iteration": 4,
+        "batch_size": 8192,
+        "replay_capacity": 300000,
+        "learning_rate": 0.0001,
+        "width": 96,
+        "depth": 6,
+        "seed": 46,
+        "temperature_moves": 12,
+        "start_fraction": 0.0,
+        "start_min_moves": 12,
+        "start_max_moves": 28,
+        "start_archive_capacity": 4096,
+        "device": "cuda",
+        "gpu_memory_gb": 40.0,
+        "gpu_duty_cycle": 0.5,
+        "checkpoint_every": 5,
+        "max_seconds": 7199.999847066007,
+        "search": {
+          "simulations": 512,
+          "cpuct": 1.5,
+          "noise_fraction": 0.25,
+          "dirichlet_alpha": 0.3,
+          "exact_threshold": 12,
+          "leaf_exact_threshold": 0,
+          "reuse_tree": false
+        }
+      },
+      "first_iteration": 1,
+      "last_iteration": 38,
+      "games_total": 4864,
+      "positions_total": 215446,
+      "initialization": {
+        "checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+        "training_games": 320,
+        "training_positions": 13934
+      },
+      "stop_reason": "time_budget",
+      "elapsed_seconds": 7364.107529085944,
+      "median_iteration_seconds": 191.1714745570207,
+      "peak_allocated_mb": 13463.0009765625,
+      "last10_mean_policy_loss": 2.092626929283142,
+      "last10_mean_value_loss": 0.6301316678524017
+    }
+  ]
+}

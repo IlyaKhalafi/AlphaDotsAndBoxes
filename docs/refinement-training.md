@@ -1,6 +1,6 @@
 # Controlled training refinement
 
-Updated 2026-10-11 08:28 UTC.
+Updated 2026-10-11 10:31 UTC.
 
 All arms start from the same released 96-channel, six-layer checkpoint.
 Search uses 512 simulations and a root-only 12-edge solver. Batch size is
@@ -11,12 +11,15 @@ Each arm is bounded to 64 rounds or two hours, saving completed rounds.
 | Arm | Rounds | New games | New positions | Hours | Last policy / value loss |
 | --- | --- | --- | --- | --- | --- |
 | control | 37 | 4,736 | 210,842 | 2.049 | 2.043 / 0.599 |
+| ratio | 38 | 4,864 | 215,446 | 2.046 | 2.082 / 0.624 |
 
 Losses describe the final replay minibatch in each round. Entropy, policy
 mismatch, midgame starts and sample presentations are available in raw metrics.
 They do not establish strength. Compare equal-round snapshots across arms.
 
 ![control loss](data/refinement-training-20261011/control-loss.svg)
+
+![ratio loss](data/refinement-training-20261011/ratio-loss.svg)
 
 **Deployment:** Released model retained.
 
