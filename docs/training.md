@@ -338,3 +338,26 @@ and `--opponent-reuse-tree`. Both players retain the configured fresh simulation
 budget per move. Receipts record move times and inherited visits. Changing
 network weights requires clearing both evaluator predictions and the search
 tree; self-play workers do this at the beginning of each collection round.
+
+The controlled presets `configs/refine-control.json`, `configs/refine-ratio.json`
+and `configs/refine-midgame.json` share the same starting-model shape, board mix,
+batch size and search settings. The ratio preset changes 16 updates to four;
+the midgame preset then changes only start sampling. Each limits training to
+64 rounds or two hours, saving after completed rounds, whichever comes first.
+Use the same immutable initial checkpoint for all arms and compare equal-round
+snapshots if their time limits produce different round counts. A 40 GiB learner
+allocator cap reserves room for the four samplers and other shared-GPU work;
+CUDA context allocations are additional. Adjust this cap to local free memory.
+
+```bash
+python scripts/supervise_training.py --config configs/refine-control.json \
+  --output runs/control --initial-checkpoint models/larger.pt
+python scripts/supervise_training.py --config configs/refine-ratio.json \
+  --output runs/ratio --initial-checkpoint models/larger.pt
+python scripts/supervise_training.py --config configs/refine-midgame.json \
+  --output runs/midgame --initial-checkpoint models/larger.pt
+python scripts/summarize_duels.py runs/matches/*.json --output runs/comparison.json
+```
+
+Only pass matching duel receipts to the summary command. It rejects duplicate
+seeds or mixed model/search treatments and weights latency by actual move counts.
