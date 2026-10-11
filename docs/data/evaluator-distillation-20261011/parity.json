@@ -1,0 +1,6 @@
+{
+  "positions": 64,
+  "max_policy_absolute_error": 1.0728836059570312e-06,
+  "max_value_absolute_error": 1.9371509552001953e-06,
+  "checkpoint_sha256": "730c2ba93c94d6de5ca7388b063313d2139169729b753fd13b3959ea946f2206"
+}

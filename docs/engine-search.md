@@ -101,6 +101,9 @@ A fresh [40-game Deep comparison](engine-deep-benchmark.md) uses the ordinary
 deployment backends and a two-second budget for both players. Alpha–beta scored
 25% on 4×4 and 10% on 5×5 against the retained model's graph search.
 
+The [smaller-evaluator experiment](evaluator-distillation.md) tests a narrower
+six-layer GIN with unchanged search and equal-time paired matches.
+
 ## Reproduce
 
 The benchmark needs ordinary deployment dependencies only. Its default run
