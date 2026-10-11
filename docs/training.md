@@ -331,6 +331,13 @@ the round; it is not a count of how often every individual position was used.
 Vary `updates_per_iteration` while holding batch size and other settings fixed
 to compare replay update ratios.
 
+`target_entropy` measures how spread out the search targets are; `policy_kl`
+subtracts that entropy from policy cross-entropy to measure their mismatch with
+the network. A flat policy loss can hide a changing mismatch when target entropy
+changes. `policy_entropy` measures the network distribution and `value_mae`
+measures absolute outcome-prediction error. These are final-minibatch metrics on
+replay data, not held-out scores; use fresh matches to assess playing strength.
+
 Search experiments are also opt-in. `--leaf-exact-threshold 12` solves small
 search leaves; `--reuse-tree` retains visited descendants across moves. A duel
 can give the opponent separate values through `--opponent-leaf-exact-threshold`

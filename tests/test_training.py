@@ -41,6 +41,12 @@ def test_rllib_training_checkpoint_and_resume(tmp_path):
     assert records[1] == second_record
     assert [row["iteration"] for row in records] == [1, 2, 3]
     assert records[-1]["elapsed_seconds"] > records[0]["elapsed_seconds"]
+    assert records[-1]["policy_kl"] >= -1e-6
+    assert records[-1]["policy_entropy"] >= 0
+    assert records[-1]["value_mae"] >= 0
+    assert records[-1]["policy_kl"] == pytest.approx(
+        records[-1]["policy_loss"] - records[-1]["target_entropy"], abs=1e-6
+    )
 
 
 def test_resuming_same_run_retains_used_time_budget(tmp_path):
