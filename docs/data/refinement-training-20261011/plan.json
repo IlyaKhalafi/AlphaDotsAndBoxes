@@ -1,0 +1,204 @@
+{
+  "recorded_utc": "2026-10-11T06:19:44.577429+00:00",
+  "arms": {
+    "control": {
+      "sizes": [
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          5
+        ]
+      ],
+      "iterations": 64,
+      "max_seconds": 7200,
+      "games_per_iteration": 128,
+      "workers": 4,
+      "device": "cuda",
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 32,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 4,
+      "updates_per_iteration": 16,
+      "batch_size": 8192,
+      "replay_capacity": 300000,
+      "learning_rate": 0.0001,
+      "width": 96,
+      "depth": 6,
+      "seed": 46,
+      "gpu_memory_gb": 40.0,
+      "gpu_duty_cycle": 0.5,
+      "checkpoint_every": 5,
+      "search": {
+        "simulations": 512,
+        "exact_threshold": 12
+      }
+    },
+    "ratio": {
+      "sizes": [
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          5
+        ]
+      ],
+      "iterations": 64,
+      "max_seconds": 7200,
+      "games_per_iteration": 128,
+      "workers": 4,
+      "device": "cuda",
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 32,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 4,
+      "updates_per_iteration": 4,
+      "batch_size": 8192,
+      "replay_capacity": 300000,
+      "learning_rate": 0.0001,
+      "width": 96,
+      "depth": 6,
+      "seed": 46,
+      "gpu_memory_gb": 40.0,
+      "gpu_duty_cycle": 0.5,
+      "checkpoint_every": 5,
+      "search": {
+        "simulations": 512,
+        "exact_threshold": 12
+      }
+    },
+    "midgame": {
+      "sizes": [
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          5
+        ]
+      ],
+      "iterations": 64,
+      "max_seconds": 7200,
+      "games_per_iteration": 128,
+      "workers": 4,
+      "device": "cuda",
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 32,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 4,
+      "updates_per_iteration": 4,
+      "batch_size": 8192,
+      "replay_capacity": 300000,
+      "learning_rate": 0.0001,
+      "width": 96,
+      "depth": 6,
+      "seed": 46,
+      "gpu_memory_gb": 40.0,
+      "gpu_duty_cycle": 0.5,
+      "checkpoint_every": 5,
+      "search": {
+        "simulations": 512,
+        "exact_threshold": 12
+      },
+      "start_fraction": 0.5,
+      "start_min_moves": 12,
+      "start_max_moves": 28
+    }
+  },
+  "initial_numpy_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "initial_torch_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+  "source_commit": "b51e0e80f8ba633d76a5cb2a1d863378d3c40915",
+  "source_sha256": {
+    "plot_training.py": "8a13bfb69ce6e6d4561d3f2783e23572925a72e1a87587247ddce5e88af43a02",
+    "report.py": "ce5869fd7329a0dbb425e4ef5f321806637103124dc71f4f1458d5c7feb453b4",
+    "capture_ui.py": "c69ecceaa879f5e58fb6dce9cea38369745f9cbdd67e8074223ad8d74e327269",
+    "finish_helpers.py": "029540fc78f63e113142722cfbb4c9c2388b843578318be642c3f7ba4534d8a6",
+    "numpy_parity.py": "f4c80c579adcfdedd7b83d281671a6d213d175a7ae317ece2b4cf490661528b4",
+    "alphaboxes/selfplay.py": "022bdfb76686814b886c98d1546bf64fc9146c538ab12f111ccec84be5797fd8",
+    "alphaboxes/chains.py": "47ec03735957d967cd0572c270c55879b1dc8ef779f3d4d3c903e6c4b9ec9eaf",
+    "alphaboxes/cuda_inference.py": "53a9b9f0984f9c903621f93671b0f784747f29bb2f216725a1b45b2bb2e9c765",
+    "alphaboxes/env.py": "28307eefde279da3211f82c85ae4b2c00e3688c66fabcb26d517e77f91733d24",
+    "alphaboxes/__init__.py": "bd95841282d4e60c8e615b899984c3cd5c62d9ac038b8f84fbed0b525648cc15",
+    "alphaboxes/curriculum.py": "f6a44819687f309f9f1f62e80297395d3dfc8da88a403814d8d372bb69ea9f58",
+    "alphaboxes/game.py": "18c33f55b9d990bcfb3792f5ed701c591f90e36f957f6b16c70a7dbd8cafe13a",
+    "alphaboxes/opponents.py": "06fc201b16710a2396492c3b0ec3825bac3746ccf0eb1064f9172eee87eabb02",
+    "alphaboxes/evaluation.py": "f30414c50e6ebc1581afdcdd81d0d16bdf3086b6d1956998d0d1ba2a4715f8a2",
+    "alphaboxes/experiments.py": "c29eb9b21f347039e3917a8ddd3ffef3c61b280d4106635d0b5413d3b3707a0d",
+    "alphaboxes/training.py": "7752662a0dd7d291822e6ffbadb26488130cd8593cf3005c7b88e14c3ffe6166",
+    "alphaboxes/_search.cpython-312-x86_64-linux-gnu.so": "112c3c57c626762723045a1b3ee819dbfac13da385664d8ebdaa5010d3f2a58f",
+    "alphaboxes/diagnostics.py": "91b7b29ccf61cb92bfe7a6ca8bfbecee7c9d09b386283687cfd9ff2505d05714",
+    "alphaboxes/supervision.py": "7de4395a04334c8c9b0170eec78e66ac1feb3d809e809ad38a8cbdbd1b45555c",
+    "alphaboxes/numpy_network.py": "5725db458eec7b2aaf2f7561dba1ed1980e0bc6a2fb5f4296963ab32d8829ad6",
+    "alphaboxes/cli.py": "d5b4c4844074db6f476a1bb440c9dab1a1723cf3aa289077ccaadf5352ade409",
+    "alphaboxes/network.py": "09a253469ca20c5c0852f7c72687f258c32210420d1f85ccfade8e3b871cec45",
+    "alphaboxes/_search.pyx": "35dfffa6cd16759bf698412f74de5fab34e6916f27ad922a57a38fae486ca9c0",
+    "alphaboxes/_endgame.pyx": "1560d748a6f84340fd9a6b3e69d65f51dc5f8c88466b4fc15f4b89fa4e05bd34",
+    "alphaboxes/growth.py": "4cc09f32fbc4ddd195b5e66188a328b3b287bc51a4b1d10befb47d39bf4b2f42",
+    "alphaboxes/_endgame.cpython-312-x86_64-linux-gnu.so": "aa4ad4b8e2932f875508a3d008f195b681a627c26c7c6f8f9f3381ed322ef809",
+    "alphaboxes/search.py": "8ee7811e64f573c33ff6c53947f380f197d23016743b7f20376fa017091cfd0e",
+    "alphaboxes/checkpoint.py": "55e84e232026f9311e418effc0e11bb10087b6bab6aab0932cdf6cf0b1fd2ebd",
+    "alphaboxes/graph.py": "947e14ae049d95b2d4d935ceaf9bc6e2f88efb650cfcfa4cfb7c64b6cce7b962",
+    "alphaboxes/learner.py": "e5454eb4fae8544113a76c1b5681bb9896ac670f141df38651d726ac05144456",
+    "alphaboxes/web/app.py": "c3748c71651a4a72854105d1025c8a3862864b983d8946ece8cbbbdefec8c5ae",
+    "alphaboxes/web/__init__.py": "9748cc73ad80be99d9ad0c1fa171b1a051e55d755ec2d80b7cda57b926373110",
+    "alphaboxes/web/static/style.css": "e10b8138d67c67c8bae78fc0c7cc31633ddbf730c992a3651458dd10f82e8c0f",
+    "alphaboxes/web/static/index.html": "a3d9fdb76f487f2732e861293d8714168fae5c3f69db1fb8eaf7278e4e361824",
+    "alphaboxes/web/static/app.js": "e59c17cd94704cc7c6fc9f2cc7262d2e4d5264d50c3b4a33285b365fa4d69fda"
+  },
+  "selection_seed": 3160,
+  "confirmation_seeds": [
+    3170,
+    3171
+  ],
+  "selection_games_per_board_budget": 20,
+  "confirmation_games_per_seed_board_budget": 40,
+  "selection_rounds": [
+    10,
+    20,
+    40,
+    64
+  ],
+  "inference": "NumPy only; Python search and solver",
+  "deployment_gate": "80 games per condition, >=50% all boards/budgets, >50% Deep 5x5, <=2x mean move latency"
+}
