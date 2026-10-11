@@ -122,3 +122,35 @@ def test_leaf_solver_covers_root_when_root_aid_is_disabled():
     margin, optimal = solve(state)
     assert set(np.flatnonzero(policy)) == set(optimal)
     assert value == np.sign(margin)
+
+
+def test_reuse_follows_moves_and_clears_after_weight_changes():
+    state = State.new(2, 2)
+    search = MCTS(uniform, SearchConfig(simulations=64, reuse_tree=True))
+    policy, _ = search.policy(state)
+    old = search._roots[0]
+    action = int(np.argmax(policy))
+    child = old.children[action]
+    state = state.play(action)
+    search.policy(state)
+    assert search._roots[0] is child
+    assert search.inherited_visits > 0
+    search.clear_tree()
+    search.policy(state)
+    assert search._roots[0] is not child
+    assert search.inherited_visits == 0
+
+
+def test_reuse_handles_undo_and_independent_identical_games():
+    state = State.new(2, 2)
+    search = MCTS(uniform, SearchConfig(simulations=64, reuse_tree=True))
+    policies = search.policies([state, state])
+    assert search._roots[0] is not search._roots[1]
+    old = search._roots.copy()
+    action = int(np.argmax(policies[0][0]))
+    search.policy(state.play(action))
+    search.policy(state)
+    assert search.inherited_visits == 0
+    assert all(search._roots[0] is not node for node in old)
+    search.policy(State.new(1, 2))
+    assert search.inherited_visits == 0

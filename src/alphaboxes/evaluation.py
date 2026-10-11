@@ -66,6 +66,7 @@ def evaluate(
     policy_only: bool = False,
     opponent_names: list[str] | None = None,
     leaf_exact_threshold: int = 0,
+    reuse_tree: bool = False,
 ) -> dict:
     if games < 2 or games % 2:
         raise ValueError("Use an even number of games >= 2 for balanced seats.")
@@ -105,6 +106,7 @@ def evaluate(
                         simulations=simulations,
                         exact_threshold=exact_threshold,
                         leaf_exact_threshold=leaf_exact_threshold,
+                        reuse_tree=reuse_tree,
                     ),
                     seed + game,
                 )
@@ -135,6 +137,7 @@ def evaluate(
         "simulations": 0 if policy_only else simulations,
         "exact_threshold": 0 if policy_only else exact_threshold,
         "leaf_exact_threshold": 0 if policy_only else leaf_exact_threshold,
+        "reuse_tree": False if policy_only else reuse_tree,
         "mode": "policy" if policy_only else "search",
         "opponents": opponent_names,
         "results": rows,
@@ -170,6 +173,8 @@ def compare_agents(
         started = time.monotonic()
         outcomes, margins, seats, histories = [], [], [], []
         agent_moves = 0
+        move_counts, search_seconds = [0, 0], [0.0, 0.0]
+        inherited_visits = [0, 0]
         for game in range(games):
             seat = game % 2
             state = State.new(*size)
@@ -188,7 +193,11 @@ def compare_agents(
                 moves.append(action)
             while not state.terminal:
                 index = 0 if state.player == seat else 1
+                search_started = time.perf_counter()
                 policy, _ = searches[index].policy(state)
+                search_seconds[index] += time.perf_counter() - search_started
+                move_counts[index] += 1
+                inherited_visits[index] += searches[index].inherited_visits
                 action = int(move_rng[index].choice(np.flatnonzero(policy == policy.max())))
                 agent_moves += index == 0
                 state = state.play(action)
@@ -199,6 +208,16 @@ def compare_agents(
             histories.append(moves)
         row = match_record(size, "checkpoint", outcomes, margins, seats, started, agent_moves)
         row["moves"] = histories
+        row["search_seconds"] = search_seconds
+        row["move_counts"] = move_counts
+        row["mean_move_seconds"] = [
+            seconds / max(count, 1)
+            for seconds, count in zip(search_seconds, move_counts, strict=True)
+        ]
+        row["mean_inherited_visits"] = [
+            visits / max(count, 1)
+            for visits, count in zip(inherited_visits, move_counts, strict=True)
+        ]
         rows.append(row)
         print(json.dumps({key: value for key, value in row.items() if key != "moves"}), flush=True)
     result = {

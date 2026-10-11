@@ -142,6 +142,7 @@ class SearchConfig:
     dirichlet_alpha: float = 0.3
     exact_threshold: int = 0
     leaf_exact_threshold: int = 0
+    reuse_tree: bool = False
 
     def __post_init__(self):
         if self.simulations < 1 or self.cpuct <= 0 or self.dirichlet_alpha <= 0:
@@ -180,6 +181,32 @@ class MCTS:
         self.config = config or SearchConfig()
         self.rng = np.random.default_rng(seed)
         self._solved: OrderedDict[tuple, float] = OrderedDict()
+        self._roots: list[Node] = []
+        self.inherited_visits = 0
+
+    def clear_tree(self) -> None:
+        """Discard visits when weights change; exact game-rule values remain valid."""
+        self._roots.clear()
+
+    @staticmethod
+    def _descendant(root: Node, state: State) -> Node | None:
+        if root.state.board != state.board:
+            return None
+        wanted = CachedEvaluator._key(state)
+        pending = [root]
+        while pending:
+            node = pending.pop()
+            if node.state is None:
+                continue
+            key = CachedEvaluator._key(node.state)
+            if key[2] & ~wanted[2]:
+                continue
+            if key == wanted and node.player == state.player:
+                # Bound repeated searches without a move, such as repeated UI hints.
+                return node if node.visits < 8192 else None
+            if node.children:
+                pending.extend(node.children.values())
+        return None
 
     def _expand(self, node: Node, prediction=None) -> float:
         if node.state.terminal:
@@ -242,6 +269,7 @@ class MCTS:
             raise ValueError("Cannot search a finished game.")
         results = [(np.zeros(state.board.num_edges, dtype=np.float32), 0.0) for state in states]
         roots = []
+        reused = set()
         for index, state in enumerate(states):
             if max(self.config.exact_threshold, self.config.leaf_exact_threshold) and len(
                 state.legal_actions
@@ -250,11 +278,37 @@ class MCTS:
                 results[index][0][list(actions)] = 1 / len(actions)
                 results[index] = results[index][0], float(np.sign(margin))
             else:
-                roots.append((index, Node(state, player=state.player)))
-        self._expand_many([root for _, root in roots])
+                root = None
+                if self.config.reuse_tree:
+                    for previous, old in enumerate(self._roots):
+                        if previous not in reused:
+                            root = self._descendant(old, state)
+                            if root is not None:
+                                reused.add(previous)
+                                break
+                if root is None:
+                    root = Node(state, player=state.player)
+                else:
+                    root.state = state
+                roots.append((index, root))
+        self.inherited_visits = sum(root.visits for _, root in roots)
+        self._roots = [root for _, root in roots] if self.config.reuse_tree else []
+        self._expand_many([root for _, root in roots if root.children is None])
         if not roots:
             return results
         for _, root in roots if explore else ():
+            if self.config.reuse_tree and root.visits:
+                # A repeated exploratory search must start from network priors,
+                # rather than mixing new noise into yesterday's noisy priors.
+                probabilities, _ = self.evaluator(root.state)
+                priors = np.maximum(probabilities[list(root.children)], 0).astype(np.float64)
+                priors = (
+                    priors / priors.sum()
+                    if priors.sum() > 0
+                    else np.full(len(priors), 1 / len(priors))
+                )
+                for child, prior in zip(root.children.values(), priors, strict=True):
+                    child.prior = float(prior)
             # Scale concentration with branching factor as board sizes change.
             alpha = self.config.dirichlet_alpha * 24 / len(root.children)
             noise = self.rng.dirichlet(np.full(len(root.children), alpha))

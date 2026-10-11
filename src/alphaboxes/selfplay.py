@@ -97,6 +97,7 @@ class SelfPlayWorker:
     ) -> list[Example]:
         self.module.set_state(weights)
         self.search.evaluator.clear_cache()
+        self.search.clear_tree()
         samples = []
         for start in range(0, games, self.batch_size):
             count = min(self.batch_size, games - start)

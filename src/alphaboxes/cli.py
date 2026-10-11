@@ -13,6 +13,7 @@ def match_arguments(parser, output: str) -> None:
     parser.add_argument("--simulations", type=int, default=128)
     parser.add_argument("--exact-threshold", type=int, default=0)
     parser.add_argument("--leaf-exact-threshold", type=int, default=0)
+    parser.add_argument("--reuse-tree", action="store_true")
     parser.add_argument("--seed", type=int, default=2026)
 
 
@@ -53,6 +54,7 @@ def main():
     duel.add_argument("--opponent-checkpoint", type=Path, required=True)
     duel.add_argument("--opening-moves", type=int, default=6)
     duel.add_argument("--opponent-leaf-exact-threshold", type=int, default=0)
+    duel.add_argument("--opponent-reuse-tree", action="store_true")
     export = commands.add_parser(
         "export", help="Convert training weights to NumPy deployment weights"
     )
@@ -119,11 +121,13 @@ def main():
                 simulations=args.simulations,
                 exact_threshold=args.exact_threshold,
                 leaf_exact_threshold=args.leaf_exact_threshold,
+                reuse_tree=args.reuse_tree,
             ),
             opponent_search_config=SearchConfig(
                 simulations=args.simulations,
                 exact_threshold=args.exact_threshold,
                 leaf_exact_threshold=args.opponent_leaf_exact_threshold,
+                reuse_tree=args.opponent_reuse_tree,
             ),
         )
     else:
@@ -141,6 +145,7 @@ def main():
             args.policy_only,
             args.opponents,
             args.leaf_exact_threshold,
+            args.reuse_tree,
         )
 
 

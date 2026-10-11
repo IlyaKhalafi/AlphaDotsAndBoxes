@@ -65,32 +65,35 @@ def solve(state: State) -> tuple[float, tuple[int, ...]]:
         scores = state.scores
         scored = scores[state.player] - scores[1 - state.player]
         return (scored + future_margin) / geometry.num_boxes, tuple(legal[a] for a in actions)
-    full = (1 << geometry.num_edges) - 1
-    box_masks = tuple(sum(1 << e for e in edges) for edges in geometry.boxes)
+    # Compress already occupied edges out of the Python fallback as well. Search
+    # repeatedly solves small leaves on large boards, so scan only remaining bits.
+    local = {action: i for i, action in enumerate(legal)}
+    full = (1 << len(legal)) - 1
+    box_masks = tuple(sum(1 << local[e] for e in edges if e in local) for edges in geometry.boxes)
 
     @cache
     def future(occupied: int) -> int:
         if occupied == full:
             return 0
         best = -geometry.num_boxes - 1
-        for a in range(geometry.num_edges):
-            bit = 1 << a
-            if occupied & bit:
-                continue
+        available = full ^ occupied
+        while available:
+            bit = available & -available
+            available ^= bit
+            action = legal[bit.bit_length() - 1]
             next_occupied = occupied | bit
             captured = sum(
-                (next_occupied & box_masks[b]) == box_masks[b] for b in geometry.edge_boxes[a]
+                (next_occupied & box_masks[b]) == box_masks[b] for b in geometry.edge_boxes[action]
             )
             continuation = future(next_occupied)
             best = max(best, captured + continuation if captured else -continuation)
         return best
 
-    occupied = sum(1 << e for e, owner in enumerate(state.edges) if owner >= 0)
     scored = state.scores[state.player] - state.scores[1 - state.player]
     action_scores = {}
     for action in state.legal_actions:
         captured = len(state.captures(action))
-        continuation = future(occupied | (1 << action))
+        continuation = future(1 << local[action])
         action_scores[action] = captured + continuation if captured else -continuation
     if not action_scores:
         return scored / geometry.num_boxes, ()

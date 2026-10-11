@@ -298,6 +298,7 @@ def train(
                 else:
                     local_search.evaluator.module.set_state(weights)
                     local_search.evaluator.clear_cache()
+                    local_search.clear_tree()
                     examples = []
                     for _ in range(config.games_per_iteration):
                         size = config.sizes[int(rng.integers(len(config.sizes)))]
