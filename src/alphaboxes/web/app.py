@@ -155,7 +155,7 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
                 if request.engine == "alpha_beta"
                 else "graph_search",
                 "engine": request.engine,
-                "time_limit": limit,
+                "time_limit": bounded.internal_seconds or limit,
                 "requested_time_limit": request.time_limit,
                 "response_deadline": bounded.timeout,
                 "thinking_seconds": time.monotonic() - started,

@@ -7,6 +7,7 @@ is managed; external training and GPU processes are never inspected or touched.
 
 import multiprocessing as mp
 import threading
+from dataclasses import replace
 from time import monotonic
 
 import numpy as np
@@ -24,6 +25,7 @@ _STATISTICS = {
     "nodes": None,
     "cutoffs": None,
     "table_hits": None,
+    "internal_seconds": None,
 }
 
 
@@ -45,6 +47,7 @@ def _worker(connection, evaluator):
             )
             policy, value = search.policy(state)
             stats = {name: getattr(search, name, default) for name, default in _STATISTICS.items()}
+            stats["internal_seconds"] = config.time_limit
             connection.send((policy, value, stats))
     except (EOFError, BrokenPipeError):
         pass
@@ -128,7 +131,12 @@ class BoundedSearch:
         try:
             if self._process is None:
                 self._start()
-            self._connection.send((state, config or self.config))
+            settings = config or self.config
+            available = max(0.001, deadline - monotonic() - 0.1)
+            settings = replace(
+                settings, time_limit=min(settings.time_limit or available, available)
+            )
+            self._connection.send((state, settings))
             while self._connection.poll(max(0.0, deadline - monotonic())):
                 result = self._connection.recv()
                 if isinstance(result, str) and result == "ready":
