@@ -1,0 +1,1 @@
+{"checkpoint_sha256":"21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0","budgets":[2048,8192],"baseline_budget":512,"games_per_seed_and_board":20,"seeds":[3200,3201],"sizes":["4x4","5x5"],"exact_threshold":12,"opening_moves":6,"leaf_exact_threshold":0,"reuse_tree":false,"limitation":"Seeded screening, not independent confirmation or human-strength evidence."}

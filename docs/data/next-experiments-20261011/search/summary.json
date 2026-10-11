@@ -1,0 +1,1 @@
+{"2048":[{"size":"4x4","games":40,"wins":23,"draws":6,"losses":11,"score_rate":0.65,"mean_move_seconds":[0.5543703004276251,0.2111328726122889]},{"size":"5x5","games":40,"wins":22,"draws":0,"losses":18,"score_rate":0.55,"mean_move_seconds":[0.9381523798485045,0.34977270569356445]}]}
