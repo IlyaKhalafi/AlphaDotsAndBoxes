@@ -1,0 +1,22 @@
+{
+  "oracle_positions": 2760,
+  "raw_value_mae": 0.301611065864563,
+  "raw_value_sign_accuracy": 0.8405797101449275,
+  "by_outcome": {
+    "-1": {
+      "positions": 912,
+      "value_mae": 0.38111066818237305
+    },
+    "0": {
+      "positions": 163,
+      "value_mae": 0.5589249730110168
+    },
+    "1": {
+      "positions": 1685,
+      "value_mae": 0.23369072377681732
+    }
+  },
+  "selfplay_outcome_disagreement_states": 38,
+  "non_draw_value_sign_accuracy": 0.8933384674624567,
+  "limitation": "Training-source positions. Strict sign accuracy counts every nonzero prediction on an exact draw as incorrect; raw value error is the primary diagnostic."
+}

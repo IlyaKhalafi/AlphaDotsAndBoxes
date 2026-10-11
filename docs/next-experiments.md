@@ -110,3 +110,20 @@ previous release checks; that result does not rule out other architectures.
 
 **Status:** implementation and screening in progress. The released model is
 retained until fresh comparisons establish a practical improvement.
+
+The first 80 full games are complete. Against 512 simulations, the 2,048
+budget scored **65% on 4×4** (23 wins, six draws, 11 losses) and **55% on
+5×5** (22 wins, 18 losses). Mean search time was 0.554 versus 0.211 seconds
+on 4×4 and 0.938 versus 0.350 on 5×5. The 5×5 seeds differ substantially:
+65% and 45%. This passes screening, but independent confirmation remains
+necessary. The 8,192-budget comparison is running next.
+
+On the teaching dataset itself, the released network's mean absolute value
+error is 0.302. In 38 of its 2,760 distinct exact positions, at least one
+recorded self-play continuation had a different outcome from perfect play.
+That is only 1.4% of states: these late-game data do **not** show widespread
+incorrect self-play labels. The teaching experiment tests concentrated value
+correction and retention, rather than assuming label errors explain the plateau.
+These are training-source diagnostics, not held-out results.
+
+[Continuously updated results](next-progress.md) record later stages.

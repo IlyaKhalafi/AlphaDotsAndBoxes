@@ -123,7 +123,7 @@ def main():
             }
             times = [
                 sum(m["search_seconds"][i] for m in matches)
-                / sum(m["move_counts"][i] for m in matches)
+                / max(sum(m["move_counts"][i] for m in matches), 1)
                 for i in range(2)
             ]
             rows.append(
