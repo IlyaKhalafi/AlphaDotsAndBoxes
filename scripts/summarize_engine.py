@@ -57,13 +57,17 @@ def summarize(receipt):
                 raise ValueError("Candidate margin disagrees with final scores.")
         wins = sum(game["alpha_margin"] > 0 for game in games)
         draws = sum(game["alpha_margin"] == 0 for game in games)
-        game_scores = np.array([
-            1.0 if game["alpha_margin"] > 0 else 0.5 if game["alpha_margin"] == 0 else 0.0
-            for game in games
-        ])
+        game_scores = np.array(
+            [
+                1.0 if game["alpha_margin"] > 0 else 0.5 if game["alpha_margin"] == 0 else 0.0
+                for game in games
+            ]
+        )
         pair_scores = game_scores.reshape(-1, 2).mean(axis=1)
         rng = np.random.default_rng(4199)
-        bootstrap = pair_scores[rng.integers(len(pair_scores), size=(20000, len(pair_scores)))].mean(axis=1)
+        bootstrap = pair_scores[
+            rng.integers(len(pair_scores), size=(20000, len(pair_scores)))
+        ].mean(axis=1)
         row = {
             "board": list(board),
             "games": len(games),
@@ -87,12 +91,16 @@ def summarize(receipt):
             alpha_openings = [move for move in openings if move["engine"] == "alpha_beta"]
             row["players"][side] = {
                 "max_seconds": max(
-                    move["seconds"] for game in games for move in game["moves"]
+                    move["seconds"]
+                    for game in games
+                    for move in game["moves"]
                     if move["side"] == side
                 ),
                 "deadline_fallbacks": sum(
                     bool(move.get("timed_out", False))
-                    for game in games for move in game["moves"] if move["side"] == side
+                    for game in games
+                    for move in game["moves"]
+                    if move["side"] == side
                 ),
                 "neural_moves": len(neural),
                 "mean_seconds": float(np.mean([move["seconds"] for move in neural]))

@@ -11,9 +11,20 @@ from time import monotonic
 
 import numpy as np
 
-from alphaboxes.engine import AlphaBeta, EngineConfig
+from alphaboxes.engine import AlphaBeta
 from alphaboxes.opponents import tactical_action
 from alphaboxes.search import MCTS, SearchConfig
+
+_STATISTICS = {
+    "timed_out": False,
+    "completed_simulations": 0,
+    "endgame_hits": 0,
+    "proven_nodes": 0,
+    "depth": None,
+    "nodes": None,
+    "cutoffs": None,
+    "table_hits": None,
+}
 
 
 def _worker(connection, evaluator):
@@ -33,15 +44,7 @@ def _worker(connection, evaluator):
                 else AlphaBeta(evaluator, config)
             )
             policy, value = search.policy(state)
-            stats = {
-                name: getattr(search, name, 0 if name in (
-                    "completed_simulations", "endgame_hits", "proven_nodes"
-                ) else None)
-                for name in (
-                    "completed_simulations", "endgame_hits", "proven_nodes",
-                    "depth", "nodes", "cutoffs", "table_hits",
-                )
-            }
+            stats = {name: getattr(search, name, default) for name, default in _STATISTICS.items()}
             connection.send((policy, value, stats))
     except (EOFError, BrokenPipeError):
         pass
@@ -78,14 +81,21 @@ class BoundedSearch:
         return getattr(self._last, "stats", {})
 
     def __getattr__(self, name):
-        if name in ("timed_out", "completed_simulations", "endgame_hits", "proven_nodes",
-                    "depth", "nodes", "cutoffs", "table_hits"):
-            return self.stats.get(name)
+        if name in _STATISTICS:
+            return self.stats.get(name, _STATISTICS[name])
         raise AttributeError(name)
 
     def _start(self):
+        live = []
+        for process in self._retired:
+            process.join(timeout=0)
+            if process.is_alive():
+                live.append(process)
+        self._retired = live
         parent, child = self._context.Pipe()
-        self._process = self._context.Process(target=_worker, args=(child, self.evaluator), daemon=True)
+        self._process = self._context.Process(
+            target=_worker, args=(child, self.evaluator), daemon=True, name="alphaboxes-search"
+        )
         self._process.start()
         child.close()
         self._connection = parent
@@ -111,10 +121,7 @@ class BoundedSearch:
         # Compute the legal fallback before waiting on any other request.
         fallback = np.zeros(state.board.num_edges, np.float32)
         fallback[tactical_action(state, np.random.default_rng(0))] = 1.0
-        self._last.stats = {
-            "timed_out": False, "completed_simulations": 0, "endgame_hits": 0, "proven_nodes": 0,
-            "depth": None, "nodes": None, "cutoffs": None, "table_hits": None,
-        }
+        self._last.stats = _STATISTICS.copy()
         if not self._lock.acquire(timeout=max(0.0, deadline - monotonic())):
             self._last.stats["timed_out"] = True
             return fallback, 0.0

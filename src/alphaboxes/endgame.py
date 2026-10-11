@@ -54,13 +54,10 @@ def cuts(group: tuple[int, int]):
         yield 0, ((length, 0),)
         return
     if boundaries:
-        yield (1, ()) if length == 1 and boundaries == 1 else (
-            0, ((length, boundaries - 1),)
-        )
+        yield (1, ()) if length == 1 and boundaries == 1 else (0, ((length, boundaries - 1),))
     for left in range(1, length):
         pieces, captured = [], 0
-        for size, boundary in ((left, int(boundaries > 0)),
-                               (length - left, int(boundaries == 2))):
+        for size, boundary in ((left, int(boundaries > 0)), (length - left, int(boundaries == 2))):
             if size == 1 and not boundary:
                 captured += 1
             else:

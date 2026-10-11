@@ -174,9 +174,13 @@ def main():
     parser.add_argument("--reference-checkpoint", type=Path)
     parser.add_argument("--reference-engine", choices=("mcts", "alpha_beta"), default="mcts")
     parser.add_argument("--candidate-engine", choices=("mcts", "alpha_beta"), default="alpha_beta")
-    parser.add_argument("--search-options", type=json.loads, default={}, help="Candidate MCTS config JSON")
+    parser.add_argument(
+        "--search-options", type=json.loads, default={}, help="Candidate MCTS config JSON"
+    )
     parser.add_argument("--reference-seconds", type=float)
-    parser.add_argument("--response-deadline", type=float, help="Supervise candidate in a warm process")
+    parser.add_argument(
+        "--response-deadline", type=float, help="Supervise candidate in a warm process"
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--boards", type=int, nargs="+", default=[4, 5, 10])
     parser.add_argument("--seconds", type=float, nargs="+", default=[0.5, 2])

@@ -137,16 +137,25 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
                 if request.engine == "alpha_beta"
                 else SearchConfig(
                     simulations=8192 if request.time_limit else request.simulations,
-                    time_limit=limit, exact_threshold=12, fpu_reduction=FPU_REDUCTION,
+                    time_limit=limit,
+                    exact_threshold=12,
+                    fpu_reduction=FPU_REDUCTION,
                 )
             )
             policy, value = bounded.policy(session.state, config=config)
+            if bounded.timed_out:
+                value = None
             action = int(policy.argmax())
             details = {
-                "method": "deadline_fallback" if bounded.timed_out
-                else "exact_endgame" if len(session.state.legal_actions) <= 12
-                else "alpha_beta" if request.engine == "alpha_beta" else "graph_search",
-                "engine": request.engine, "time_limit": limit,
+                "method": "deadline_fallback"
+                if bounded.timed_out
+                else "exact_endgame"
+                if len(session.state.legal_actions) <= 12
+                else "alpha_beta"
+                if request.engine == "alpha_beta"
+                else "graph_search",
+                "engine": request.engine,
+                "time_limit": limit,
                 "requested_time_limit": request.time_limit,
                 "response_deadline": bounded.timeout,
                 "thinking_seconds": time.monotonic() - started,
@@ -156,16 +165,20 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             }
             if request.engine == "alpha_beta":
                 details.update(
-                    depth=bounded.depth, nodes=bounded.nodes,
-                    cutoffs=bounded.cutoffs, table_hits=bounded.table_hits,
+                    depth=bounded.depth,
+                    nodes=bounded.nodes,
+                    cutoffs=bounded.cutoffs,
+                    table_hits=bounded.table_hits,
                 )
             return action, value, details
         with search_lock:
             started = time.monotonic()
             if evaluator is None:
-                return tactical_action(session.state, rng), None, {
-                    "method": "tactical", "simulations": 0
-                }
+                return (
+                    tactical_action(session.state, rng),
+                    None,
+                    {"method": "tactical", "simulations": 0},
+                )
             exact = len(session.state.legal_actions) <= 12
             limit = request.time_limit or (0.5 if request.engine == "alpha_beta" else None)
             if request.engine == "alpha_beta":
@@ -194,8 +207,10 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             }
             if isinstance(planner, AlphaBeta):
                 details.update(
-                    depth=planner.depth, nodes=planner.nodes,
-                    cutoffs=planner.cutoffs, table_hits=planner.table_hits,
+                    depth=planner.depth,
+                    nodes=planner.nodes,
+                    cutoffs=planner.cutoffs,
+                    table_hits=planner.table_hits,
                 )
             return action, value, details
 
@@ -310,7 +325,10 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
             check_revision(session, request.revision)
             action, value, details = search(session, request)
             return {
-                "action": action, "value": value, "revision": session.revision, "analysis": details
+                "action": action,
+                "value": value,
+                "revision": session.revision,
+                "analysis": details,
             }
 
     @app.post("/api/games/{game_id}/undo")

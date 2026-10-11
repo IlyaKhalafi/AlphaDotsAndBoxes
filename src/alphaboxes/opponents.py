@@ -1,7 +1,7 @@
 """Reproducible baselines and an exact late-game oracle."""
 
-from functools import cache
 import os
+from functools import cache
 
 import numpy as np
 

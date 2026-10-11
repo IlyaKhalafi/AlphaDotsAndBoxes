@@ -123,4 +123,6 @@ def test_timed_engines_and_replay_report_actual_work(monkeypatch):
                 assert analysis["simulations"] == 0 and analysis["nodes"] > 0
             assert client.get(path + "/replay").json()["moves"][0]["analysis"] == analysis
             for invalid in ({"time_limit": 0}, {"time_limit": 2.1}, {"engine": "chess"}):
-                assert client.post(path + "/hint", json={"revision": 1, **invalid}).status_code == 422
+                assert (
+                    client.post(path + "/hint", json={"revision": 1, **invalid}).status_code == 422
+                )

@@ -26,7 +26,9 @@ def main():
     args = parser.parse_args()
     evaluator, _ = load_evaluator(args.checkpoint)
     config = SearchConfig(
-        simulations=8192, time_limit=args.seconds, exact_threshold=12,
+        simulations=8192,
+        time_limit=args.seconds,
+        exact_threshold=12,
         fpu_reduction=args.fpu_reduction,
     )
     records = []
@@ -50,19 +52,32 @@ def main():
                     elapsed = monotonic() - started
                     action = int(policy.argmax())
                     assert action in state.legal_actions and np.isclose(policy.sum(), 1)
-                    records.append({
-                        "board": [size, size], "phase": phase, "repeat": repeat,
-                        "seconds": elapsed, "remaining_edges": len(state.legal_actions),
-                        "action": action, "value": value, **search.stats,
-                    })
+                    records.append(
+                        {
+                            "board": [size, size],
+                            "phase": phase,
+                            "repeat": repeat,
+                            "seconds": elapsed,
+                            "remaining_edges": len(state.legal_actions),
+                            "action": action,
+                            "value": value,
+                            **search.stats,
+                        }
+                    )
                     print(f"{size}x{size} {phase}: {elapsed:.4f}s", flush=True)
     report = {
         "checkpoint_sha256": hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
-        "internal_seconds": args.seconds, "response_deadline": 1.9,
+        "internal_seconds": args.seconds,
+        "response_deadline": 1.9,
         "fpu_reduction": args.fpu_reduction,
-        "threads": {key: os.environ.get(key) for key in (
-            "OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS",
-        )},
+        "threads": {
+            key: os.environ.get(key)
+            for key in (
+                "OPENBLAS_NUM_THREADS",
+                "OMP_NUM_THREADS",
+                "MKL_NUM_THREADS",
+            )
+        },
         "records": records,
         "max_seconds": max(row["seconds"] for row in records),
         "fallbacks": sum(row["timed_out"] for row in records),

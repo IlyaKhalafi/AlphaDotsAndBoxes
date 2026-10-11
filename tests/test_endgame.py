@@ -12,8 +12,7 @@ def occupied_state(rows, cols, occupied, player=0):
     state = State.new(rows, cols)
     edges = tuple(0 if occupied & (1 << e) else -1 for e in range(state.board.num_edges))
     owners = tuple(
-        b % 2 if all(edges[e] >= 0 for e in box) else -1
-        for b, box in enumerate(state.board.boxes)
+        b % 2 if all(edges[e] >= 0 for e in box) else -1 for b, box in enumerate(state.board.boxes)
     )
     return replace(state, edges=edges, owners=owners, player=player)
 

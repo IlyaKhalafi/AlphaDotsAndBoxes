@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
+import os
 from collections import OrderedDict
 from dataclasses import dataclass
-import os
 from time import monotonic
 from typing import TYPE_CHECKING, Protocol
 
 import numpy as np
 
-from alphaboxes.game import State
 from alphaboxes.endgame import EndgameTimeout, shared_solver
+from alphaboxes.game import State
 from alphaboxes.graph import encode, encode_batch
 from alphaboxes.opponents import solve
 
@@ -419,7 +419,8 @@ class MCTS:
                     scale = self.config.cpuct * np.sqrt(node.visits + 1)
                     child = (
                         choose_child(node.children, node.player, float(scale))
-                        if choose_child and not self.config.fpu_reduction
+                        if choose_child
+                        and not self.config.fpu_reduction
                         and not self.config.prove_results
                         else self._select(node, scale)
                     )
@@ -443,17 +444,18 @@ class MCTS:
             eligible = root.children
             if self.config.prove_results and root.solved_value is not None:
                 eligible = {
-                    action: child for action, child in root.children.items()
-                    if child.solved_value is not None and perspective(
-                        child.solved_value, child.player, root.player
-                    ) == root.solved_value
+                    action: child
+                    for action, child in root.children.items()
+                    if child.solved_value is not None
+                    and perspective(child.solved_value, child.player, root.player)
+                    == root.solved_value
                 }
             elif self.config.prove_results:
                 safe = {
-                    action: child for action, child in root.children.items()
-                    if child.solved_value is None or perspective(
-                        child.solved_value, child.player, root.player
-                    ) >= 0
+                    action: child
+                    for action, child in root.children.items()
+                    if child.solved_value is None
+                    or perspective(child.solved_value, child.player, root.player) >= 0
                 }
                 eligible = safe or eligible
             total = sum(child.visits for child in eligible.values())
