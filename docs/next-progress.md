@@ -1,6 +1,6 @@
 # Search and teaching results
 
-Updated 2026-10-11 15:38 UTC. Stage: critic teaching screened.
+Updated 2026-10-11 15:54 UTC. Stage: critic teaching confirmed.
 
 [Recorded protocol](next-experiments.md) separates screening from fresh confirmation.
 All match inference uses NumPy with Python search and solving.
@@ -39,6 +39,17 @@ All match inference uses NumPy with Python search and solving.
 | 300 | 512 | 5×5 | 14–0–6 | 70.0% |
 
 Screening winner: critic-00300.
+
+Fresh confirmation:
+
+| Simulations | Board | Games | W–D–L | Score |
+| --- | --- | --- | --- | --- |
+| 128 | 4×4 | 80 | 43–7–30 | 58.1% |
+| 128 | 5×5 | 80 | 32–0–48 | 40.0% |
+| 512 | 4×4 | 80 | 29–9–42 | 41.9% |
+| 512 | 5×5 | 80 | 53–0–27 | 66.2% |
+
+Release gate: failed.
 
 **Deployment:** previous released weights retained.
 
