@@ -18,6 +18,7 @@ from ray.rllib.core.rl_module.multi_rl_module import MultiRLModuleSpec
 from ray.rllib.policy.sample_batch import DEFAULT_POLICY_ID, MultiAgentBatch, SampleBatch
 
 from alphaboxes.checkpoint import load_agent, save_agent
+from alphaboxes.curriculum import StartPositionArchive
 from alphaboxes.game import board
 from alphaboxes.graph import encode_batch
 from alphaboxes.learner import AlphaZeroLearner
@@ -45,6 +46,10 @@ class TrainConfig:
     depth: int = 6
     seed: int = 42
     temperature_moves: int = 12
+    start_fraction: float = 0.0
+    start_min_moves: int = 12
+    start_max_moves: int = 28
+    start_archive_capacity: int = 4096
     device: str = "cpu"
     gpu_memory_gb: float = 4.0
     gpu_duty_cycle: float = 0.15
@@ -93,6 +98,16 @@ class TrainConfig:
             not np.isfinite(self.max_seconds) or self.max_seconds <= 0
         ):
             raise ValueError("max_seconds must be finite and positive.")
+        StartPositionArchive(**self.start_options)
+
+    @property
+    def start_options(self) -> dict:
+        return {
+            "fraction": self.start_fraction,
+            "min_moves": self.start_min_moves,
+            "max_moves": self.start_max_moves,
+            "capacity": self.start_archive_capacity,
+        }
 
     @classmethod
     def from_json(cls, path: Path, **overrides) -> "TrainConfig":
@@ -271,12 +286,16 @@ def train(
                 max(board(*size).num_nodes for size in config.sizes)
                 if config.selfplay_cuda_graphs and device == "cuda"
                 else None,
+                config.start_options,
+                [example.state for example in list(replay)[-config.start_archive_capacity :]],
             )
             for i, (device, _) in enumerate(plan)
         ]
     else:
         module = module_spec(width=config.width, depth=config.depth).build()
         local_search = MCTS(NeuralEvaluator(module), config.search, config.seed)
+    local_starts = StartPositionArchive(**config.start_options)
+    local_starts.observe(example.state for example in replay)
     started = time.monotonic()
     try:
         with (output / "metrics.jsonl").open("a") as log:
@@ -295,27 +314,42 @@ def train(
                         for i, worker in enumerate(workers)
                     ]
                     examples = [example for chunk in ray.get(tasks) for example in chunk]
+                    start_rows = ray.get([worker.start_statistics.remote() for worker in workers])
                 else:
                     local_search.evaluator.module.set_state(weights)
                     local_search.evaluator.clear_cache()
                     local_search.clear_tree()
+                    local_starts.reset_statistics()
                     examples = []
                     for _ in range(config.games_per_iteration):
                         size = config.sizes[int(rng.integers(len(config.sizes)))]
-                        examples.extend(
-                            play_episode(local_search, size, rng, config.temperature_moves)
+                        episode = play_episode(
+                            local_search,
+                            size,
+                            rng,
+                            config.temperature_moves,
+                            local_starts.choose(size, rng),
                         )
+                        examples.extend(episode)
+                        local_starts.observe(example.state for example in episode)
+                    start_rows = [local_starts.statistics()]
+                start_stats = {
+                    key: sum(row[key] for row in start_rows)
+                    for key in ("sampled_games", "midgame_starts", "initial_moves_total")
+                }
                 sample_seconds = time.monotonic() - iteration_start
                 replay.extend(examples)
                 games_total += config.games_per_iteration
                 positions_total += len(examples)
                 update_start = time.monotonic()
                 metrics = {}
+                sample_presentations = 0
                 for _ in range(config.updates_per_iteration):
                     indices = rng.choice(
                         len(replay), min(config.batch_size, len(replay)), replace=False
                     )
                     batch = make_batch([replay[int(index)] for index in indices])
+                    sample_presentations += len(indices)
                     result = learner.update(batch=batch)
                     metrics = metric_values(result)
                 if config.device == "cuda":
@@ -340,6 +374,9 @@ def train(
                     "selfplay_cuda_graphs": config.selfplay_cuda_graphs,
                     "selfplay_gpu_workers": sum(device == "cuda" for device, _ in plan),
                     "training_exact_threshold": config.search.exact_threshold,
+                    "training_leaf_exact_threshold": config.search.leaf_exact_threshold,
+                    "training_reuse_tree": config.search.reuse_tree,
+                    "start_fraction": config.start_fraction,
                     "initialization": initialization,
                 }
                 budget_exhausted = (
@@ -350,6 +387,11 @@ def train(
                     metadata
                     | metrics
                     | {
+                        **start_stats,
+                        "mean_initial_moves": start_stats["initial_moves_total"]
+                        / max(start_stats["sampled_games"], 1),
+                        "sample_presentations": sample_presentations,
+                        "presentations_per_new_position": sample_presentations / len(examples),
                         "replay_positions": len(replay),
                         "sample_seconds": sample_seconds,
                         "update_seconds": update_seconds,

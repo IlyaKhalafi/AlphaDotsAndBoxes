@@ -308,3 +308,33 @@ rectangles, independent chain-aware opponents, and a balanced series of matches
 against experienced human players. Report fixed search budgets and solver use.
 Keep a held-out evaluation set for checkpoint selection and a separate final
 test set. These broader experiments remain future work.
+
+## Controlled refinement options
+
+`start_fraction` defaults to zero. Set it to, for example, `0.5` to start half
+the games from reachable midgame positions collected by that sampler. Each board
+shape has a bounded archive (`start_archive_capacity`, default 4,096 states).
+`start_min_moves` and `start_max_moves` select the number of edges already drawn,
+with defaults 12 and 28. A cold archive uses a random legal prefix. Finished
+positions are excluded; small boards that cannot meet the minimum start empty.
+Resumed workers rebuild their initial archives from saved replay positions.
+
+Targets use the complete final score, including boxes claimed before the start,
+and the player active at each recorded position. Temperature applies to the
+first sampled moves after that start. Keep some empty-start games to retain
+opening practice, and test this option separately before making it a default.
+
+Metrics include `midgame_starts`, `mean_initial_moves`, `sample_presentations`
+and `presentations_per_new_position`. The last metric is the number of examples
+presented to the learner in this round divided by new positions collected in
+the round; it is not a count of how often every individual position was used.
+Vary `updates_per_iteration` while holding batch size and other settings fixed
+to compare replay update ratios.
+
+Search experiments are also opt-in. `--leaf-exact-threshold 12` solves small
+search leaves; `--reuse-tree` retains visited descendants across moves. A duel
+can give the opponent separate values through `--opponent-leaf-exact-threshold`
+and `--opponent-reuse-tree`. Both players retain the configured fresh simulation
+budget per move. Receipts record move times and inherited visits. Changing
+network weights requires clearing both evaluator predictions and the search
+tree; self-play workers do this at the beginning of each collection round.

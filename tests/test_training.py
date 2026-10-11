@@ -133,3 +133,27 @@ def test_sampling_plan_balances_legacy_and_mixed_workers():
         replace(config, games_per_worker=(4, 4, 2))
     with pytest.raises(ValueError, match="selfplay_gpu_workers"):
         replace(config, selfplay_gpu_workers=5)
+
+
+def test_midgame_training_reports_starts_and_update_ratio(tmp_path):
+    config = TrainConfig(
+        sizes=((2, 2),),
+        iterations=1,
+        games_per_iteration=2,
+        workers=0,
+        updates_per_iteration=2,
+        batch_size=8,
+        width=16,
+        depth=2,
+        start_fraction=1,
+        start_min_moves=2,
+        start_max_moves=4,
+        search=SearchConfig(simulations=2),
+    )
+    train(config, tmp_path)
+    row = json.loads((tmp_path / "metrics.jsonl").read_text())
+    assert row["midgame_starts"] == row["sampled_games"] == 2
+    assert 2 <= row["mean_initial_moves"] <= 4
+    assert row["positions_total"] == 24 - row["initial_moves_total"]
+    assert row["sample_presentations"] == 16
+    assert row["presentations_per_new_position"] == 16 / row["positions_total"]
