@@ -13,12 +13,20 @@ import numpy as np
 from alphaboxes.chains import chain_action
 from alphaboxes.checkpoint import load_evaluator
 from alphaboxes.game import State
-from alphaboxes.opponents import endgame_action, random_action, solve, tactical_action
-from alphaboxes.search import MCTS, SearchConfig
+from alphaboxes.opponents import (
+    endgame_action,
+    random_action,
+    solve,
+    solve_remaining,
+    tactical_action,
+)
+from alphaboxes.search import MCTS, SearchConfig, choose_child
 
 
 def software_versions(*checkpoints: Path) -> dict[str, str]:
     versions = {"python": platform.python_version(), "numpy": np.__version__}
+    versions["endgame_backend"] = "cython" if solve_remaining else "python"
+    versions["tree_selection_backend"] = "cython" if choose_child else "python"
     if any(path.suffix != ".npz" for path in checkpoints):
         versions.update({name: importlib.metadata.version(name) for name in ("torch", "ray")})
     return versions

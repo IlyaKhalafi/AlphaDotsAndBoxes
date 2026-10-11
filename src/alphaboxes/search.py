@@ -296,7 +296,7 @@ class MCTS:
         self._expand_many([root for _, root in roots if root.children is None])
         if not roots:
             return results
-        for _, root in roots if explore else ():
+        for _, root in roots:
             if self.config.reuse_tree and root.visits:
                 # A repeated exploratory search must start from network priors,
                 # rather than mixing new noise into yesterday's noisy priors.
@@ -309,6 +309,8 @@ class MCTS:
                 )
                 for child, prior in zip(root.children.values(), priors, strict=True):
                     child.prior = float(prior)
+            if not explore:
+                continue
             # Scale concentration with branching factor as board sizes change.
             alpha = self.config.dirichlet_alpha * 24 / len(root.children)
             noise = self.rng.dirichlet(np.full(len(root.children), alpha))

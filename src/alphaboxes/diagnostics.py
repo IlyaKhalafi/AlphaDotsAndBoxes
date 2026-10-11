@@ -11,6 +11,7 @@ import numpy as np
 
 from alphaboxes.chains import components
 from alphaboxes.checkpoint import load_evaluator
+from alphaboxes.evaluation import software_versions
 from alphaboxes.game import State
 from alphaboxes.opponents import solve
 from alphaboxes.search import MCTS, SearchConfig
@@ -138,7 +139,7 @@ def generate_suite(seed: int = 3100, repetitions: int = 4) -> dict:
         "format_version": 1,
         "seed": seed,
         "repetitions": repetitions,
-        "generation": "Random legal moves plus two shared control fixtures",
+        "generation": "Random legal moves plus eight shared chain and loop fixtures",
         "oracle": "Exact minimax final box margin; winning-outcome and margin metrics differ",
         "positions": records,
     }
@@ -203,6 +204,7 @@ def benchmark_suite(checkpoint: Path, suite_path: Path, output: Path, config: Se
         for tag, group in grouped.items()
     }
     result = {
+        "software": software_versions(checkpoint),
         "checkpoint_sha256": metadata["checkpoint_sha256"],
         "suite_sha256": hashlib.sha256(snapshot).hexdigest(),
         "search": asdict(config),

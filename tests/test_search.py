@@ -154,3 +154,12 @@ def test_reuse_handles_undo_and_independent_identical_games():
     assert all(search._roots[0] is not node for node in old)
     search.policy(State.new(1, 2))
     assert search.inherited_visits == 0
+
+
+def test_reuse_removes_exploration_noise_before_evaluation():
+    state = State.new(2, 2)
+    search = MCTS(uniform, SearchConfig(simulations=16, reuse_tree=True), seed=10)
+    search.policy(state, explore=True)
+    assert not np.allclose([c.prior for c in search._roots[0].children.values()], 1 / 12)
+    search.policy(state, explore=False)
+    assert np.allclose([c.prior for c in search._roots[0].children.values()], 1 / 12)
