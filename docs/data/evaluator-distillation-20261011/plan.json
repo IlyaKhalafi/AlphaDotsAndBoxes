@@ -1,0 +1,38 @@
+{
+  "experiment": "Narrower evaluator with unchanged alpha-beta search",
+  "teacher_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "teacher_architecture": {"width": 96, "depth": 6, "parameters": 272648},
+  "student_architecture": {"width": 32, "depth": 6},
+  "dataset": "Frozen policy/value predictions on the existing 6856-position teaching corpus",
+  "targets": "Teacher network predictions only, including positions that also have unused exact labels",
+  "training": {
+    "seed": 3601,
+    "steps": 1500,
+    "batch_size": 1024,
+    "learning_rate": 0.0003,
+    "validation_interval": 100,
+    "holdout_fraction": 0.1,
+    "gpu_allocation_limit_gib": 8,
+    "gpu_duty_cycle": 0.5,
+    "selection": "Minimum validation KL plus value MSE; no match-based selection",
+    "limitation": "Position-level holdout can contain neighbors from the same source game"
+  },
+  "verification": ["NumPy/PyTorch prediction parity", "Uncached CPU latency on 4x4, 5x5 and 10x10"],
+  "matches": {
+    "boards": [4, 5],
+    "games_per_board_per_arm": 20,
+    "seconds_per_move": 2,
+    "workers": 8,
+    "blas_threads_per_worker": 1,
+    "opening": "Six random edges, same opening with seats swapped",
+    "root_exact_threshold": 12,
+    "candidate": "Student alpha-beta",
+    "arms": [
+      {"reference": "Teacher alpha-beta", "seed": 3602},
+      {"reference": "Teacher MCTS", "seed": 3603}
+    ],
+    "selection": "Use the same preselected student checkpoint in both arms",
+    "limitations": "Small timed match samples are exploratory, not a release-strength guarantee"
+  },
+  "deployment": "Keep the released port-9003 model; require a separate release gate before promotion"
+}
