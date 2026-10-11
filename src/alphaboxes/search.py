@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from dataclasses import dataclass
+import os
 from time import monotonic
 from typing import TYPE_CHECKING, Protocol
 
@@ -14,6 +15,8 @@ from alphaboxes.graph import encode, encode_batch
 from alphaboxes.opponents import solve
 
 try:
+    if os.environ.get("ALPHABOXES_PURE_NUMPY") == "1":
+        raise ImportError
     from alphaboxes._search import choose_child
 except ImportError:
     choose_child = None
@@ -145,6 +148,7 @@ class SearchConfig:
     leaf_exact_threshold: int = 0
     reuse_tree: bool = False
     time_limit: float | None = None
+    fpu_reduction: float = 0.0
 
     def __post_init__(self):
         if self.time_limit is not None and (
@@ -153,6 +157,8 @@ class SearchConfig:
             raise ValueError("Thinking time must be finite and positive.")
         if self.simulations < 1 or self.cpuct <= 0 or self.dirichlet_alpha <= 0:
             raise ValueError("Search budgets and exploration constants must be positive.")
+        if not np.isfinite(self.fpu_reduction) or self.fpu_reduction < 0:
+            raise ValueError("First-play reduction must be finite and nonnegative.")
         if (
             not 0 <= self.noise_fraction <= 1
             or not 0 <= self.exact_threshold <= 18
@@ -341,11 +347,15 @@ class MCTS:
                     scale = self.config.cpuct * np.sqrt(node.visits + 1)
                     child = (
                         choose_child(node.children, node.player, float(scale))
-                        if choose_child
+                        if choose_child and not self.config.fpu_reduction
                         else max(
                             node.children.values(),
                             key=lambda child: (
-                                perspective(child.value, child.player, node.player)
+                                (
+                                    perspective(child.value, child.player, node.player)
+                                    if child.visits or not self.config.fpu_reduction
+                                    else node.evaluation - self.config.fpu_reduction
+                                )
                                 + scale * child.prior / (1 + child.visits)
                             ),
                         )

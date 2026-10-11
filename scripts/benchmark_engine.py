@@ -25,10 +25,12 @@ from alphaboxes.opponents import solve_remaining
 from alphaboxes.search import MCTS, SearchConfig, choose_child
 
 
-def planner(evaluator, engine, seconds):
+def planner(evaluator, engine, seconds, search_options=None):
     if engine == "alpha_beta":
         return AlphaBeta(evaluator, EngineConfig(time_limit=seconds))
-    return MCTS(evaluator, SearchConfig(simulations=8192, time_limit=seconds, exact_threshold=12))
+    options = {"simulations": 8192, "time_limit": seconds, "exact_threshold": 12}
+    options.update(search_options or {})
+    return MCTS(evaluator, SearchConfig(**options))
 
 
 def measure(search, state):
@@ -93,8 +95,10 @@ def play_pair(evaluators, args, size, pair_index):
         moves = []
         while not state.terminal:
             side = "candidate" if state.player == alpha_player else "reference"
-            engine = "alpha_beta" if side == "candidate" else args.reference_engine
-            step = measure(planner(evaluators[side], engine, args.match_seconds), state)
+            engine = args.candidate_engine if side == "candidate" else args.reference_engine
+            seconds = args.match_seconds if side == "candidate" else args.reference_seconds
+            options = args.search_options if side == "candidate" else None
+            step = measure(planner(evaluators[side], engine, seconds, options), state)
             moves.append({"player": state.player, "side": side, "engine": engine, **step})
             state = state.play(step["action"])
         margin = state.scores[alpha_player] - state.scores[1 - alpha_player]
@@ -109,7 +113,7 @@ def play_pair(evaluators, args, size, pair_index):
                 "moves": moves,
             }
         )
-        print(f"{size}x{size} game {index + 1}: alpha-beta margin {margin}", flush=True)
+        print(f"{size}x{size} game {index + 1}: candidate margin {margin}", flush=True)
     return games
 
 
@@ -151,6 +155,9 @@ def main():
     parser.add_argument("--checkpoint", type=Path, default=Path("models/larger.npz"))
     parser.add_argument("--reference-checkpoint", type=Path)
     parser.add_argument("--reference-engine", choices=("mcts", "alpha_beta"), default="mcts")
+    parser.add_argument("--candidate-engine", choices=("mcts", "alpha_beta"), default="alpha_beta")
+    parser.add_argument("--search-options", type=json.loads, default={}, help="Candidate MCTS config JSON")
+    parser.add_argument("--reference-seconds", type=float)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--boards", type=int, nargs="+", default=[4, 5, 10])
     parser.add_argument("--seconds", type=float, nargs="+", default=[0.5, 2])
@@ -163,6 +170,14 @@ def main():
     parser.add_argument("--skip-latency", action="store_true")
     parser.add_argument("--progress", type=Path)
     args = parser.parse_args()
+    if args.reference_seconds is None:
+        args.reference_seconds = args.match_seconds
+    if not isinstance(args.search_options, dict):
+        parser.error("Search options must be a JSON object.")
+    try:
+        SearchConfig(**args.search_options)
+    except (TypeError, ValueError) as error:
+        parser.error(str(error))
     if args.games < 0 or args.games % 2 or args.repeats < 1:
         parser.error("Use a nonnegative even match count and positive repeats.")
     if not 1 <= args.workers <= 8:
@@ -173,7 +188,7 @@ def main():
             parser.error("Progress output already exists; use a fresh path.")
     if not all(2 <= size <= 12 for size in args.boards + args.match_boards):
         parser.error("Benchmark board sizes must be 2..12.")
-    for seconds in args.seconds + [args.match_seconds]:
+    for seconds in args.seconds + [args.match_seconds, args.reference_seconds]:
         EngineConfig(time_limit=seconds)
     evaluators = load_players(args)
     modules = [
@@ -196,6 +211,8 @@ def main():
             (args.reference_checkpoint or args.checkpoint).read_bytes()
         ).hexdigest(),
         "reference_engine": args.reference_engine,
+        "candidate_engine": args.candidate_engine,
+        "search_options": args.search_options,
         "python": platform.python_version(),
         "numpy": np.__version__,
         "threads": {
@@ -204,6 +221,7 @@ def main():
         },
         "seed": args.seed,
         "match_seconds": args.match_seconds,
+        "reference_seconds": args.reference_seconds,
         "games_per_board": args.games,
         "workers": args.workers,
         "root_exact_edges": 12,

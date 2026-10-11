@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from alphaboxes.game import State
 from alphaboxes.numpy_network import weight_shapes
@@ -109,7 +110,8 @@ def test_parallel_pairs_match_serial_oracle_games_and_preserve_progress(tmp_path
         ]
 
 
-def test_distinct_checkpoints_with_same_search_algorithm(tmp_path):
+@pytest.mark.parametrize("candidate_engine", ["alpha_beta", "mcts"])
+def test_distinct_checkpoints_and_search_algorithms(tmp_path, candidate_engine):
     root = Path(__file__).resolve().parents[1]
     candidate = tmp_path / "small.npz"
     payload = {
@@ -132,6 +134,8 @@ def test_distinct_checkpoints_with_same_search_algorithm(tmp_path):
             str(root / "models/larger.npz"),
             "--reference-engine",
             "alpha_beta",
+            "--candidate-engine",
+            candidate_engine,
             "--match-boards",
             "2",
             "--games",
@@ -152,7 +156,10 @@ def test_distinct_checkpoints_with_same_search_algorithm(tmp_path):
     assert receipt["checkpoint_sha256"] == hashlib.sha256(candidate.read_bytes()).hexdigest()
     assert receipt["reference_checkpoint_sha256"] != receipt["checkpoint_sha256"]
     assert receipt["reference_engine"] == "alpha_beta"
+    assert receipt["candidate_engine"] == candidate_engine
     for game in receipt["games"]:
         for move in game["moves"]:
-            assert move["engine"] == "alpha_beta"
+            assert move["engine"] == (
+                candidate_engine if move["side"] == "candidate" else "alpha_beta"
+            )
             assert (move["side"] == "candidate") == (move["player"] == game["alpha_player"])

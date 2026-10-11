@@ -1,12 +1,15 @@
 """Reproducible baselines and an exact late-game oracle."""
 
 from functools import cache
+import os
 
 import numpy as np
 
 from alphaboxes.game import State
 
 try:
+    if os.environ.get("ALPHABOXES_PURE_NUMPY") == "1":
+        raise ImportError
     from alphaboxes._endgame import solve_remaining
 except ImportError:
     solve_remaining = None

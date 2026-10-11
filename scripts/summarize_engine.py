@@ -35,7 +35,11 @@ def summarize(receipt):
                 state = state.play(action)
             for move in game["moves"]:
                 side = "candidate" if state.player == game["alpha_player"] else "reference"
-                engine = "alpha_beta" if side == "candidate" else receipt["reference_engine"]
+                engine = (
+                    receipt.get("candidate_engine", "alpha_beta")
+                    if side == "candidate"
+                    else receipt["reference_engine"]
+                )
                 if (
                     move["player"] != state.player
                     or move["side"] != side
@@ -74,6 +78,10 @@ def summarize(receipt):
             openings = [game["moves"][0] for game in games if game["moves"][0]["side"] == side]
             alpha_openings = [move for move in openings if move["engine"] == "alpha_beta"]
             row["players"][side] = {
+                "max_seconds": max(
+                    move["seconds"] for game in games for move in game["moves"]
+                    if move["side"] == side
+                ),
                 "neural_moves": len(neural),
                 "mean_seconds": float(np.mean([move["seconds"] for move in neural]))
                 if neural
@@ -116,6 +124,7 @@ def main():
                 "candidate_sha256": receipt["checkpoint_sha256"],
                 "reference_sha256": receipt["reference_checkpoint_sha256"],
                 "reference_engine": receipt["reference_engine"],
+                "candidate_engine": receipt.get("candidate_engine", "alpha_beta"),
                 "results": summarize(receipt),
             }
         )
