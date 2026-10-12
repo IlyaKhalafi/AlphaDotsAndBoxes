@@ -111,7 +111,7 @@ def play_pair(evaluators, args, size, pair_index):
             side = "candidate" if state.player == alpha_player else "reference"
             engine = args.candidate_engine if side == "candidate" else args.reference_engine
             seconds = args.match_seconds if side == "candidate" else args.reference_seconds
-            options = args.search_options if side == "candidate" else None
+            options = args.search_options if side == "candidate" else args.reference_search_options
             step = measure(
                 planner(evaluators[side], engine, seconds, options, args.match_simulations), state
             )
@@ -190,6 +190,9 @@ def main():
     parser.add_argument(
         "--search-options", type=json.loads, default={}, help="Candidate MCTS config JSON"
     )
+    parser.add_argument(
+        "--reference-search-options", type=json.loads, default={}, help="Reference MCTS config JSON"
+    )
     parser.add_argument("--reference-seconds", type=float)
     parser.add_argument(
         "--response-deadline", type=float, help="Supervise candidate in a warm process"
@@ -211,7 +214,9 @@ def main():
     parser.add_argument("--progress", type=Path)
     parser.add_argument("--move-progress-dir", type=Path)
     args = parser.parse_args()
-    if not isinstance(args.search_options, dict):
+    if not isinstance(args.search_options, dict) or not isinstance(
+        args.reference_search_options, dict
+    ):
         parser.error("Search options must be a JSON object.")
     if args.reference_seconds is None:
         args.reference_seconds = args.match_seconds
@@ -228,13 +233,18 @@ def main():
                 "Untimed matches require both MCTS engines, no response deadline "
                 "and --skip-latency."
             )
-        if "time_limit" in args.search_options or "simulations" in args.search_options:
+        if any(
+            name in options
+            for options in (args.search_options, args.reference_search_options)
+            for name in ("time_limit", "simulations")
+        ):
             parser.error("Untimed match budgets must be set with --match-simulations.")
         args.match_seconds = args.reference_seconds = None
     if args.response_deadline is not None and not 0 < args.response_deadline < 2:
         parser.error("Response deadline must be positive and below two seconds.")
     try:
         SearchConfig(**args.search_options)
+        SearchConfig(**args.reference_search_options)
     except (TypeError, ValueError) as error:
         parser.error(str(error))
     if args.games < 0 or args.games % 2 or args.repeats < 1:
@@ -279,6 +289,7 @@ def main():
         "reference_engine": args.reference_engine,
         "candidate_engine": args.candidate_engine,
         "search_options": args.search_options,
+        "reference_search_options": args.reference_search_options,
         "python": platform.python_version(),
         "numpy": np.__version__,
         "threads": {

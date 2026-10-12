@@ -268,3 +268,26 @@ def test_proof_search_finishes_small_game_before_simulation_budget():
     assert search.completed_simulations < 10000
     assert policy.argmax() in solve(state)[1]
     assert value == -1 and search.proven_nodes > 0
+
+
+def test_policy_mass_first_play_scales_with_explored_probability():
+    root = Node(None, player=0, evaluation=0.0)
+    visited = Node(None, prior=0.25, visits=1, value_sum=-0.2, player=0)
+    unvisited = Node(None, prior=0.75, player=-1)
+    root.children = {0: visited, 1: unvisited}
+    constant = MCTS(uniform, SearchConfig(fpu_reduction=0.33))
+    adaptive = MCTS(uniform, SearchConfig(fpu_reduction=0.33, fpu_mode="policy_mass"))
+    assert constant._select(root, 0) is visited
+    assert adaptive._select(root, 0) is unvisited
+
+
+def test_branching_mode_preserves_constant_search_on_small_roots():
+    state = State.new(4, 4)
+    base = MCTS(uniform, SearchConfig(simulations=128, fpu_reduction=0.33))
+    adaptive = MCTS(
+        uniform, SearchConfig(simulations=128, fpu_reduction=0.33, fpu_mode="branching")
+    )
+    actual, value = adaptive.policy(state)
+    expected, expected_value = base.policy(state)
+    np.testing.assert_array_equal(actual, expected)
+    assert value == expected_value

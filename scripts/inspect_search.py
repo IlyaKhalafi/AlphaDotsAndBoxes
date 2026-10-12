@@ -47,6 +47,7 @@ def main():
     parser.add_argument("--boards", type=int, nargs="+", default=[4, 5, 10])
     parser.add_argument("--simulations", type=int, default=1024)
     parser.add_argument("--seed", type=int, default=4451)
+    parser.add_argument("--modes", nargs="+", default=["constant"])
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.simulations < 1 or any(not 3 <= size <= 12 for size in args.boards):
@@ -60,13 +61,15 @@ def main():
             action = int(rng.choice(state.legal_actions))
             opening.append(action)
             state = state.play(action)
-        for reduction in (0.0, 0.33):
+        settings = [(0.0, "constant")] + [(0.33, mode) for mode in args.modes]
+        for reduction, mode in settings:
             evaluator.clear_cache()
             # Each planner is fresh. Reuse merely retains its tree for inspection;
             # no visits are inherited and no second policy call is performed.
             config = SearchConfig(
                 simulations=args.simulations,
                 fpu_reduction=reduction,
+                fpu_mode=mode,
                 exact_threshold=12,
                 reuse_tree=True,
             )

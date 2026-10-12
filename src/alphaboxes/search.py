@@ -150,6 +150,7 @@ class SearchConfig:
     reuse_tree: bool = False
     time_limit: float | None = None
     fpu_reduction: float = 0.0
+    fpu_mode: str = "constant"
     degree_two: bool = False
     prove_results: bool = False
 
@@ -162,6 +163,8 @@ class SearchConfig:
             raise ValueError("Search budgets and exploration constants must be positive.")
         if not np.isfinite(self.fpu_reduction) or self.fpu_reduction < 0:
             raise ValueError("First-play reduction must be finite and nonnegative.")
+        if self.fpu_mode not in {"constant", "policy_mass", "branching"}:
+            raise ValueError("First-play mode must be constant, policy_mass or branching.")
         if (
             not 0 <= self.noise_fraction <= 1
             or not 0 <= self.exact_threshold <= 18
@@ -315,6 +318,13 @@ class MCTS:
 
     def _select(self, node: Node, scale: float) -> Node:
         children = node.children.values()
+        reduction = self.config.fpu_reduction
+        if self.config.fpu_mode == "policy_mass":
+            visited_mass = sum(child.prior for child in children if child.visits)
+            reduction *= np.sqrt(visited_mass)
+        elif self.config.fpu_mode == "branching":
+            reduction *= min(1.0, np.sqrt(54 / len(node.children)))
+        first_play = node.evaluation - reduction
         if self.config.prove_results:
             unresolved = [child for child in children if child.solved_value is None]
             if unresolved:
@@ -325,7 +335,7 @@ class MCTS:
                 (
                     perspective(child.value, child.player, node.player)
                     if child.visits or not self.config.fpu_reduction
-                    else node.evaluation - self.config.fpu_reduction
+                    else first_play
                 )
                 + scale * child.prior / (1 + child.visits)
             ),
