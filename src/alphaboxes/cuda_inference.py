@@ -4,7 +4,7 @@ import torch
 from ray.rllib.core.columns import Columns
 
 from alphaboxes.game import State
-from alphaboxes.graph import encode_batch
+from alphaboxes.graph import adjacency, encode_batch
 
 
 class CudaInference:
@@ -17,8 +17,13 @@ class CudaInference:
         device = next(self.module.parameters()).device
         self.observations = {
             key: torch.from_numpy(value).to(device)
-            for key, value in encode_batch([state] * self.batch_size, self.capacity).items()
+            for key, value in encode_batch(
+                [state] * self.batch_size, self.capacity, structure=self.module.structure
+            ).items()
         }
+        shape = state.board.rows, state.board.cols
+        self._board_shapes = [shape] * self.batch_size
+        self._adjacency_cache = {shape: self.observations["adjacency"][0].clone()}
         stream = torch.cuda.Stream(device=device)
         stream.wait_stream(torch.cuda.current_stream(device))
         with torch.cuda.stream(stream):
@@ -38,7 +43,23 @@ class CudaInference:
             raise ValueError("Prediction batch exceeds the CUDA graph capacity.")
         if self.graph is None:
             self._initialize(states[0])
-        observations = encode_batch(states, self.capacity)
+        observations = encode_batch(
+            states, self.capacity, structure=self.module.structure, include_adjacency=False
+        )
+        for index, state in enumerate(states):
+            shape = state.board.rows, state.board.cols
+            if shape != self._board_shapes[index]:
+                if shape not in self._adjacency_cache:
+                    padded = self.observations["adjacency"][0].new_zeros(
+                        (self.capacity, self.capacity)
+                    )
+                    n = state.board.num_nodes
+                    padded[:n, :n].copy_(
+                        torch.from_numpy(adjacency(*shape).copy()).to(padded.device)
+                    )
+                    self._adjacency_cache[shape] = padded
+                self.observations["adjacency"][index].copy_(self._adjacency_cache[shape])
+                self._board_shapes[index] = shape
         for key, value in observations.items():
             self.observations[key][: len(states)].copy_(torch.from_numpy(value))
         self.graph.replay()

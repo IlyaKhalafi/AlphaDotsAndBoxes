@@ -10,11 +10,12 @@ from alphaboxes.search import NeuralEvaluator
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA unavailable")
-def test_cuda_graph_handles_shapes_partial_batches_and_weight_updates():
+@pytest.mark.parametrize("structure", [False, True])
+def test_cuda_graph_handles_shapes_partial_batches_and_weight_updates(structure):
     torch.set_num_threads(1)
     total = torch.cuda.get_device_properties(0).total_memory
     torch.cuda.set_per_process_memory_fraction(1024**3 / total)
-    module = module_spec(width=16, depth=2).build().to("cuda").eval()
+    module = module_spec(width=16, depth=2, structure=structure).build().to("cuda").eval()
     eager = NeuralEvaluator(module, cache_size=0)
     captured = NeuralEvaluator(module, cache_size=0, cuda_batch_size=8, capacity=85)
     states = [State.new(*size).play(0) for size in ((1, 1), (2, 3), (5, 5))]
