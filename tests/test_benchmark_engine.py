@@ -302,3 +302,64 @@ def test_match_retains_search_trees_when_reuse_is_requested(tmp_path):
     assert any(move["inherited_visits"] > 0 for move in moves)
     assert all(move["simulations"] == 16 for move in moves if move["remaining_edges"] > 12)
     assert all(game["moves"][0]["inherited_visits"] == 0 for game in receipt["games"])
+
+
+def test_forced_capture_benchmark_records_values_and_replays_complete_games(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    output = tmp_path / "forced.json"
+    command = [
+        sys.executable,
+        str(root / "scripts/benchmark_engine.py"),
+        "--candidate-engine",
+        "mcts",
+        "--search-options",
+        '{"fpu_reduction":0.33,"chain_pruning":true}',
+        "--candidate-forced-captures",
+        "--match-boards",
+        "3",
+        "--games",
+        "2",
+        "--match-simulations",
+        "16",
+        "--untimed",
+        "--skip-latency",
+        "--workers",
+        "2",
+        "--output",
+        str(output),
+    ]
+    environment = {**os.environ, "OPENBLAS_NUM_THREADS": "1", "ALPHABOXES_PURE_NUMPY": "1"}
+    subprocess.run(command, cwd=root, env=environment, check=True, capture_output=True, timeout=30)
+    receipt = json.loads(output.read_text())
+    assert receipt["candidate_value_estimator"] == {"rollouts": 0, "forced_captures": True}
+    assert "forced_captures.py" in receipt["source_sha256"]
+    candidate_moves = [
+        move for game in receipt["games"] for move in game["moves"] if move["side"] == "candidate"
+    ]
+    assert all("forced_capture_positions" in move for move in candidate_moves)
+    summary = tmp_path / "summary.json"
+    subprocess.run(
+        [
+            sys.executable,
+            str(root / "scripts/summarize_engine.py"),
+            "--receipts",
+            str(output),
+            "--output",
+            str(summary),
+        ],
+        cwd=root,
+        env=environment,
+        check=True,
+        capture_output=True,
+        timeout=30,
+    )
+    result = json.loads(summary.read_text())["reports"][0]["results"][0]
+    assert result["games"] == 2
+    invalid = subprocess.run(
+        [*command, "--candidate-rollouts", "1"],
+        cwd=root,
+        env=environment,
+        capture_output=True,
+        timeout=30,
+    )
+    assert invalid.returncode != 0 and b"Forced captures require" in invalid.stderr

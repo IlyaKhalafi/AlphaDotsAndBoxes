@@ -20,6 +20,7 @@ import numpy as np
 
 from alphaboxes.checkpoint import load_evaluator
 from alphaboxes.engine import AlphaBeta, EngineConfig
+from alphaboxes.forced_captures import ForcedCaptureEvaluator
 from alphaboxes.game import State
 from alphaboxes.opponents import solve_remaining
 from alphaboxes.rollouts import RolloutEvaluator
@@ -157,6 +158,8 @@ def load_players(args):
         "candidate": load_evaluator(args.checkpoint)[0],
         "reference": load_evaluator(args.reference_checkpoint or args.checkpoint)[0],
     }
+    if getattr(args, "candidate_forced_captures", False):
+        players["candidate"] = ForcedCaptureEvaluator(players["candidate"])
     if getattr(args, "candidate_rollouts", 0):
         players["candidate"] = RolloutEvaluator(
             players["candidate"],
@@ -210,6 +213,7 @@ def main():
     parser.add_argument("--reference-engine", choices=("mcts", "alpha_beta"), default="mcts")
     parser.add_argument("--candidate-engine", choices=("mcts", "alpha_beta"), default="alpha_beta")
     parser.add_argument("--candidate-rollouts", type=int, default=0)
+    parser.add_argument("--candidate-forced-captures", action="store_true")
     parser.add_argument("--rollout-weight", type=float, default=1.0)
     parser.add_argument("--rollout-seed", type=int, default=1729)
     parser.add_argument("--rollout-backend", choices=("python", "cython"), default="python")
@@ -256,6 +260,12 @@ def main():
         args.reference_search_options, dict
     ):
         parser.error("Search options must be a JSON object.")
+    if args.candidate_forced_captures and (
+        args.candidate_engine != "mcts"
+        or not args.search_options.get("chain_pruning", False)
+        or args.candidate_rollouts
+    ):
+        parser.error("Forced captures require MCTS with chain pruning and no rollout wrapper.")
     if args.reference_seconds is None:
         args.reference_seconds = args.match_seconds
     if args.match_simulations < 1:
@@ -325,6 +335,7 @@ def main():
             "root_halving",
             "rollouts",
             "chain_moves",
+            "forced_captures",
             "checkpoint",
             "endgame",
             "timed_search",
@@ -353,7 +364,7 @@ def main():
             "oracle": "Long-component recurrence; general multi-front positions excluded",
         }
         if args.candidate_rollouts
-        else {"rollouts": 0},
+        else {"rollouts": 0, "forced_captures": args.candidate_forced_captures},
         "search_options": args.search_options,
         "reference_search_options": args.reference_search_options,
         "python": platform.python_version(),

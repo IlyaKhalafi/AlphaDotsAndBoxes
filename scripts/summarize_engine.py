@@ -135,7 +135,14 @@ def summarize(receipt):
                 ),
                 **{
                     key: sum(move.get(key, 0) for move in neural)
-                    for key in ("rollout_episodes", "rollout_moves", "rollout_oracle_finishes")
+                    for key in (
+                        "rollout_episodes",
+                        "rollout_moves",
+                        "rollout_oracle_finishes",
+                        "forced_capture_positions",
+                        "forced_capture_moves",
+                        "forced_capture_terminal_finishes",
+                    )
                 },
                 "opening_positions": len(openings),
                 "opening_depth_counts": dict(
