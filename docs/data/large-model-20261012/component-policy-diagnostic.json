@@ -1,0 +1,279 @@
+{
+  "seed": 41271,
+  "classification_draw_threshold": 0.1,
+  "excluded_dataset_overlap": 0,
+  "excluded_dataset_sha256": "fe54d1bb135ae814a10dacd3c2869ba8c126f7d3873e8728e9089a7529132b29",
+  "suite_sha256": "a9212c6b2dc9b0e74b9fc82cc6313f4c2593101055f6d0541014b68cb62dbbad",
+  "source_sha256": {
+    "/home/ubuntu8/ilya/research/AlphaDotsAndBoxes/scripts/diagnose_components.py": "72679241d0f26d67d19ab7893202253857ef8226d7c93a7fa19818fcb44156cb",
+    "src/alphaboxes/curriculum.py": "ec1d626aef164c835af53dbe4784cf9a4867e8046271aa010c30fea18ac5d181",
+    "src/alphaboxes/endgame.py": "00f3c360cea71c4a8bd9da2a95e1ac70d3d9daf4b9e87b3ce30dfbd0a1e762d5",
+    "src/alphaboxes/components.py": "b5c20384bc97d4fa6b4210b4164fa7bd7e02e7535a1578df139caacf2f3ca953",
+    "src/alphaboxes/numpy_network.py": "cae9da249fcd970dd240e640401554a423f09e282da39e2582bcb9d227c9962e",
+    "src/alphaboxes/graph.py": "19533402b0fcd7374464638eef298923c544f38ee4f1a7b662250392d97dd50e",
+    "src/alphaboxes/teaching.py": "3d550875210637c4f34b1fff599914660746de05328d3721f52f5918a011270e"
+  },
+  "scope": "Raw network on closed chain/loop positions; no full-game strength claim",
+  "results": [
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        4,
+        4
+      ],
+      "positions": 100,
+      "value_error": 0.423771885484457,
+      "outcome_correct": 0.71,
+      "best_margin": 0.89,
+      "optimal_policy_mass": 0.8671496811509133,
+      "box_regret": 0.44
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        4,
+        4
+      ],
+      "positions": 100,
+      "value_error": 0.3599198977119522,
+      "outcome_correct": 0.75,
+      "best_margin": 0.96,
+      "optimal_policy_mass": 0.8866222158074379,
+      "box_regret": 0.16
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        4,
+        4
+      ],
+      "positions": 100,
+      "value_error": 0.32343333835713567,
+      "outcome_correct": 0.77,
+      "best_margin": 0.95,
+      "optimal_policy_mass": 0.8832779285311699,
+      "box_regret": 0.2
+    },
+    {
+      "checkpoint_sha256": "0810e8ab0e93eb8861645ec98038d4a00ccff91742c9679f6ef2e6b75f5bb111",
+      "board": [
+        4,
+        4
+      ],
+      "positions": 100,
+      "value_error": 0.32651986043871145,
+      "outcome_correct": 0.77,
+      "best_margin": 0.98,
+      "optimal_policy_mass": 0.9278913256525994,
+      "box_regret": 0.08
+    },
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        5,
+        5
+      ],
+      "positions": 100,
+      "value_error": 0.6215317229926586,
+      "outcome_correct": 0.68,
+      "best_margin": 0.71,
+      "optimal_policy_mass": 0.6619592435657978,
+      "box_regret": 1.08
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        5,
+        5
+      ],
+      "positions": 100,
+      "value_error": 0.4425271648482885,
+      "outcome_correct": 0.83,
+      "best_margin": 0.88,
+      "optimal_policy_mass": 0.6926311078667641,
+      "box_regret": 0.46
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        5,
+        5
+      ],
+      "positions": 100,
+      "value_error": 0.39592137777712194,
+      "outcome_correct": 0.82,
+      "best_margin": 0.86,
+      "optimal_policy_mass": 0.6911283330619336,
+      "box_regret": 0.54
+    },
+    {
+      "checkpoint_sha256": "0810e8ab0e93eb8861645ec98038d4a00ccff91742c9679f6ef2e6b75f5bb111",
+      "board": [
+        5,
+        5
+      ],
+      "positions": 100,
+      "value_error": 0.39716889469884337,
+      "outcome_correct": 0.84,
+      "best_margin": 0.94,
+      "optimal_policy_mass": 0.7505501733720302,
+      "box_regret": 0.24
+    },
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        10,
+        10
+      ],
+      "positions": 100,
+      "value_error": 0.8213538101315498,
+      "outcome_correct": 0.5,
+      "best_margin": 0.37,
+      "optimal_policy_mass": 0.5920179130882025,
+      "box_regret": 3.96
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        10,
+        10
+      ],
+      "positions": 100,
+      "value_error": 0.43686651668511334,
+      "outcome_correct": 0.73,
+      "best_margin": 0.86,
+      "optimal_policy_mass": 0.6276806926727295,
+      "box_regret": 0.56
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        10,
+        10
+      ],
+      "positions": 100,
+      "value_error": 0.23605251304805278,
+      "outcome_correct": 0.82,
+      "best_margin": 0.82,
+      "optimal_policy_mass": 0.6275601126253605,
+      "box_regret": 0.72
+    },
+    {
+      "checkpoint_sha256": "0810e8ab0e93eb8861645ec98038d4a00ccff91742c9679f6ef2e6b75f5bb111",
+      "board": [
+        10,
+        10
+      ],
+      "positions": 100,
+      "value_error": 0.24862392380833626,
+      "outcome_correct": 0.82,
+      "best_margin": 0.94,
+      "optimal_policy_mass": 0.7232169815897942,
+      "box_regret": 0.24000000000000005
+    },
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        12,
+        12
+      ],
+      "positions": 100,
+      "value_error": 0.7510958082973958,
+      "outcome_correct": 0.53,
+      "best_margin": 0.23,
+      "optimal_policy_mass": 0.6091858837008476,
+      "box_regret": 6.56
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        12,
+        12
+      ],
+      "positions": 100,
+      "value_error": 0.5025621539447457,
+      "outcome_correct": 0.73,
+      "best_margin": 0.9,
+      "optimal_policy_mass": 0.6395443648099899,
+      "box_regret": 0.4
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        12,
+        12
+      ],
+      "positions": 100,
+      "value_error": 0.23683192967204378,
+      "outcome_correct": 0.87,
+      "best_margin": 0.88,
+      "optimal_policy_mass": 0.6369041565060616,
+      "box_regret": 0.64
+    },
+    {
+      "checkpoint_sha256": "0810e8ab0e93eb8861645ec98038d4a00ccff91742c9679f6ef2e6b75f5bb111",
+      "board": [
+        12,
+        12
+      ],
+      "positions": 100,
+      "value_error": 0.24449940759222955,
+      "outcome_correct": 0.85,
+      "best_margin": 0.94,
+      "optimal_policy_mass": 0.7310153633356095,
+      "box_regret": 0.24
+    },
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        14,
+        14
+      ],
+      "positions": 100,
+      "value_error": 0.6888914710283279,
+      "outcome_correct": 0.57,
+      "best_margin": 0.22,
+      "optimal_policy_mass": 0.5786327181756497,
+      "box_regret": 8.08
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        14,
+        14
+      ],
+      "positions": 100,
+      "value_error": 0.516213109884411,
+      "outcome_correct": 0.65,
+      "best_margin": 0.77,
+      "optimal_policy_mass": 0.6031588345766068,
+      "box_regret": 1.48
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        14,
+        14
+      ],
+      "positions": 100,
+      "value_error": 0.32383075293619185,
+      "outcome_correct": 0.77,
+      "best_margin": 0.75,
+      "optimal_policy_mass": 0.599476448893547,
+      "box_regret": 2.08
+    },
+    {
+      "checkpoint_sha256": "0810e8ab0e93eb8861645ec98038d4a00ccff91742c9679f6ef2e6b75f5bb111",
+      "board": [
+        14,
+        14
+      ],
+      "positions": 100,
+      "value_error": 0.3414245304092765,
+      "outcome_correct": 0.76,
+      "best_margin": 0.91,
+      "optimal_policy_mass": 0.6967826986312866,
+      "box_regret": 0.36
+    }
+  ]
+}

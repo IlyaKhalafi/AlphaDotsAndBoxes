@@ -49,3 +49,38 @@ The frozen final NumPy snapshot has SHA-256
 Its predeclared full-game screen has started. [All update records, settings and
 source hashes](data/large-model-20261012/component-policy-progress.json) are
 preserved. The live model is unchanged pending fresh game and deployment gates.
+
+## Fresh component diagnostic
+
+Seed 41271 samples 100 distinct closed-component positions per board on 4×4,
+5×5, 10×10, 12×12 and 14×14. Every canonical teaching-dataset state is
+excluded; overlap with other historical training is not measured. No diagnostic
+selects an intermediate snapshot. [Complete diagnostic](data/large-model-20261012/component-policy-diagnostic.json).
+
+On 10×10, raw best-margin move accuracy is 37% for retained weights, 86% for
+the frozen iteration-three starting model, 82% for critic-only update 300 and
+94% for policy-and-value update 300. Mean box regret is 3.96, 0.56, 0.72 and
+0.24 respectively. The taught policy increases mass on optimal moves from
+62.77% to 72.32% relative to its starting model. Outcome classification is
+50%, 73%, 82% and 82%, using the recorded ±0.1 draw threshold.
+
+Raw move accuracy also improves relative to the starting model on 5×5
+(88% to 94%) and 14×14 (77% to 91%). These are specialized endgame
+diagnostics, not complete matches or proof of arbitrary-board strength.
+
+## Independent low-work policy arm
+
+The policy diagnostic motivates testing the same fixed update-300 weights with
+one candidate simulation against 1,024 reference simulations. With no noise
+or move reduction, one simulation selects the highest network prior. Both
+sides keep the common 12-edge root aid. This is an explicitly unequal-work
+comparison of the taught policy against retained search, not a test of the
+value of search with identical weights.
+
+Use 12 paired-seat 10×10 games, fresh seed 23001, without deadlines, reuse,
+proofs, structural aids, pruning, capture extension or rollouts. A screen score
+above 50% requires 40 fresh games, seed 210001, with score above 50% and paired
+bootstrap lower bound above 50%. The separate zero-first-play control uses
+20 games, seed 310001, and requires at least 50% score. Numerical and web
+deadline checks and smaller-board matches remain required before release.
+The 1,024-simulation taught-model arm keeps its separate predeclared protocol.
