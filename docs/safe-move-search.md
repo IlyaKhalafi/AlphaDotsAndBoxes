@@ -46,10 +46,25 @@ Both sides will read the same immutable retained NumPy snapshot, SHA-256
 The full CPU suite passes 238 tests with two GPU tests skipped; the extended
 diagnostic separately passes nine focused tests. The seeded tactical baseline
 retains identical actions on four board shapes after sharing the safe-action
-helper. Full-game testing has not started for this arm.
+helper. At source freeze, full-game testing had not started for this arm.
 
 The contingency is activated after the final component snapshot cannot clear
 fresh confirmation (21–15 over 36 games, optimistic final lower bound 47.5%).
 The safe-move screen starts with six CPU workers, the frozen source and
 retained-model copy, and the exact settings specified above. Other prototypes
 remain disabled and the live agent remains unchanged.
+
+## Completed screen
+
+The filter wins 9–3 (75%, paired 95% interval 58.33–91.67%), mean margin
++28.83 boxes. Both sides use the retained weights and exactly 1,024 simulations
+on every neural decision. No structural solve, proof, rollout or reuse is enabled.
+[Legally replayed summary and full history](data/large-model-20261012/safe-moves-screen-summary.json).
+
+Candidate neural decisions average 1.143 seconds, versus 1.604 for the reference;
+maxima are 5.422 and 5.004 seconds. This is an untimed strength screen, outside
+the web deadline. Timings mix different played positions and are not a
+same-position speed benchmark. The screen advances unchanged settings to the
+specified 40-game fresh confirmation and 20-game zero-first-play control, using
+six and two CPU workers. Neither the screen nor its interval replaces fresh
+confirmation and actual web-setting checks. The live agent remains unchanged.
