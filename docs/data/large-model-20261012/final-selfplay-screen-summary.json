@@ -1,0 +1,171 @@
+{
+  "validation": "Full legal replays, final scores and seat-swapped openings checked",
+  "timing": "Only moves with more than 12 remaining edges enter search-work statistics",
+  "source_sha256": "e78754080ff027f85c180b4f16192e5aa57dfb594778fad81d28ac6849c51ac2",
+  "reports": [
+    {
+      "receipt": "component-00034-screen.json",
+      "receipt_sha256": "b72d0f942df65c8936b30af954a4c5bd764d2731d049739ed7f8b5c7de04439a",
+      "status": "completed",
+      "planned_games_per_board": 12,
+      "candidate_sha256": "bd6c888f47c5c75eb093dc16ef692e55792d10c9f74b9774949ca733b74544a7",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 12,
+          "wins": 8,
+          "draws": 0,
+          "losses": 4,
+          "score": 0.6666666666666666,
+          "paired_bootstrap_95pct": [
+            0.3333333333333333,
+            0.9166666666666666
+          ],
+          "mean_box_margin": 15.666666666666666,
+          "players": {
+            "candidate": {
+              "max_seconds": 6.205917028011754,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1301,
+              "mean_seconds": 1.8111687006588473,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 1301
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 6.221730216988362,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1123,
+              "mean_seconds": 2.09838055818962,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 1123
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "data-control-00036-screen.json",
+      "receipt_sha256": "126ff2b109424fa898694e4e86268e889fc4c8d0c7c41a5c5f95a9c3971ab5b9",
+      "status": "completed",
+      "planned_games_per_board": 12,
+      "candidate_sha256": "754f6a9d12440decdf67da322625f49777c82670103067ce5e2609412a97776b",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 12,
+          "wins": 5,
+          "draws": 0,
+          "losses": 7,
+          "score": 0.4166666666666667,
+          "paired_bootstrap_95pct": [
+            0.08333333333333333,
+            0.75
+          ],
+          "mean_box_margin": -9.666666666666666,
+          "players": {
+            "candidate": {
+              "max_seconds": 6.732650224934332,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1157,
+              "mean_seconds": 1.8876082156109684,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 1157
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 6.335745137999766,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1267,
+              "mean_seconds": 1.6228898440443762,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 1267
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

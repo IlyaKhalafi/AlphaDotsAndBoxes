@@ -1,0 +1,51 @@
+{
+  "source_checkpoint_sha256": "8cfa200a183acf651c30af760a26062c43409877b7e1c801660d50a59dc27151",
+  "numpy_checkpoint_sha256": "bd6c888f47c5c75eb093dc16ef692e55792d10c9f74b9774949ca733b74544a7",
+  "sizes": [
+    [
+      1,
+      2
+    ],
+    [
+      3,
+      3
+    ],
+    [
+      4,
+      4
+    ],
+    [
+      3,
+      5
+    ],
+    [
+      5,
+      5
+    ],
+    [
+      2,
+      7
+    ],
+    [
+      10,
+      10
+    ],
+    [
+      12,
+      12
+    ]
+  ],
+  "states": 738,
+  "padding_nodes": 7,
+  "seed": 20261009,
+  "numpy": "2.5.1",
+  "torch": "2.12.1",
+  "max_absolute_error": {
+    "logits": 4.0531158447265625e-06,
+    "value": 6.556510925292969e-07
+  },
+  "mean_absolute_error": {
+    "logits": 1.5727792005874922e-06,
+    "value": 4.519533042904484e-08
+  }
+}

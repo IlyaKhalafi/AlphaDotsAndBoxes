@@ -39,3 +39,27 @@ Frozen NumPy SHA-256 hashes:
 The contingency is activated after iteration 25 fails confirmation at 13–13
 and its confidence gate becomes unreachable. Both final-checkpoint screens
 start with the frozen settings above, using three CPU workers each.
+
+## Screen results and confirmation
+
+The final component snapshot wins 8–4 (66.67%, paired 95% interval
+33.33–91.67%), mean margin +15.67 boxes. The original-encoding snapshot
+loses 5–7 (41.67%, interval 8.33–75%), mean margin −9.67. The component
+snapshot advances under the recorded rule; the original-encoding snapshot is
+rejected. [Legally replayed summaries and full histories](data/large-model-20261012/final-selfplay-screen-summary.json).
+
+The component checkpoint starts the prescribed 40-game fresh confirmation
+and 20-game zero-first-play control, using six and two CPU workers respectively.
+Both use the immutable retained-model copy with the same published SHA-256,
+so a future deployment cannot change the opponent for pending worker tasks.
+Package and benchmark source remain the frozen `fpu-floor-v1` snapshot.
+The live model remains unchanged pending confirmation and release checks.
+
+The [NumPy parity check](data/large-model-20261012/component-00034-export-parity.json)
+passes on 738 reachable states across eight board shapes, including 10×10
+and 12×12 with seven padding nodes. Maximum absolute logit/value differences
+are 4.05e−6 and 6.56e−7, within the recorded absolute/relative tolerances.
+The [deadline probe](data/large-model-20261012/component-00034-deadline-probe.json)
+passes all 36 supervised decisions on 4×4, 5×5 and 10×10, maximum 1.770
+seconds with no fallback. These checks establish numerical agreement and
+responsiveness, rather than strength under the web time limit.
