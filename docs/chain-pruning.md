@@ -32,3 +32,17 @@ The separate zero-first-play control uses 20 games, seed 306001, and requires
 at least 50% score. Smaller-board and actual web-setting checks follow before
 release. Retained weights have SHA-256
 `21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0`.
+
+## Screen result
+
+The complete screen scored 8 wins, 1 draw and 3 losses (70.83%), with mean
+margin +21.33 boxes. Its paired bootstrap interval is 54.17–87.5%. Candidate
+search averaged 1.69 seconds per decision above the common endgame threshold;
+the reference averaged 1.96 seconds. These are untimed fixed-work games and
+the slowest candidate decision took 9.61 seconds.
+
+The 40-game confirmation started with the unchanged settings and fresh seed
+206001. This screen alone does not authorize release. Every game was legally
+replayed by the [summary](data/large-model-20261012/later-screen-summary.json),
+and the [complete histories](data/large-model-20261012/chain-pruning-screen.json)
+retain per-move work and timing. The full regression suite passed 189 tests.

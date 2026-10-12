@@ -33,6 +33,19 @@ edge 43. The component snapshot does not show the proposed broad-opening-search
 problem on this example, so no fixed first-play value is added in this experiment.
 This diagnostic is not a full-game strength result.
 
+## Screen results
+
+Component iteration 14 lost 4–8 (33.33%), with mean margin −1.17 boxes. It is
+rejected. Data-only iteration 15 won 8–4 (66.67%), with mean margin +30.33;
+its paired bootstrap interval is 50–83.33%. The selected data-only snapshot
+now enters the predeclared 40-game confirmation at fresh seed 204001. Its
+weights and both sides' search settings remain frozen. This is a promising
+screen, not a confirmed improvement or an architecture comparison.
+
+The [validated summary](data/large-model-20261012/later-screen-summary.json)
+links complete histories for both candidates. The live weights are unchanged
+pending confirmation and deployment checks.
+
 ## Contingency: deeper planning with retained weights
 
 If neither later snapshot passes screening, the next isolated test keeps the
