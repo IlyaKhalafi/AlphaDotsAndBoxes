@@ -8,17 +8,18 @@ from pathlib import Path
 import numpy as np
 
 from alphaboxes.game import State
-from alphaboxes.graph import FEATURES, encode
+from alphaboxes.graph import dimensions, encode
 from alphaboxes.search import CachedEvaluator
 
 
-def weight_shapes(width: int, depth: int) -> dict[str, tuple[int, ...]]:
+def weight_shapes(width: int, depth: int, structure: bool = False) -> dict[str, tuple[int, ...]]:
     shapes = {}
+    features, context = dimensions(structure)
     layers = {
-        "encoder.0": (FEATURES + 3, width),
-        "policy.0": (width * 3 + 3, width),
+        "encoder.0": (features + context, width),
+        "policy.0": (width * 3 + context, width),
         "policy.2": (width, 1),
-        "value.0": (width * 2 + 3, width),
+        "value.0": (width * 2 + context, width),
         "value.2": (width, 1),
     }
     for index in range(depth):
@@ -39,10 +40,12 @@ def silu(x: np.ndarray) -> np.ndarray:
 
 
 class NumpyNetwork:
-    def __init__(self, weights: dict[str, np.ndarray], width: int, depth: int):
+    def __init__(
+        self, weights: dict[str, np.ndarray], width: int, depth: int, structure: bool = False
+    ):
         if width < 8 or depth < 1:
             raise ValueError("Network requires width >= 8 and depth >= 1.")
-        shapes = weight_shapes(width, depth)
+        shapes = weight_shapes(width, depth, structure)
         if weights.keys() != shapes.keys():
             raise ValueError("Checkpoint parameters do not match the GIN architecture.")
         for name, shape in shapes.items():
@@ -52,6 +55,7 @@ class NumpyNetwork:
             value.flags.writeable = False
         self.weights = weights
         self.width, self.depth = width, depth
+        self.structure = structure
 
     def linear(self, x: np.ndarray, name: str) -> np.ndarray:
         return x @ self.weights[f"{name}.weight"].T + self.weights[f"{name}.bias"]
@@ -59,8 +63,11 @@ class NumpyNetwork:
     def forward(self, obs: dict[str, np.ndarray]) -> tuple[np.ndarray, float]:
         """Return masked logits and value for one graph, including optional padding."""
         x, context = obs["x"], obs["context"]
+        features, contexts = dimensions(self.structure)
+        if x.shape[-1] != features or context.shape != (contexts,):
+            raise ValueError("Observation features do not match the checkpoint encoding.")
         mask = obs["node_mask"][:, None]
-        broadcast = np.broadcast_to(context, (len(x), 3))
+        broadcast = np.broadcast_to(context, (len(x), len(context)))
         h = silu(self.linear(np.concatenate((x, broadcast), axis=-1), "encoder.0")) * mask
         for index in range(self.depth):
             prefix = f"blocks.{index}"
@@ -95,7 +102,7 @@ class NumpyEvaluator(CachedEvaluator):
         self.network = network
 
     def _predict(self, state: State) -> tuple[np.ndarray, float]:
-        logits, value = self.network.forward(encode(state))
+        logits, value = self.network.forward(encode(state, structure=self.network.structure))
         logits = logits[: state.board.num_edges]
         probabilities = np.exp(logits - logits.max())
         probabilities /= probabilities.sum()
@@ -128,6 +135,8 @@ def export_agent(source: Path, output: Path) -> dict:
         name: value.detach().cpu().numpy().copy() for name, value in module.state_dict().items()
     }
     config = {"width": module.model_config["width"], "depth": module.model_config["depth"]}
+    if module.structure:
+        config["structure"] = True
     NumpyNetwork(weights, **config)  # Validate the conversion before writing.
     metadata = {**metadata, "source_checkpoint_sha256": metadata["checkpoint_sha256"]}
     metadata.pop("checkpoint_sha256")

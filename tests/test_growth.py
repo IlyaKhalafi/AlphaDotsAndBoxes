@@ -6,7 +6,7 @@ from ray.rllib.core.columns import Columns
 from alphaboxes.checkpoint import load_agent, save_agent
 from alphaboxes.game import State
 from alphaboxes.graph import encode
-from alphaboxes.growth import widen_agent
+from alphaboxes.growth import enable_structure, widen_agent
 from alphaboxes.network import module_spec, tensor_observations
 from alphaboxes.numpy_network import export_agent, load_network
 from alphaboxes.search import SearchConfig
@@ -77,3 +77,40 @@ def test_widened_checkpoint_can_train_with_rllib(tmp_path):
 def test_invalid_expansion_is_rejected(tmp_path, factor, noise):
     with pytest.raises(ValueError):
         widen_agent(tmp_path / "source.pt", tmp_path / "wide.pt", factor, noise)
+
+
+def test_component_expansion_preserves_predictions_and_numpy_export(tmp_path):
+    torch.set_num_threads(1)
+    torch.manual_seed(741)
+    original = module_spec(width=16, depth=6).build().eval()
+    source, output = tmp_path / "original.pt", tmp_path / "structured.pt"
+    save_agent(source, original.state_dict(), 16, 6, {"games_total": 320})
+    report = enable_structure(source, output)
+    expanded, metadata = load_agent(output)
+    assert expanded.structure and metadata["games_total"] == 320
+    assert report["parameters"] > report["source_parameters"]
+    export_agent(output, output.with_suffix(".npz"))
+    network, _ = load_network(output.with_suffix(".npz"))
+    assert network.structure
+    for size in ((1, 1), (2, 3), (5, 5), (10, 10), (14, 14)):
+        state = State.new(*size).play(0)
+        base_obs, extra_obs = encode(state), encode(state, structure=True)
+        base = original.predict(tensor_observations([base_obs]))
+        extra = expanded.predict(tensor_observations([extra_obs]))
+        for key in (Columns.ACTION_DIST_INPUTS, Columns.VF_PREDS):
+            torch.testing.assert_close(base[key], extra[key], atol=3e-6, rtol=3e-5)
+        logits, value = network.forward(extra_obs)
+        np.testing.assert_allclose(
+            logits, extra[Columns.ACTION_DIST_INPUTS][0].numpy(), atol=3e-6, rtol=3e-5
+        )
+        assert value == pytest.approx(float(extra[Columns.VF_PREDS][0]), abs=3e-6)
+        with pytest.raises(ValueError, match="checkpoint encoding"):
+            network.forward(base_obs)
+    wider = tmp_path / "structured-wide.pt"
+    widen_agent(output, wider, factor=2, noise=0)
+    widened, _ = load_agent(wider)
+    assert widened.structure
+    actual = widened.predict(tensor_observations([extra_obs]))
+    torch.testing.assert_close(
+        actual[Columns.VF_PREDS], extra[Columns.VF_PREDS], atol=3e-6, rtol=3e-5
+    )

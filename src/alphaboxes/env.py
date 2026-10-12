@@ -27,7 +27,8 @@ class DotsAndBoxesEnv(MultiAgentEnv):
         config = config or {}
         self.sizes = [tuple(size) for size in config.get("sizes", [(3, 3)])]
         self.capacity = max(board(*size).num_nodes for size in self.sizes)
-        observation_space, _ = spaces(self.capacity)
+        self.structure = bool(config.get("structure", False))
+        observation_space, _ = spaces(self.capacity, self.structure)
         action_space = LegalDiscrete(self.capacity)
         self.possible_agents = ["player_0", "player_1"]
         self.agents = self.possible_agents.copy()
@@ -50,7 +51,11 @@ class DotsAndBoxesEnv(MultiAgentEnv):
         self.agents = self.possible_agents.copy()
         self.state = State.new(*self.sizes[int(self.rng.integers(len(self.sizes)))])
         self._update_mask()
-        return {f"player_{self.state.player}": encode(self.state, self.capacity)}, {}
+        return {
+            f"player_{self.state.player}": encode(
+                self.state, self.capacity, structure=self.structure
+            )
+        }, {}
 
     def step(self, action_dict):
         active = f"player_{self.state.player}"
@@ -65,7 +70,15 @@ class DotsAndBoxesEnv(MultiAgentEnv):
         }
         terminated = {agent: terminal for agent in self.possible_agents} | {"__all__": terminal}
         truncated = dict.fromkeys([*self.possible_agents, "__all__"], False)
-        obs = {} if terminal else {f"player_{self.state.player}": encode(self.state, self.capacity)}
+        obs = (
+            {}
+            if terminal
+            else {
+                f"player_{self.state.player}": encode(
+                    self.state, self.capacity, structure=self.structure
+                )
+            }
+        )
         if terminal:
             self.agents = []
         return obs, rewards, terminated, truncated, {}

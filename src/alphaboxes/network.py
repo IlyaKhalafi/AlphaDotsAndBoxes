@@ -7,7 +7,7 @@ from ray.rllib.core.rl_module.rl_module import RLModuleSpec
 from ray.rllib.core.rl_module.torch.torch_rl_module import TorchRLModule
 from torch import nn
 
-from alphaboxes.graph import FEATURES, spaces
+from alphaboxes.graph import dimensions, spaces
 
 
 class GINBlock(nn.Module):
@@ -30,14 +30,18 @@ class GraphModule(TorchRLModule):
     def setup(self):
         width = int(self.model_config.get("width", 96))
         depth = int(self.model_config.get("depth", 6))
+        self.structure = bool(self.model_config.get("structure", False))
+        features, context = dimensions(self.structure)
         if width < 8 or depth < 1:
             raise ValueError("Network requires width >= 8 and depth >= 1.")
-        self.encoder = nn.Sequential(nn.Linear(FEATURES + 3, width), nn.SiLU())
+        self.encoder = nn.Sequential(nn.Linear(features + context, width), nn.SiLU())
         self.blocks = nn.ModuleList([GINBlock(width) for _ in range(depth)])
         # Global mean and maximum provide context beyond the local receptive field.
-        self.policy = nn.Sequential(nn.Linear(width * 3 + 3, width), nn.SiLU(), nn.Linear(width, 1))
+        self.policy = nn.Sequential(
+            nn.Linear(width * 3 + context, width), nn.SiLU(), nn.Linear(width, 1)
+        )
         self.value = nn.Sequential(
-            nn.Linear(width * 2 + 3, width), nn.SiLU(), nn.Linear(width, 1), nn.Tanh()
+            nn.Linear(width * 2 + context, width), nn.SiLU(), nn.Linear(width, 1), nn.Tanh()
         )
 
     def _forward(self, batch, **kwargs):
@@ -69,13 +73,15 @@ class GraphModule(TorchRLModule):
         return self._forward({Columns.OBS: observations})
 
 
-def module_spec(capacity: int = 1, width: int = 96, depth: int = 6) -> RLModuleSpec:
-    observation_space, action_space = spaces(capacity)
+def module_spec(
+    capacity: int = 1, width: int = 96, depth: int = 6, structure: bool = False
+) -> RLModuleSpec:
+    observation_space, action_space = spaces(capacity, structure)
     return RLModuleSpec(
         module_class=GraphModule,
         observation_space=observation_space,
         action_space=action_space,
-        model_config={"width": width, "depth": depth},
+        model_config={"width": width, "depth": depth, "structure": structure},
     )
 
 

@@ -126,9 +126,12 @@ class NeuralEvaluator(CachedEvaluator):
         from alphaboxes.network import tensor_observations
 
         obs = (
-            tensor_observations([encode(states[0])])
+            tensor_observations([encode(states[0], structure=self.module.structure)])
             if len(states) == 1
-            else {key: torch.from_numpy(value) for key, value in encode_batch(states).items()}
+            else {
+                key: torch.from_numpy(value)
+                for key, value in encode_batch(states, structure=self.module.structure).items()
+            }
         )
         device = next(self.module.parameters()).device
         obs = {key: value.to(device) for key, value in obs.items()}

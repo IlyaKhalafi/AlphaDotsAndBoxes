@@ -11,7 +11,9 @@ if TYPE_CHECKING:
     from alphaboxes.network import GraphModule
 
 
-def save_agent(path: Path, weights: dict, width: int, depth: int, metadata: dict) -> None:
+def save_agent(
+    path: Path, weights: dict, width: int, depth: int, metadata: dict, *, structure: bool = False
+) -> None:
     import torch
 
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -21,6 +23,8 @@ def save_agent(path: Path, weights: dict, width: int, depth: int, metadata: dict
         "state_dict": {key: torch.as_tensor(value).cpu() for key, value in weights.items()},
         "metadata": metadata,
     }
+    if structure:
+        payload["model_config"]["structure"] = True
     temporary = path.with_suffix(".tmp")
     torch.save(payload, temporary)
     temporary.replace(path)
