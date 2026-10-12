@@ -55,6 +55,28 @@ checks 36 supervised decisions on 4×4, 5×5 and 10×10. All finish below two
 seconds (maximum 1.768 seconds), with no fallback. Neither probe is a
 full-game strength comparison under the web deadline.
 
+## Data-only confirmation: rejected
+
+Fresh confirmation retains 24 complete opening-paired games: 9 wins and
+15 losses (37.5%, paired interval 16.67–58.33%), mean margin −4.33 boxes.
+The screen's 8–4 result did not hold on fresh openings, so the selected
+iteration-15 checkpoint is rejected and the zero-first-play control is not run.
+
+The planned 40-game run stops when its confidence gate becomes unreachable.
+Even 16 further wins would yield only 45% for the final paired-bootstrap lower
+bound, below the required strictly-above-50% threshold. The optimistic final
+score would be 62.5%. Any other future outcomes can only reduce that bound
+under the fixed final resample indices. Stopping rejects a futile candidate;
+it does not promote a favorable partial result.
+
+The [receipt](data/large-model-20261012/data-control-00015-confirm.json) records
+this bound and reconstruction provenance. Source hashes are verified against
+the matching commit-321de70 source snapshot; weights match the frozen selection
+hash. The [summary](data/large-model-20261012/data-control-00015-confirm-summary.json)
+legally replays every retained game. [Unfinished opening-pair traces](data/large-model-20261012/data-control-00015-confirm-inflight.json)
+are retained separately. Only the owned benchmark and its workers were stopped;
+self-play continues within the existing budgets.
+
 ## Contingency: deeper planning with retained weights
 
 If neither later snapshot passes screening, the next isolated test keeps the

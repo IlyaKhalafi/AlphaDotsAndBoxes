@@ -368,6 +368,13 @@ evaluator were screened separately and are not enabled in the release.
 
 ## 10×10 transfer test
 
+Subsequent large-board experiments are recorded in the
+[component-model report](component-gin.md),
+[later-checkpoint comparisons](later-component-checkpoints.md),
+[chain-search checks](chain-pruning.md), and
+[exact-policy teaching experiment](component-policy-teaching.md).
+Promising screens require fresh confirmation before release.
+
 An [untimed 20-game comparison](ten-by-ten-search.md) gave both versions 1,024
 full simulations per move. The first-play update scored 10 wins and 10 losses
 (50%; paired interval 30%–70%), so a 10×10 strength improvement is not established.
