@@ -167,6 +167,7 @@ class SearchConfig:
     chain_pruning: bool = False
     sparse_selection: bool = False
     safe_moves: bool = False
+    root_safety_scale: float = 1.0
 
     def __post_init__(self):
         if self.time_limit is not None and (
@@ -191,6 +192,8 @@ class SearchConfig:
             raise ValueError("Root halving requires fresh trees without proof propagation.")
         if self.safe_moves and self.prove_results:
             raise ValueError("Safe-move filtering is heuristic and cannot prove results.")
+        if not np.isfinite(self.root_safety_scale) or not 0 < self.root_safety_scale <= 1:
+            raise ValueError("Root safety scale must be finite and within (0, 1].")
         if (
             not 0 <= self.noise_fraction <= 1
             or not 0 <= self.exact_threshold <= 18
@@ -486,6 +489,16 @@ class MCTS:
                 )
                 for child, prior in zip(root.children.values(), priors, strict=True):
                     child.prior = float(prior)
+            if self.config.root_safety_scale < 1:
+                safe = set(safe_actions(root.state))
+                # Keep late strategic sacrifices and every legal move available.
+                if len(safe) >= 8 and len(safe) < len(root.children):
+                    for action, child in root.children.items():
+                        if action not in safe:
+                            child.prior *= self.config.root_safety_scale
+                    total = sum(child.prior for child in root.children.values())
+                    for child in root.children.values():
+                        child.prior /= total
             if not explore:
                 continue
             # Scale concentration with branching factor as board sizes change.
