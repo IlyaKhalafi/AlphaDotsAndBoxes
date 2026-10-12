@@ -203,10 +203,10 @@ suite passes 185 tests, including compiled playout parity and mutable-game repla
 
 ## Progress snapshot
 
-The recorded snapshot contains 14 component iterations (672 games, 90,442
-positions) and 17 data-only iterations (816 games, 106,806 positions).
-Component value loss is 0.5768 and policy loss 3.0337; data-only values are
-0.6095 and 3.0391. These are final-minibatch metrics. Different starts and
+The 2026-10-12 15:33 UTC snapshot contains 20 component iterations (960 games,
+129,272 positions) and 22 data-only iterations (1,056 games, 139,705 positions).
+Component value loss is 0.5677 and policy loss 2.9932; data-only values are
+0.6185 and 3.0508. These are final-minibatch metrics. Different starts and
 trajectories make direct loss comparisons an imperfect quality measure;
 full-game matches remain the selection criterion.
 

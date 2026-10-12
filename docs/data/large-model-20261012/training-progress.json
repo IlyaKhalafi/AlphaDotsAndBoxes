@@ -1134,6 +1134,498 @@
       "elapsed_seconds": 12493.523421830032,
       "stop_reason": null,
       "gpu_peak_mb": 19516.78759765625
+    },
+    {
+      "iteration": 15,
+      "games_total": 720,
+      "positions_total": 96901,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": true,
+      "component_feature_backend": "cython",
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "5c7bed891c467ffcb86bcbe5a046b3097b617b914b9e062520be323ca23ec0b2",
+        "training_games": 320,
+        "training_positions": 13934,
+        "structure_initialization": {
+          "method": "zero_new_component_input_columns",
+          "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+          "source_parameters": 272648,
+          "parameters": 277064
+        }
+      },
+      "default_optimizer_learning_rate": 0.0001,
+      "gradients_default_optimizer_global_norm": 5.381441593170166,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "policy_entropy": 2.9927167892456055,
+      "policy_kl": 0.5536961555480957,
+      "policy_loss": 3.001047134399414,
+      "target_entropy": 2.4473509788513184,
+      "total_loss": 3.581382989883423,
+      "value_loss": 0.5803358554840088,
+      "value_mae": 0.585552990436554,
+      "weights_seq_no": 240.0,
+      "sampled_games": 48,
+      "midgame_starts": 3,
+      "endgame_starts": 11,
+      "initial_moves_total": 1649,
+      "mean_initial_moves": 34.354166666666664,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 5.073231150332869,
+      "replay_positions": 96901,
+      "sample_seconds": 713.2089190080296,
+      "update_seconds": 19.622420758008957,
+      "iteration_seconds": 732.8316130070016,
+      "elapsed_seconds": 13234.468121393002,
+      "stop_reason": null,
+      "gpu_peak_mb": 19516.78759765625
+    },
+    {
+      "iteration": 16,
+      "games_total": 768,
+      "positions_total": 103540,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": true,
+      "component_feature_backend": "cython",
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "5c7bed891c467ffcb86bcbe5a046b3097b617b914b9e062520be323ca23ec0b2",
+        "training_games": 320,
+        "training_positions": 13934,
+        "structure_initialization": {
+          "method": "zero_new_component_input_columns",
+          "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+          "source_parameters": 272648,
+          "parameters": 277064
+        }
+      },
+      "default_optimizer_learning_rate": 0.0001,
+      "gradients_default_optimizer_global_norm": 5.708381652832031,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "policy_entropy": 3.070042371749878,
+      "policy_kl": 0.5493135452270508,
+      "policy_loss": 3.065514326095581,
+      "target_entropy": 2.5162007808685303,
+      "total_loss": 3.6410722732543945,
+      "value_loss": 0.575558066368103,
+      "value_mae": 0.5909721851348877,
+      "weights_seq_no": 256.0,
+      "sampled_games": 48,
+      "midgame_starts": 3,
+      "endgame_starts": 13,
+      "initial_moves_total": 1969,
+      "mean_initial_moves": 41.020833333333336,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 4.935683084801928,
+      "replay_positions": 103540,
+      "sample_seconds": 830.5306566089857,
+      "update_seconds": 38.30661139998119,
+      "iteration_seconds": 868.8374652109342,
+      "elapsed_seconds": 14113.022572127986,
+      "stop_reason": null,
+      "gpu_peak_mb": 19516.78759765625
+    },
+    {
+      "iteration": 17,
+      "games_total": 816,
+      "positions_total": 110987,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": true,
+      "component_feature_backend": "cython",
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "5c7bed891c467ffcb86bcbe5a046b3097b617b914b9e062520be323ca23ec0b2",
+        "training_games": 320,
+        "training_positions": 13934,
+        "structure_initialization": {
+          "method": "zero_new_component_input_columns",
+          "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+          "source_parameters": 272648,
+          "parameters": 277064
+        }
+      },
+      "default_optimizer_learning_rate": 0.0001,
+      "gradients_default_optimizer_global_norm": 13.22012710571289,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "policy_entropy": 3.018486976623535,
+      "policy_kl": 0.5355806350708008,
+      "policy_loss": 3.0107498168945312,
+      "target_entropy": 2.4751691818237305,
+      "total_loss": 3.5805773735046387,
+      "value_loss": 0.569827675819397,
+      "value_mae": 0.5800690650939941,
+      "weights_seq_no": 272.0,
+      "sampled_games": 48,
+      "midgame_starts": 3,
+      "endgame_starts": 7,
+      "initial_moves_total": 1073,
+      "mean_initial_moves": 22.354166666666668,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 4.4001611387135755,
+      "replay_positions": 110987,
+      "sample_seconds": 849.1561809940031,
+      "update_seconds": 29.06977147399448,
+      "iteration_seconds": 878.2262670149794,
+      "elapsed_seconds": 15000.809965373017,
+      "stop_reason": null,
+      "gpu_peak_mb": 19516.78759765625
+    },
+    {
+      "iteration": 18,
+      "games_total": 864,
+      "positions_total": 117520,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": true,
+      "component_feature_backend": "cython",
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "5c7bed891c467ffcb86bcbe5a046b3097b617b914b9e062520be323ca23ec0b2",
+        "training_games": 320,
+        "training_positions": 13934,
+        "structure_initialization": {
+          "method": "zero_new_component_input_columns",
+          "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+          "source_parameters": 272648,
+          "parameters": 277064
+        }
+      },
+      "default_optimizer_learning_rate": 0.0001,
+      "gradients_default_optimizer_global_norm": 10.505454063415527,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "policy_entropy": 2.9978578090667725,
+      "policy_kl": 0.563147783279419,
+      "policy_loss": 3.015805959701538,
+      "target_entropy": 2.452658176422119,
+      "total_loss": 3.600553035736084,
+      "value_loss": 0.5847469568252563,
+      "value_mae": 0.5911091566085815,
+      "weights_seq_no": 288.0,
+      "sampled_games": 48,
+      "midgame_starts": 6,
+      "endgame_starts": 11,
+      "initial_moves_total": 1899,
+      "mean_initial_moves": 39.5625,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 5.015766110515843,
+      "replay_positions": 117520,
+      "sample_seconds": 860.977936130017,
+      "update_seconds": 18.34398520202376,
+      "iteration_seconds": 879.3222154449904,
+      "elapsed_seconds": 15890.755060676951,
+      "stop_reason": null,
+      "gpu_peak_mb": 19516.78759765625
+    },
+    {
+      "iteration": 19,
+      "games_total": 912,
+      "positions_total": 123310,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": true,
+      "component_feature_backend": "cython",
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "5c7bed891c467ffcb86bcbe5a046b3097b617b914b9e062520be323ca23ec0b2",
+        "training_games": 320,
+        "training_positions": 13934,
+        "structure_initialization": {
+          "method": "zero_new_component_input_columns",
+          "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+          "source_parameters": 272648,
+          "parameters": 277064
+        }
+      },
+      "default_optimizer_learning_rate": 0.0001,
+      "gradients_default_optimizer_global_norm": 10.860139846801758,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "policy_entropy": 3.023300886154175,
+      "policy_kl": 0.5383710861206055,
+      "policy_loss": 3.023538589477539,
+      "target_entropy": 2.4851675033569336,
+      "total_loss": 3.5707719326019287,
+      "value_loss": 0.5472333431243896,
+      "value_mae": 0.5643004179000854,
+      "weights_seq_no": 304.0,
+      "sampled_games": 48,
+      "midgame_starts": 0,
+      "endgame_starts": 15,
+      "initial_moves_total": 1798,
+      "mean_initial_moves": 37.458333333333336,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 5.659412780656304,
+      "replay_positions": 123310,
+      "sample_seconds": 759.9854441320058,
+      "update_seconds": 19.477939631906338,
+      "iteration_seconds": 779.4636287259636,
+      "elapsed_seconds": 16680.94820730097,
+      "stop_reason": null,
+      "gpu_peak_mb": 19516.78759765625
+    },
+    {
+      "iteration": 20,
+      "games_total": 960,
+      "positions_total": 129272,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": true,
+      "component_feature_backend": "cython",
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "5c7bed891c467ffcb86bcbe5a046b3097b617b914b9e062520be323ca23ec0b2",
+        "training_games": 320,
+        "training_positions": 13934,
+        "structure_initialization": {
+          "method": "zero_new_component_input_columns",
+          "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+          "source_parameters": 272648,
+          "parameters": 277064
+        }
+      },
+      "default_optimizer_learning_rate": 0.0001,
+      "gradients_default_optimizer_global_norm": 15.35843276977539,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "policy_entropy": 2.9955363273620605,
+      "policy_kl": 0.53407883644104,
+      "policy_loss": 2.993154287338257,
+      "target_entropy": 2.459075450897217,
+      "total_loss": 3.5608878135681152,
+      "value_loss": 0.5677335858345032,
+      "value_mae": 0.5737919807434082,
+      "weights_seq_no": 320.0,
+      "sampled_games": 48,
+      "midgame_starts": 2,
+      "endgame_starts": 14,
+      "initial_moves_total": 1374,
+      "mean_initial_moves": 28.625,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 5.496142234149614,
+      "replay_positions": 129272,
+      "sample_seconds": 692.053014423931,
+      "update_seconds": 19.97609121899586,
+      "iteration_seconds": 712.0292856600136,
+      "elapsed_seconds": 17407.241794392,
+      "stop_reason": null,
+      "gpu_peak_mb": 19516.78759765625
     }
   ],
   "data-control-v2": [
@@ -2409,6 +2901,381 @@
       "update_seconds": 17.342891074018553,
       "iteration_seconds": 837.789565508021,
       "elapsed_seconds": 13094.936547413003,
+      "stop_reason": null,
+      "gpu_peak_mb": 19337.5947265625
+    },
+    {
+      "iteration": 18,
+      "games_total": 864,
+      "positions_total": 113679,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": false,
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+        "training_games": 320,
+        "training_positions": 13934
+      },
+      "policy_entropy": 3.0279359817504883,
+      "policy_kl": 0.5699906349182129,
+      "policy_loss": 3.0248894691467285,
+      "target_entropy": 2.4548988342285156,
+      "value_loss": 0.614916205406189,
+      "value_mae": 0.6251603364944458,
+      "gradients_default_optimizer_global_norm": 1.0924122333526611,
+      "weights_seq_no": 288.0,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "total_loss": 3.639805793762207,
+      "default_optimizer_learning_rate": 0.0001,
+      "sampled_games": 48,
+      "midgame_starts": 4,
+      "endgame_starts": 8,
+      "initial_moves_total": 1587,
+      "mean_initial_moves": 33.0625,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 4.767641495707842,
+      "replay_positions": 113679,
+      "sample_seconds": 812.6423891970189,
+      "update_seconds": 15.785903171054088,
+      "iteration_seconds": 828.4284385140054,
+      "elapsed_seconds": 13935.039782610955,
+      "stop_reason": null,
+      "gpu_peak_mb": 19337.5947265625
+    },
+    {
+      "iteration": 19,
+      "games_total": 912,
+      "positions_total": 120211,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": false,
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+        "training_games": 320,
+        "training_positions": 13934
+      },
+      "policy_entropy": 3.0477895736694336,
+      "policy_kl": 0.5625286102294922,
+      "policy_loss": 3.0572762489318848,
+      "target_entropy": 2.4947476387023926,
+      "value_loss": 0.6146620512008667,
+      "value_mae": 0.6303616762161255,
+      "gradients_default_optimizer_global_norm": 1.9762834310531616,
+      "weights_seq_no": 304.0,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "total_loss": 3.671938419342041,
+      "default_optimizer_learning_rate": 0.0001,
+      "sampled_games": 48,
+      "midgame_starts": 3,
+      "endgame_starts": 11,
+      "initial_moves_total": 1976,
+      "mean_initial_moves": 41.166666666666664,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 5.016533986527863,
+      "replay_positions": 120211,
+      "sample_seconds": 814.7671346589923,
+      "update_seconds": 17.479034919990227,
+      "iteration_seconds": 832.2463566199876,
+      "elapsed_seconds": 14779.27083290997,
+      "stop_reason": null,
+      "gpu_peak_mb": 19337.5947265625
+    },
+    {
+      "iteration": 20,
+      "games_total": 960,
+      "positions_total": 126615,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": false,
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+        "training_games": 320,
+        "training_positions": 13934
+      },
+      "policy_entropy": 3.0467324256896973,
+      "policy_kl": 0.5706684589385986,
+      "policy_loss": 3.0438177585601807,
+      "target_entropy": 2.473149299621582,
+      "value_loss": 0.6100011467933655,
+      "value_mae": 0.625601589679718,
+      "gradients_default_optimizer_global_norm": 1.222988247871399,
+      "weights_seq_no": 320.0,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "total_loss": 3.6538188457489014,
+      "default_optimizer_learning_rate": 0.0001,
+      "sampled_games": 48,
+      "midgame_starts": 4,
+      "endgame_starts": 8,
+      "initial_moves_total": 1400,
+      "mean_initial_moves": 29.166666666666668,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 5.1168019987507805,
+      "replay_positions": 126615,
+      "sample_seconds": 775.9083526090253,
+      "update_seconds": 17.34654767299071,
+      "iteration_seconds": 793.25507371407,
+      "elapsed_seconds": 15585.254826991935,
+      "stop_reason": null,
+      "gpu_peak_mb": 19337.5947265625
+    },
+    {
+      "iteration": 21,
+      "games_total": 1008,
+      "positions_total": 133886,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": false,
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+        "training_games": 320,
+        "training_positions": 13934
+      },
+      "policy_entropy": 2.9965407848358154,
+      "policy_kl": 0.566474199295044,
+      "policy_loss": 2.9734442234039307,
+      "target_entropy": 2.4069700241088867,
+      "value_loss": 0.6014018654823303,
+      "value_mae": 0.6135706901550293,
+      "gradients_default_optimizer_global_norm": 1.8841633796691895,
+      "weights_seq_no": 336.0,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "total_loss": 3.574846029281616,
+      "default_optimizer_learning_rate": 0.0001,
+      "sampled_games": 48,
+      "midgame_starts": 3,
+      "endgame_starts": 13,
+      "initial_moves_total": 1717,
+      "mean_initial_moves": 35.770833333333336,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 4.506670334204373,
+      "replay_positions": 133886,
+      "sample_seconds": 853.8074367010267,
+      "update_seconds": 18.38503380701877,
+      "iteration_seconds": 872.1927013240056,
+      "elapsed_seconds": 16472.072745461017,
+      "stop_reason": null,
+      "gpu_peak_mb": 19337.5947265625
+    },
+    {
+      "iteration": 22,
+      "games_total": 1056,
+      "positions_total": 139705,
+      "seed": 75,
+      "sizes": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "simulations": 256,
+      "structure": false,
+      "selfplay_device": "cuda",
+      "selfplay_batch_size": 16,
+      "selfplay_cuda_graphs": true,
+      "selfplay_gpu_workers": 3,
+      "training_exact_threshold": 12,
+      "training_leaf_exact_threshold": 0,
+      "training_reuse_tree": true,
+      "start_fraction": 0.1,
+      "endgame_fraction": 0.25,
+      "initialization": {
+        "checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+        "training_games": 320,
+        "training_positions": 13934
+      },
+      "policy_entropy": 3.0573582649230957,
+      "policy_kl": 0.5694260597229004,
+      "policy_loss": 3.0507516860961914,
+      "target_entropy": 2.481325626373291,
+      "value_loss": 0.6184886693954468,
+      "value_mae": 0.6303603649139404,
+      "gradients_default_optimizer_global_norm": 1.9519010782241821,
+      "weights_seq_no": 352.0,
+      "module_train_batch_size_mean": 2048.0,
+      "num_module_steps_trained": 2048.0,
+      "num_module_steps_trained_lifetime": 2048.0,
+      "total_loss": 3.6692404747009277,
+      "default_optimizer_learning_rate": 0.0001,
+      "sampled_games": 48,
+      "midgame_starts": 6,
+      "endgame_starts": 16,
+      "initial_moves_total": 2373,
+      "mean_initial_moves": 49.4375,
+      "sample_presentations": 32768,
+      "presentations_per_new_position": 5.63120811135934,
+      "replay_positions": 139705,
+      "sample_seconds": 830.7197759799892,
+      "update_seconds": 18.832713135052472,
+      "iteration_seconds": 849.5526268520625,
+      "elapsed_seconds": 17336.85132053797,
       "stop_reason": null,
       "gpu_peak_mb": 19337.5947265625
     }
