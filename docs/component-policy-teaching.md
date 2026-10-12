@@ -84,3 +84,18 @@ bootstrap lower bound above 50%. The separate zero-first-play control uses
 20 games, seed 310001, and requires at least 50% score. Numerical and web
 deadline checks and smaller-board matches remain required before release.
 The 1,024-simulation taught-model arm keeps its separate predeclared protocol.
+
+### Low-work screen: rejected
+
+The eight retained games score 1 win and 7 losses (12.5%, paired interval
+0–37.5%), mean margin −27.75 boxes. Candidate decisions average 9.83 ms
+above the common root-aid threshold, maximum 17.36 ms across all decisions.
+The policy is fast, but it loses to retained search in full games.
+
+The planned 12-game screen stops because even four further wins yield only
+41.67%, below the strictly-above-50% gate. [Receipt and optimistic bound](data/large-model-20261012/policy-one-screen.json),
+[legal replay validation](data/large-model-20261012/policy-one-screen-summary.json),
+and [unfinished opening-pair traces](data/large-model-20261012/policy-one-screen-inflight.json)
+are preserved. Metadata reconstruction verifies matching commit-cf2310f
+sources and the frozen update-300 model hash. This arm is not deployed.
+The same model's 1,024-simulation screen continues independently.

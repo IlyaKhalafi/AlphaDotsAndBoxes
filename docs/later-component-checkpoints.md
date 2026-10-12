@@ -79,7 +79,7 @@ self-play continues within the existing budgets.
 
 ## Contingency: deeper planning with retained weights
 
-If neither later snapshot passes screening, the next isolated test keeps the
+If no later snapshot passes fresh confirmation, the next isolated test keeps the
 retained weights and constant-0.33 search and increases candidate work to 8,192
 simulations against reference 1,024. Use 12 paired-seat 10×10 games, seed 19001,
 without timers, structural aid, proofs, reuse or rollouts. This changes computation
@@ -92,3 +92,8 @@ The benchmark accepts `--candidate-simulations` and `--reference-simulations`;
 omitting both retains the shared `--match-simulations` budget. Replay validation
 checks each side against its own ceiling. Serial/parallel regression tests cover
 equal and unequal budgets and reject receipts with excess work.
+
+The fallback is activated after both later models fail confirmation. Its
+original opening seed 19001 has not been used by another arm. The trigger
+was broadened from failed screening to failed confirmation before launch;
+budgets, seeds and promotion gates are unchanged.
