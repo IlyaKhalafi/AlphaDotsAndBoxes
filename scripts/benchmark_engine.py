@@ -158,7 +158,12 @@ def load_players(args):
     }
     if getattr(args, "candidate_rollouts", 0):
         players["candidate"] = RolloutEvaluator(
-            players["candidate"], args.candidate_rollouts, args.rollout_weight, args.rollout_seed
+            players["candidate"],
+            args.candidate_rollouts,
+            args.rollout_weight,
+            args.rollout_seed,
+            backend=args.rollout_backend,
+            max_remaining_fraction=args.rollout_max_remaining,
         )
     if args.response_deadline:
         players["candidate"] = BoundedSearch(players["candidate"], timeout=args.response_deadline)
@@ -206,6 +211,8 @@ def main():
     parser.add_argument("--candidate-rollouts", type=int, default=0)
     parser.add_argument("--rollout-weight", type=float, default=1.0)
     parser.add_argument("--rollout-seed", type=int, default=1729)
+    parser.add_argument("--rollout-backend", choices=("python", "cython"), default="python")
+    parser.add_argument("--rollout-max-remaining", type=float, default=1.0)
     parser.add_argument(
         "--search-options", type=json.loads, default={}, help="Candidate MCTS config JSON"
     )
@@ -238,6 +245,8 @@ def main():
         or not np.isfinite(args.rollout_weight)
         or not 0 <= args.rollout_weight <= 1
         or args.rollout_seed < 0
+        or not np.isfinite(args.rollout_max_remaining)
+        or not 0 < args.rollout_max_remaining <= 1
     ):
         parser.error("Use 0..16 rollouts, a weight in [0, 1] and a nonnegative rollout seed.")
     if not isinstance(args.search_options, dict) or not isinstance(
@@ -313,6 +322,11 @@ def main():
         )
     ]
     extensions = [sys.modules[fn.__module__] for fn in (choose_child, solve_remaining) if fn]
+    candidate = evaluators["candidate"]
+    if isinstance(candidate, BoundedSearch):
+        candidate = candidate.evaluator
+    if isinstance(candidate, RolloutEvaluator) and candidate.backend == "cython":
+        extensions.append(sys.modules[candidate.playout.__module__])
     report = {
         "started_utc": datetime.now(UTC).isoformat(),
         "checkpoint_sha256": hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
@@ -325,6 +339,8 @@ def main():
             "rollouts": args.candidate_rollouts,
             "weight": args.rollout_weight,
             "seed": args.rollout_seed,
+            "backend": args.rollout_backend,
+            "max_remaining_fraction": args.rollout_max_remaining,
             "oracle": "Long-component recurrence; general multi-front positions excluded",
         }
         if args.candidate_rollouts
@@ -349,6 +365,7 @@ def main():
         "acceleration": {
             "search": choose_child is not None,
             "endgame": solve_remaining is not None,
+            "rollout": args.candidate_rollouts > 0 and args.rollout_backend == "cython",
         },
         "source_sha256": {
             path.name: hashlib.sha256(path.read_bytes()).hexdigest()

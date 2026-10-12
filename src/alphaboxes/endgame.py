@@ -163,6 +163,14 @@ class DegreeTwoSolver:
         groups = position(state)
         if groups is None:
             return None
+        future = self.fast_future(groups)
+        if future is None:
+            return None
+        ours, theirs = state.scores[state.player], state.scores[1 - state.player]
+        return (ours - theirs + future) / state.board.num_boxes
+
+    def fast_future(self, groups: Position) -> int | None:
+        """Exact future margin on the restricted rollout domain."""
         active = 0
         for length, boundaries in groups:
             if (length, boundaries) in {(1, 1), (2, 0)}:
@@ -177,9 +185,7 @@ class DegreeTwoSolver:
                 return None
         if active > 1:
             return None
-        future = self._future(groups, None)
-        ours, theirs = state.scores[state.player], state.scores[1 - state.player]
-        return (ours - theirs + future) / state.board.num_boxes
+        return self._future(groups, None)
 
     def solve(self, state: State, deadline: float | None = None):
         """Return exact margin and all optimal actions, or None outside scope."""

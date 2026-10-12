@@ -59,3 +59,49 @@ def test_rollout_cache_misses_and_player_relabeling_are_deterministic():
     assert first[1] == second[1] == third[1]
     np.testing.assert_array_equal(first[0], second[0])
     assert evaluator.episodes == 6
+
+
+@pytest.mark.parametrize("size", [(1, 2), (2, 3), (4, 4), (5, 5), (10, 10), (12, 12), (3, 7)])
+@pytest.mark.parametrize("use_oracle", [False, True])
+def test_compiled_playouts_preserve_every_action_and_finish(size, use_oracle):
+    compiled = pytest.importorskip("alphaboxes._rollout").playout
+    rng = np.random.default_rng(959)
+    state = State.new(*size)
+    for moves in (0, state.board.num_edges // 3, state.board.num_edges // 2):
+        while state.board.num_edges - len(state.legal_actions) < moves:
+            state = state.play(int(rng.choice(state.legal_actions)))
+        paths, results = [], []
+        for implementation in (playout, compiled):
+            actions = []
+            oracle = DegreeTwoSolver() if use_oracle else None
+            results.append(
+                implementation(state, np.random.default_rng(957), oracle, actions.append)
+            )
+            paths.append(actions)
+        assert results[0] == results[1]
+        assert paths[0] == paths[1]
+
+
+def test_compiled_evaluator_preserves_predictions_including_cache_misses():
+    pytest.importorskip("alphaboxes._rollout")
+    first = RolloutEvaluator(Neural(), rollouts=2, cache_size=0)
+    second = RolloutEvaluator(Neural(), rollouts=2, cache_size=0, backend="cython")
+    rng = np.random.default_rng(972)
+    state = State.new(5, 5)
+    for _ in range(16):
+        policy, value = first(state)
+        other_policy, other_value = second(state)
+        np.testing.assert_array_equal(policy, other_policy)
+        assert value == other_value
+        state = state.play(int(rng.choice(state.legal_actions)))
+    assert first.statistics() == second.statistics()
+
+
+def test_late_rollouts_preserve_early_neural_predictions():
+    evaluator = RolloutEvaluator(Neural(), max_remaining_fraction=0.5)
+    state = State.new(3, 3)
+    assert evaluator(state)[1] == -0.25 and evaluator.episodes == 0
+    for action in range(state.board.num_edges // 2):
+        state = state.play(action)
+    evaluator(state)
+    assert evaluator.episodes == 2

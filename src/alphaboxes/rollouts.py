@@ -69,13 +69,36 @@ def playout(state: State, rng, oracle=None, on_move=None):
 class RolloutEvaluator(CachedEvaluator):
     """Keep learned priors and blend their value with complete-game estimates."""
 
-    def __init__(self, neural, rollouts=2, weight=1.0, seed=1729, cache_size=4096):
+    def __init__(
+        self,
+        neural,
+        rollouts=2,
+        weight=1.0,
+        seed=1729,
+        cache_size=4096,
+        backend="python",
+        max_remaining_fraction=1.0,
+    ):
         super().__init__(cache_size)
         if not isinstance(rollouts, int) or rollouts < 1:
             raise ValueError("Use a positive integer rollout count.")
         if not np.isfinite(weight) or not 0 <= weight <= 1 or seed < 0:
             raise ValueError("Use a weight in [0, 1] and a nonnegative seed.")
+        if not np.isfinite(max_remaining_fraction) or not 0 < max_remaining_fraction <= 1:
+            raise ValueError("Remaining-edge fraction must be in (0, 1].")
+        self.max_remaining_fraction = max_remaining_fraction
         self.neural, self.rollouts, self.weight, self.seed = neural, rollouts, weight, seed
+        if backend not in {"python", "cython"}:
+            raise ValueError("Rollout backend must be python or cython.")
+        self.backend, self.playout = backend, playout
+        if backend == "cython":
+            try:
+                from alphaboxes._rollout import playout as compiled
+            except ImportError as error:
+                raise ValueError(
+                    "Build the optional rollout kernel before selecting cython."
+                ) from error
+            self.playout = compiled
         self.oracle = DegreeTwoSolver(cache_size=10000)
         self.episodes = self.moves = self.oracle_finishes = 0
 
@@ -92,11 +115,13 @@ class RolloutEvaluator(CachedEvaluator):
 
     def _predict(self, state):
         policy, value = self.neural(state)
+        if len(state.legal_actions) > state.board.num_edges * self.max_remaining_fraction:
+            return policy, value
         digest = hashlib.blake2b(repr(self._key(state)).encode(), digest_size=8).digest()
         rng = np.random.default_rng(int.from_bytes(digest, "little") ^ self.seed)
         outcomes = []
         for _ in range(self.rollouts):
-            outcome, steps, exact = playout(state, rng, self.oracle)
+            outcome, steps, exact = self.playout(state, rng, self.oracle)
             outcomes.append(outcome)
             self.episodes += 1
             self.moves += steps

@@ -47,3 +47,30 @@ ALPHABOXES_PURE_NUMPY=1 python scripts/benchmark_engine.py \
   --match-boards 10 --match-simulations 1024 --untimed --skip-latency \
   --games 12 --workers 6 --seed 15001 --output runs/rollout-screen.json
 ```
+
+## Full replacement rejected; late-phase test
+
+The first arm finished **1 win and 11 losses**, 8.33% score, paired interval
+0–25%, and mean margin −51.33 boxes. Both sides completed 1,024 simulations per
+nonexact decision. The candidate averaged 9.00 seconds versus 1.94 for reference,
+with 1,055,322 playouts and 129,920,966 simulated moves. This is a decisive
+screen failure; no confirmation runs. The continuations use a heuristic policy,
+and accurate terminal scoring does not make them strong opponent forecasts.
+[Validated results](data/large-model-20261012/rollout-2-summary.json).
+
+The next isolated arm preserves the neural value while more than half the
+original edges remain. It uses the same two-playout estimator after that
+threshold, with unchanged weights, priors, blend weight and seed. The 12-game
+screen uses fresh seed 16001 and the same 1,024-simulation comparison. A passing
+candidate needs 40 fresh games at seed 203001 and the previously stated paired
+confidence gate, followed by the 20-game zero-first-play control at seed 303001.
+This tests whether changing opening estimates caused the earlier regression.
+
+An optional Cython playout kernel preserves the complete action sequence,
+outcome, episode length and exact-finish status of the Python implementation.
+Comparisons cover seven board shapes from 1×2 through 12×12, with and without
+the oracle, plus cached evaluator predictions. The late-phase screen uses this
+compiled game loop; neural inference remains NumPy. It is selected explicitly
+with `--rollout-backend cython`, independently of search/endgame acceleration.
+Kernel builds replace extension files atomically so running processes retain
+their loaded code.
