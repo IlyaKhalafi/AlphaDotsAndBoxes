@@ -26,6 +26,9 @@ def test_all_recognized_two_by_two_positions_match_full_edge_oracle():
             continue
         recognized += 1
         assert solver.solve(state) == solve(state)
+        fast = solver.fast_value(state)
+        if fast is not None:
+            assert fast == pytest.approx(solve(state)[0])
         for action in state.legal_actions:
             child = state.play(action)
             expected = solve(child)[0]

@@ -154,6 +154,33 @@ class DegreeTwoSolver:
         ours, theirs = state.scores[state.player], state.scores[1 - state.player]
         return (ours - theirs + future) / state.board.num_boxes
 
+    def fast_value(self, state: State) -> float | None:
+        """Use only the long-component recurrence and forced tiny captures.
+
+        This avoids the general multi-front solver without a clock-dependent
+        cutoff, so seeded rollout estimates do not depend on scheduling.
+        """
+        groups = position(state)
+        if groups is None:
+            return None
+        active = 0
+        for length, boundaries in groups:
+            if (length, boundaries) in {(1, 1), (2, 0)}:
+                continue
+            if boundaries == 2 and length >= 3:
+                continue
+            if boundaries == -1 and length >= 4 and length % 2 == 0:
+                continue
+            if boundaries in (0, 1) and length >= 2 - boundaries:
+                active += 1
+            else:
+                return None
+        if active > 1:
+            return None
+        future = self._future(groups, None)
+        ours, theirs = state.scores[state.player], state.scores[1 - state.player]
+        return (ours - theirs + future) / state.board.num_boxes
+
     def solve(self, state: State, deadline: float | None = None):
         """Return exact margin and all optimal actions, or None outside scope."""
         value = self.value(state, deadline)

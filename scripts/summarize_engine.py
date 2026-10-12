@@ -131,6 +131,10 @@ def summarize(receipt):
                 "decisions_with_reused_visits": sum(
                     move.get("inherited_visits", 0) > 0 for move in neural
                 ),
+                **{
+                    key: sum(move.get(key, 0) for move in neural)
+                    for key in ("rollout_episodes", "rollout_moves", "rollout_oracle_finishes")
+                },
                 "opening_positions": len(openings),
                 "opening_depth_counts": dict(
                     sorted(Counter(move["depth"] for move in alpha_openings).items())

@@ -22,6 +22,7 @@ from alphaboxes.checkpoint import load_evaluator
 from alphaboxes.engine import AlphaBeta, EngineConfig
 from alphaboxes.game import State
 from alphaboxes.opponents import solve_remaining
+from alphaboxes.rollouts import RolloutEvaluator
 from alphaboxes.search import MCTS, SearchConfig, choose_child
 from alphaboxes.timed_search import BoundedSearch
 
@@ -40,6 +41,8 @@ def planner(evaluator, engine, seconds, search_options=None, simulations=8192):
 
 
 def measure(search, state):
+    statistics = getattr(getattr(search, "evaluator", None), "statistics", lambda: {})
+    before = statistics()
     started = monotonic()
     policy, value = search.policy(state)
     return {
@@ -56,6 +59,7 @@ def measure(search, state):
         "nodes": getattr(search, "nodes", None),
         "cutoffs": getattr(search, "cutoffs", None),
         "table_hits": getattr(search, "table_hits", None),
+        **{key: count - before[key] for key, count in statistics().items()},
     }
 
 
@@ -152,6 +156,10 @@ def load_players(args):
         "candidate": load_evaluator(args.checkpoint)[0],
         "reference": load_evaluator(args.reference_checkpoint or args.checkpoint)[0],
     }
+    if getattr(args, "candidate_rollouts", 0):
+        players["candidate"] = RolloutEvaluator(
+            players["candidate"], args.candidate_rollouts, args.rollout_weight, args.rollout_seed
+        )
     if args.response_deadline:
         players["candidate"] = BoundedSearch(players["candidate"], timeout=args.response_deadline)
     return players
@@ -195,6 +203,9 @@ def main():
     parser.add_argument("--reference-checkpoint", type=Path)
     parser.add_argument("--reference-engine", choices=("mcts", "alpha_beta"), default="mcts")
     parser.add_argument("--candidate-engine", choices=("mcts", "alpha_beta"), default="alpha_beta")
+    parser.add_argument("--candidate-rollouts", type=int, default=0)
+    parser.add_argument("--rollout-weight", type=float, default=1.0)
+    parser.add_argument("--rollout-seed", type=int, default=1729)
     parser.add_argument(
         "--search-options", type=json.loads, default={}, help="Candidate MCTS config JSON"
     )
@@ -222,6 +233,13 @@ def main():
     parser.add_argument("--progress", type=Path)
     parser.add_argument("--move-progress-dir", type=Path)
     args = parser.parse_args()
+    if (
+        not 0 <= args.candidate_rollouts <= 16
+        or not np.isfinite(args.rollout_weight)
+        or not 0 <= args.rollout_weight <= 1
+        or args.rollout_seed < 0
+    ):
+        parser.error("Use 0..16 rollouts, a weight in [0, 1] and a nonnegative rollout seed.")
     if not isinstance(args.search_options, dict) or not isinstance(
         args.reference_search_options, dict
     ):
@@ -288,6 +306,7 @@ def main():
             "opponents",
             "search",
             "root_halving",
+            "rollouts",
             "checkpoint",
             "endgame",
             "timed_search",
@@ -302,6 +321,14 @@ def main():
         ).hexdigest(),
         "reference_engine": args.reference_engine,
         "candidate_engine": args.candidate_engine,
+        "candidate_value_estimator": {
+            "rollouts": args.candidate_rollouts,
+            "weight": args.rollout_weight,
+            "seed": args.rollout_seed,
+            "oracle": "Long-component recurrence; general multi-front positions excluded",
+        }
+        if args.candidate_rollouts
+        else {"rollouts": 0},
         "search_options": args.search_options,
         "reference_search_options": args.reference_search_options,
         "python": platform.python_version(),
