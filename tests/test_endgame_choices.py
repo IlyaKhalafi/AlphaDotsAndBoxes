@@ -98,6 +98,37 @@ def test_timeouts_do_not_become_oracle_labels(monkeypatch):
     assert all("exactly_diagnosed_decisions" not in row for row in result["counts"].values())
 
 
+def test_counts_early_gifts_without_claiming_they_are_strategic_errors():
+    state = State.new(1, 2)
+    opening = list(state.board.boxes[0][:2])
+    for action in opening:
+        state = state.play(action)
+    risky = next(a for a in state.legal_actions if a not in module.safe_actions(state))
+    moves = []
+    while not state.terminal:
+        action = risky if not moves else min(state.legal_actions)
+        moves.append(
+            {
+                "action": action,
+                "player": state.player,
+                "side": "candidate" if state.player == 0 else "reference",
+            }
+        )
+        state = state.play(action)
+    episode = {
+        "index": 0,
+        "board": [1, 2],
+        "alpha_player": 0,
+        "opening": opening,
+        "moves": moves,
+        "scores": list(state.scores),
+    }
+    result = inspect([episode])
+    assert result["counts"]["candidate"]["early_gifts_with_safe_moves"] == 1
+    assert result["early_gifts"][0]["action"] == risky
+    assert result["early_gifts"][0]["safe_actions"] > 0
+
+
 @pytest.mark.parametrize("seconds", [0, -1, float("nan"), float("inf")])
 def test_rejects_invalid_oracle_budget(seconds):
     with pytest.raises(ValueError, match="budget"):

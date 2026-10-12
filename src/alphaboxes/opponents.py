@@ -19,6 +19,20 @@ def random_action(state: State, rng: np.random.Generator) -> int:
     return int(rng.choice(state.legal_actions))
 
 
+def safe_actions(state: State) -> tuple[int, ...]:
+    """Delay offering captures while safe moves remain and no capture is open.
+
+    This is a heuristic: an early sacrifice can be strategically correct.
+    Leave capture and handout decisions unrestricted.
+    """
+    legal = state.legal_actions
+    free = [sum(state.edges[e] < 0 for e in box) for box in state.board.boxes]
+    if any(count == 1 and owner < 0 for count, owner in zip(free, state.owners, strict=True)):
+        return legal
+    safe = tuple(a for a in legal if all(free[b] >= 3 for b in state.board.edge_boxes[a]))
+    return safe or legal
+
+
 def tactical_action(state: State, rng: np.random.Generator) -> int:
     """Capture most boxes, otherwise avoid offering a third side when possible."""
     legal = state.legal_actions
@@ -29,15 +43,7 @@ def tactical_action(state: State, rng: np.random.Generator) -> int:
                 [a for a, count in zip(legal, captures, strict=True) if count == max(captures)]
             )
         )
-    safe = [
-        a
-        for a in legal
-        if all(
-            sum(state.edges[e] < 0 for e in state.board.boxes[b]) != 2
-            for b in state.board.edge_boxes[a]
-        )
-    ]
-    return int(rng.choice(safe or legal))
+    return int(rng.choice(safe_actions(state)))
 
 
 def endgame_action(state: State, rng: np.random.Generator) -> int:

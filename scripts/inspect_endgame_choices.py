@@ -8,9 +8,10 @@ from collections import Counter
 from pathlib import Path
 from time import monotonic
 
-from alphaboxes import components, endgame, game
+from alphaboxes import components, endgame, game, opponents
 from alphaboxes.endgame import DegreeTwoSolver
 from alphaboxes.game import State
+from alphaboxes.opponents import safe_actions
 
 
 def inspect(games, seconds=0.05):
@@ -18,7 +19,7 @@ def inspect(games, seconds=0.05):
         raise ValueError("Oracle time budget must be finite and positive.")
     solver = DegreeTwoSolver()
     counts = {side: Counter() for side in ("candidate", "reference")}
-    mistakes, first_exact = [], []
+    mistakes, first_exact, gifts = [], [], []
     for episode in games:
         state = State.new(*episode["board"])
         for action in episode["opening"]:
@@ -30,6 +31,21 @@ def inspect(games, seconds=0.05):
                 raise ValueError("Move side disagrees with the replayed state.")
             row = counts[side]
             row["decisions"] += 1
+            safe = safe_actions(state)
+            if len(safe) < len(state.legal_actions):
+                row["positions_with_safe_and_gifting_choices"] += 1
+                if move["action"] not in safe:
+                    row["early_gifts_with_safe_moves"] += 1
+                    gifts.append(
+                        {
+                            "game": episode["index"],
+                            "ply": ply,
+                            "side": side,
+                            "remaining_edges": len(state.legal_actions),
+                            "safe_actions": len(safe),
+                            "action": move["action"],
+                        }
+                    )
             deadline = monotonic() + seconds
             try:
                 best = solver.value(state, deadline)
@@ -76,6 +92,7 @@ def inspect(games, seconds=0.05):
         "counts": {side: dict(row) for side, row in counts.items()},
         "first_exact_decisions": first_exact,
         "mistakes": mistakes,
+        "early_gifts": gifts,
     }
 
 
@@ -98,6 +115,7 @@ def main():
             "Exact oracle answers only in its recognized domain. "
             "Regrets are local, not additive predicted match losses. "
             "Timeouts are excluded; coverage can depend on CPU scheduling."
+            " Early gifts are descriptive; sacrifices can be strategically correct."
         ),
         "receipt_sha256": hashlib.sha256(snapshot).hexdigest(),
         "game_indices": [episode["index"] for episode in games],
@@ -113,6 +131,7 @@ def main():
                 Path(game.__file__),
                 Path(endgame.__file__),
                 Path(components.__file__),
+                Path(opponents.__file__),
             )
         },
         **inspect(games, args.seconds),

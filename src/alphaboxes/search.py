@@ -16,7 +16,7 @@ from alphaboxes.chain_moves import allowed_actions
 from alphaboxes.endgame import EndgameTimeout, shared_solver
 from alphaboxes.game import State
 from alphaboxes.graph import encode, encode_batch
-from alphaboxes.opponents import solve
+from alphaboxes.opponents import safe_actions, solve
 from alphaboxes.root_halving import RootHalving
 from alphaboxes.selection import ChildSelection
 
@@ -166,6 +166,7 @@ class SearchConfig:
     prove_results: bool = False
     chain_pruning: bool = False
     sparse_selection: bool = False
+    safe_moves: bool = False
 
     def __post_init__(self):
         if self.time_limit is not None and (
@@ -188,6 +189,8 @@ class SearchConfig:
             raise ValueError("Root candidates must be an integer in 0..512.")
         if self.root_candidates and (self.reuse_tree or self.prove_results):
             raise ValueError("Root halving requires fresh trees without proof propagation.")
+        if self.safe_moves and self.prove_results:
+            raise ValueError("Safe-move filtering is heuristic and cannot prove results.")
         if (
             not 0 <= self.noise_fraction <= 1
             or not 0 <= self.exact_threshold <= 18
@@ -274,6 +277,9 @@ class MCTS:
             reduced = allowed_actions(node.state)
             node.chain_restricted = len(reduced) < len(legal)
             legal = reduced
+        if self.config.safe_moves:
+            safe = set(safe_actions(node.state))
+            legal = tuple(action for action in legal if action in safe)
         probabilities, value = prediction if prediction is not None else self.evaluator(node.state)
         priors = np.maximum(probabilities[list(legal)], 0).astype(np.float64)
         priors = priors / priors.sum() if priors.sum() > 0 else np.full(len(legal), 1 / len(legal))
