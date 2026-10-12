@@ -129,6 +129,18 @@ and gates were saved before either match started in the
 [confirmation plan](data/large-model-20261012/component-00001-confirmation-plan.json).
 Training continues independently; no serving weights have been replaced.
 
+**Confirmation rejected.** After 36 complete games the frozen iteration-one
+model finished 15 wins and 21 losses: 41.67% score, paired interval 25–58.33%,
+mean margin −2.50 boxes. Even four further wins would yield only 47.5%, so the
+planned 40-game match stopped for mathematical futility. The dependent old-search
+control stopped at eight paired games, four wins and four losses; it is incomplete
+and does not establish a control result. Every retained nonexact decision
+completed 1,024 simulations. Interrupted games are excluded from paired results.
+[Validated screen and stopped-match summaries](data/large-model-20261012/component-00001-summary.json).
+Stopped receipts reconstruct invocation settings and historical source hashes
+from revision `74cc6c2`, preserving complete pairs from append-only progress.
+The next isolated arm is [exact component-value teaching](component-teaching.md).
+
 The frozen learned weights also passed a Torch-versus-NumPy comparison on 101
 legal positions across seven board shapes, from 1×2 through 14×14, with seven
 padding nodes. Maximum logit and value differences were 0.00000572 and

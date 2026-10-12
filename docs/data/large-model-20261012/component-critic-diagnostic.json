@@ -1,0 +1,344 @@
+{
+  "seed": 41171,
+  "classification_draw_threshold": 0.1,
+  "excluded_dataset_overlap": 0,
+  "excluded_dataset_sha256": "fe54d1bb135ae814a10dacd3c2869ba8c126f7d3873e8728e9089a7529132b29",
+  "suite_sha256": "fbd2355330c34687ea3d931ef642029ac269f017548bda860cc360155d3be08a",
+  "source_sha256": {
+    "/home/ubuntu8/ilya/research/AlphaDotsAndBoxes/scripts/diagnose_components.py": "72679241d0f26d67d19ab7893202253857ef8226d7c93a7fa19818fcb44156cb",
+    "src/alphaboxes/curriculum.py": "ec1d626aef164c835af53dbe4784cf9a4867e8046271aa010c30fea18ac5d181",
+    "src/alphaboxes/endgame.py": "a9280629648841e70f4cb60a3670cfd85d76f54de41efeeb11b41c9fb5e56673",
+    "src/alphaboxes/components.py": "867e2dd23d7a4e9688a4e8a400219375c44ac27fbffe1c38a8afac70c88fefd7",
+    "src/alphaboxes/numpy_network.py": "cae9da249fcd970dd240e640401554a423f09e282da39e2582bcb9d227c9962e",
+    "src/alphaboxes/graph.py": "19533402b0fcd7374464638eef298923c544f38ee4f1a7b662250392d97dd50e",
+    "src/alphaboxes/teaching.py": "3d550875210637c4f34b1fff599914660746de05328d3721f52f5918a011270e"
+  },
+  "scope": "Raw network on closed chain/loop positions; no full-game strength claim",
+  "results": [
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        4,
+        4
+      ],
+      "positions": 100,
+      "value_error": 0.4819666310027242,
+      "outcome_correct": 0.67,
+      "best_margin": 0.94,
+      "optimal_policy_mass": 0.8697626498341561,
+      "box_regret": 0.24
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        4,
+        4
+      ],
+      "positions": 100,
+      "value_error": 0.43925873036147095,
+      "outcome_correct": 0.7,
+      "best_margin": 0.98,
+      "optimal_policy_mass": 0.8970561358332634,
+      "box_regret": 0.08
+    },
+    {
+      "checkpoint_sha256": "b59323dab2dc57583fb12c045012048279706238b369262058f8c00322419e42",
+      "board": [
+        4,
+        4
+      ],
+      "positions": 100,
+      "value_error": 0.41941872532479463,
+      "outcome_correct": 0.71,
+      "best_margin": 0.97,
+      "optimal_policy_mass": 0.8965890941023826,
+      "box_regret": 0.12
+    },
+    {
+      "checkpoint_sha256": "afc93186987f073707a0d2b31d7a84910b0b08490df49eb155a796302d6d68e5",
+      "board": [
+        4,
+        4
+      ],
+      "positions": 100,
+      "value_error": 0.39621269474504517,
+      "outcome_correct": 0.73,
+      "best_margin": 0.97,
+      "optimal_policy_mass": 0.8981688606739044,
+      "box_regret": 0.12
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        4,
+        4
+      ],
+      "positions": 100,
+      "value_error": 0.374729597682599,
+      "outcome_correct": 0.74,
+      "best_margin": 0.96,
+      "optimal_policy_mass": 0.89356016933918,
+      "box_regret": 0.16
+    },
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        5,
+        5
+      ],
+      "positions": 100,
+      "value_error": 0.591831977814436,
+      "outcome_correct": 0.68,
+      "best_margin": 0.6,
+      "optimal_policy_mass": 0.6338866893947125,
+      "box_regret": 1.58
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        5,
+        5
+      ],
+      "positions": 100,
+      "value_error": 0.37123179258778694,
+      "outcome_correct": 0.83,
+      "best_margin": 0.7,
+      "optimal_policy_mass": 0.6558551156520843,
+      "box_regret": 1.16
+    },
+    {
+      "checkpoint_sha256": "b59323dab2dc57583fb12c045012048279706238b369262058f8c00322419e42",
+      "board": [
+        5,
+        5
+      ],
+      "positions": 100,
+      "value_error": 0.3388101759925485,
+      "outcome_correct": 0.85,
+      "best_margin": 0.71,
+      "optimal_policy_mass": 0.6539827533066273,
+      "box_regret": 1.12
+    },
+    {
+      "checkpoint_sha256": "afc93186987f073707a0d2b31d7a84910b0b08490df49eb155a796302d6d68e5",
+      "board": [
+        5,
+        5
+      ],
+      "positions": 100,
+      "value_error": 0.3629001671075821,
+      "outcome_correct": 0.8,
+      "best_margin": 0.71,
+      "optimal_policy_mass": 0.6546644884347915,
+      "box_regret": 1.12
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        5,
+        5
+      ],
+      "positions": 100,
+      "value_error": 0.34401637616567315,
+      "outcome_correct": 0.82,
+      "best_margin": 0.69,
+      "optimal_policy_mass": 0.6519213294982911,
+      "box_regret": 1.2
+    },
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        10,
+        10
+      ],
+      "positions": 100,
+      "value_error": 0.8818765072524548,
+      "outcome_correct": 0.48,
+      "best_margin": 0.3,
+      "optimal_policy_mass": 0.5847801630198955,
+      "box_regret": 4.56
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        10,
+        10
+      ],
+      "positions": 100,
+      "value_error": 0.44803789131343363,
+      "outcome_correct": 0.78,
+      "best_margin": 0.84,
+      "optimal_policy_mass": 0.6162909258902073,
+      "box_regret": 0.64
+    },
+    {
+      "checkpoint_sha256": "b59323dab2dc57583fb12c045012048279706238b369262058f8c00322419e42",
+      "board": [
+        10,
+        10
+      ],
+      "positions": 100,
+      "value_error": 0.390865044798702,
+      "outcome_correct": 0.79,
+      "best_margin": 0.81,
+      "optimal_policy_mass": 0.6175902803987264,
+      "box_regret": 0.8
+    },
+    {
+      "checkpoint_sha256": "afc93186987f073707a0d2b31d7a84910b0b08490df49eb155a796302d6d68e5",
+      "board": [
+        10,
+        10
+      ],
+      "positions": 100,
+      "value_error": 0.36203223230317233,
+      "outcome_correct": 0.78,
+      "best_margin": 0.82,
+      "optimal_policy_mass": 0.6170180121809244,
+      "box_regret": 0.76
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        10,
+        10
+      ],
+      "positions": 100,
+      "value_error": 0.3230422291345894,
+      "outcome_correct": 0.79,
+      "best_margin": 0.79,
+      "optimal_policy_mass": 0.616398219615221,
+      "box_regret": 0.88
+    },
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        12,
+        12
+      ],
+      "positions": 100,
+      "value_error": 0.8331222921609879,
+      "outcome_correct": 0.5,
+      "best_margin": 0.29,
+      "optimal_policy_mass": 0.5874831512570381,
+      "box_regret": 6.28
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        12,
+        12
+      ],
+      "positions": 100,
+      "value_error": 0.5884040242014453,
+      "outcome_correct": 0.62,
+      "best_margin": 0.77,
+      "optimal_policy_mass": 0.6143060876429081,
+      "box_regret": 0.92
+    },
+    {
+      "checkpoint_sha256": "b59323dab2dc57583fb12c045012048279706238b369262058f8c00322419e42",
+      "board": [
+        12,
+        12
+      ],
+      "positions": 100,
+      "value_error": 0.4972663295455277,
+      "outcome_correct": 0.69,
+      "best_margin": 0.76,
+      "optimal_policy_mass": 0.6153002710640431,
+      "box_regret": 1.08
+    },
+    {
+      "checkpoint_sha256": "afc93186987f073707a0d2b31d7a84910b0b08490df49eb155a796302d6d68e5",
+      "board": [
+        12,
+        12
+      ],
+      "positions": 100,
+      "value_error": 0.3270301901549101,
+      "outcome_correct": 0.83,
+      "best_margin": 0.75,
+      "optimal_policy_mass": 0.6137611080706119,
+      "box_regret": 1.0
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        12,
+        12
+      ],
+      "positions": 100,
+      "value_error": 0.26158508531283586,
+      "outcome_correct": 0.86,
+      "best_margin": 0.7,
+      "optimal_policy_mass": 0.6127012649178505,
+      "box_regret": 1.4
+    },
+    {
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "board": [
+        14,
+        14
+      ],
+      "positions": 100,
+      "value_error": 0.9123574960231781,
+      "outcome_correct": 0.51,
+      "best_margin": 0.23,
+      "optimal_policy_mass": 0.5349556489288807,
+      "box_regret": 8.16
+    },
+    {
+      "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+      "board": [
+        14,
+        14
+      ],
+      "positions": 100,
+      "value_error": 0.5647335434379056,
+      "outcome_correct": 0.73,
+      "best_margin": 0.76,
+      "optimal_policy_mass": 0.5587848541140557,
+      "box_regret": 1.28
+    },
+    {
+      "checkpoint_sha256": "b59323dab2dc57583fb12c045012048279706238b369262058f8c00322419e42",
+      "board": [
+        14,
+        14
+      ],
+      "positions": 100,
+      "value_error": 0.5211089742649346,
+      "outcome_correct": 0.71,
+      "best_margin": 0.72,
+      "optimal_policy_mass": 0.5595725224912167,
+      "box_regret": 1.84
+    },
+    {
+      "checkpoint_sha256": "afc93186987f073707a0d2b31d7a84910b0b08490df49eb155a796302d6d68e5",
+      "board": [
+        14,
+        14
+      ],
+      "positions": 100,
+      "value_error": 0.3145667025074363,
+      "outcome_correct": 0.87,
+      "best_margin": 0.77,
+      "optimal_policy_mass": 0.5567344574630261,
+      "box_regret": 1.48
+    },
+    {
+      "checkpoint_sha256": "b1c5bf3bb82a105d93bc766a3242fdcc2b532187ad43bb56821239d45ac4d8c9",
+      "board": [
+        14,
+        14
+      ],
+      "positions": 100,
+      "value_error": 0.30132741044508293,
+      "outcome_correct": 0.86,
+      "best_margin": 0.69,
+      "optimal_policy_mass": 0.5543465405702591,
+      "box_regret": 2.2
+    }
+  ]
+}

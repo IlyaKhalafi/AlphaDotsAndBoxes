@@ -1,0 +1,56 @@
+{
+  "format_version": 1,
+  "seed": 41071,
+  "sources": [
+    {
+      "name": "replay.pt",
+      "sha256": "661ac26130e77516ebb227ac58c7bff147ac2fb91c6f85649fc1a700a5037e08"
+    }
+  ],
+  "source_seeds": [
+    75
+  ],
+  "source_iteration": 3,
+  "generator": "Legally reached closed components, followed by 0..6 optimal moves",
+  "oracle_seconds_per_candidate": 0.05,
+  "skipped_oracle_timeouts": 2026,
+  "sizes": [
+    [
+      4,
+      4
+    ],
+    [
+      5,
+      5
+    ],
+    [
+      8,
+      8
+    ],
+    [
+      10,
+      10
+    ],
+    [
+      10,
+      10
+    ],
+    [
+      12,
+      12
+    ]
+  ],
+  "checkpoint_sha256": "accca6f2d76341784b362ada6290dae7fbe62fdf766208dfe6d7f3e5d7c332c2",
+  "source_checkpoint_sha256": "7185d4f820cb2dba33ed9bfead8ce3496572ebde1403df03ffce15cd5ffa505e",
+  "exact_positions": 2048,
+  "anchor_positions": 2048,
+  "oracle_outcomes": {
+    "-1": 871,
+    "0": 272,
+    "1": 905
+  },
+  "generation_seconds": 18.155690251034684,
+  "oracle": "Exact final WDL value and uniform best-box-margin policy",
+  "anchors": "Frozen released-network policy and value, earlier in source games",
+  "dataset_sha256": "fe54d1bb135ae814a10dacd3c2869ba8c126f7d3873e8728e9089a7529132b29"
+}
