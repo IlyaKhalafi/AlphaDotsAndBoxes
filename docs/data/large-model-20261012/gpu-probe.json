@@ -1,0 +1,31 @@
+{
+  "batch_size": 2048,
+  "board": [
+    12,
+    12
+  ],
+  "nodes": 456,
+  "node_features": 16,
+  "context_features": 17,
+  "memory_limit_gb": 24,
+  "update_seconds": 1.1828107230830938,
+  "peak_allocated_mb": 19514.63134765625,
+  "reserved_mb": 20514.0,
+  "checkpoint_sha256": "5c7bed891c467ffcb86bcbe5a046b3097b617b914b9e062520be323ca23ec0b2",
+  "metrics": {
+    "num_trainable_parameters": 277064.0,
+    "policy_entropy": 4.591982841491699,
+    "policy_kl": 0.7331669330596924,
+    "policy_loss": 4.596271514892578,
+    "target_entropy": 3.8631045818328857,
+    "value_loss": 1.3946800231933594,
+    "value_mae": 0.8205820918083191,
+    "gradients_default_optimizer_global_norm": 60.59356689453125,
+    "weights_seq_no": 1.0,
+    "module_train_batch_size_mean": 2048.0,
+    "num_module_steps_trained": 2048.0,
+    "num_module_steps_trained_lifetime": 2048.0,
+    "total_loss": 5.9909515380859375,
+    "default_optimizer_learning_rate": 0.0003
+  }
+}

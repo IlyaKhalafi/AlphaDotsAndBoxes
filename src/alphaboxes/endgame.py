@@ -20,6 +20,11 @@ class EndgameTimeout(TimeoutError):
 
 def position(state: State) -> Position | None:
     """Return (box count, boundary count), with -1 denoting a closed cycle."""
+    if any(
+        owner < 0 and not 1 <= sum(state.edges[e] < 0 for e in box) <= 2
+        for owner, box in zip(state.owners, state.board.boxes, strict=True)
+    ):
+        return None
     components = free_components(state)
     if any(c.min_free == 0 or c.max_free > 2 for c in components):
         return None
