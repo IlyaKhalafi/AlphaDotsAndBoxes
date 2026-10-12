@@ -32,6 +32,35 @@ record the full shared simulation count. Report wins, draws, losses, box margins
 and a 20,000-resample paired-opening bootstrap interval (seed 4199), including
 negative results. This sample does not establish expert-human strength.
 
+## What changed in the search
+
+The learned policy, value network and weights are unchanged. The change is to
+first-play urgency: before an action has any visits, its exploitation value is
+`parent_neural_value - 0.33` instead of zero. Once visited, it uses the usual
+average backed-up value. The policy-weighted exploration bonus remains the same.
+
+For example, with parent value 0.10 an unvisited move starts at −0.23. A tested
+move valued at −0.10 can then receive more visits instead of losing priority to
+an untested move initialized at zero. Exploration bonuses still grow for moves
+with few visits. This changes the breadth/depth balance of the search.
+
+Additional diagnostics used one separate six-move random opening per board
+(seed 4451 plus board size) and 1,024 simulations. The tree was retained solely
+for inspection; each search was fresh and inherited no visits. The endpoint of
+a simulation is the position whose value it backs up. Depth counts drawn edges
+from the root, including capture moves that keep the same player.
+
+| Board | Old median endpoint depth | New median endpoint depth | Old/new visited root actions |
+| --- | --- | --- | --- |
+| 4×4 | 2 | 7 | 34/34 of 34 |
+| 5×5 | 2 | 10 | 54/54 of 54 |
+| 10×10 | 2 | 71 | 214/1 of 214 |
+
+The larger-board case exposes a tradeoff: a deep search can still examine only
+one root action. Greater depth does not by itself establish stronger play. These
+diagnostics illustrate the mechanism on individual positions; the paired games
+provide the playing-strength test. [Complete diagnostic receipt](data/ten-by-ten-20261012/search-allocation.json).
+
 ## Results
 
 The run is in progress. No 10×10 superiority claim is made until it finishes.
