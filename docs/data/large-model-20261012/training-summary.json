@@ -82,9 +82,9 @@
         }
       },
       "first_iteration": 1,
-      "last_iteration": 20,
-      "games_total": 960,
-      "positions_total": 129272,
+      "last_iteration": 34,
+      "games_total": 1632,
+      "positions_total": 218590,
       "initialization": {
         "checkpoint_sha256": "5c7bed891c467ffcb86bcbe5a046b3097b617b914b9e062520be323ca23ec0b2",
         "training_games": 320,
@@ -96,12 +96,12 @@
           "parameters": 277064
         }
       },
-      "stop_reason": null,
-      "elapsed_seconds": 17407.241794392,
-      "median_iteration_seconds": 861.2044610389858,
+      "stop_reason": "time_budget",
+      "elapsed_seconds": 28949.10213133495,
+      "median_iteration_seconds": 840.55103709799,
       "peak_allocated_mb": 19516.78759765625,
-      "last10_mean_policy_loss": 3.025979828834534,
-      "last10_mean_value_loss": 0.5741151452064515
+      "last10_mean_policy_loss": 3.0054824113845826,
+      "last10_mean_value_loss": 0.5708513200283051
     },
     {
       "label": "data-control-v2",
@@ -177,20 +177,20 @@
         }
       },
       "first_iteration": 1,
-      "last_iteration": 22,
-      "games_total": 1056,
-      "positions_total": 139705,
+      "last_iteration": 36,
+      "games_total": 1728,
+      "positions_total": 231778,
       "initialization": {
         "checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
         "training_games": 320,
         "training_positions": 13934
       },
-      "stop_reason": null,
-      "elapsed_seconds": 17336.85132053797,
-      "median_iteration_seconds": 801.9494619299658,
+      "stop_reason": "time_budget",
+      "elapsed_seconds": 29088.218213654007,
+      "median_iteration_seconds": 811.7439604795072,
       "peak_allocated_mb": 19337.5947265625,
-      "last10_mean_policy_loss": 3.0136687755584717,
-      "last10_mean_value_loss": 0.600746339559555
+      "last10_mean_policy_loss": 3.028716230392456,
+      "last10_mean_value_loss": 0.602543979883194
     }
   ]
 }

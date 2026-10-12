@@ -201,12 +201,12 @@ time. [Restart and configuration receipt](data/large-model-20261012/component-cy
 Subsequent metrics identify the component feature backend. The complete current
 suite passes 185 tests, including compiled playout parity and mutable-game replays.
 
-## Progress snapshot
+## Completed training
 
-The 2026-10-12 15:33 UTC snapshot contains 20 component iterations (960 games,
-129,272 positions) and 22 data-only iterations (1,056 games, 139,705 positions).
-Component value loss is 0.5677 and policy loss 2.9932; data-only values are
-0.6185 and 3.0508. These are final-minibatch metrics. Different starts and
+The completed runs contain 34 component iterations (1,632 games,
+218,590 positions) and 36 data-only iterations (1,728 games, 231,778 positions).
+Component value loss is 0.5787 and policy loss 2.9980; data-only values are
+0.5790 and 2.9787. These are final-minibatch metrics. Different starts and
 trajectories make direct loss comparisons an imperfect quality measure;
 full-game matches remain the selection criterion.
 
@@ -216,6 +216,14 @@ full-game matches remain the selection criterion.
 
 [Iteration records](data/large-model-20261012/training-progress.json),
 [CSV exports and current configurations](data/large-model-20261012/training-summary.json).
-Training continues beyond this dated snapshot. The component plot spans the
+Both drivers stop with `time_budget` and release their GPU workers. The timer
+is checked after a complete iteration: component training-clock elapsed time
+is 28,949 seconds against the adjusted 28,312-second cap, and the data-only
+run takes 29,088 seconds against 28,800. These are 637- and 288-second
+overruns, not exact hard deadlines. The component restart allowance is
+described above. Peak learner allocations are 19,517 and 19,338 MiB;
+the unrelated GPU process remains running.
+
+The component plot spans the
 sampler restart before iteration 14; it is one resumed run, with restarted
 worker streams and preserved optimizer/driver state.
