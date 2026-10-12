@@ -47,3 +47,9 @@ The full CPU suite passes 238 tests with two GPU tests skipped; the extended
 diagnostic separately passes nine focused tests. The seeded tactical baseline
 retains identical actions on four board shapes after sharing the safe-action
 helper. Full-game testing has not started for this arm.
+
+The contingency is activated after the final component snapshot cannot clear
+fresh confirmation (21–15 over 36 games, optimistic final lower bound 47.5%).
+The safe-move screen starts with six CPU workers, the frozen source and
+retained-model copy, and the exact settings specified above. Other prototypes
+remain disabled and the live agent remains unchanged.

@@ -63,3 +63,28 @@ The [deadline probe](data/large-model-20261012/component-00034-deadline-probe.js
 passes all 36 supervised decisions on 4×4, 5×5 and 10×10, maximum 1.770
 seconds with no fallback. These checks establish numerical agreement and
 responsiveness, rather than strength under the web time limit.
+
+## Fresh confirmation: not established
+
+The retained 36 complete opening-paired games finish 21–15 (58.33%, paired
+95% interval 41.67–75%), mean margin +8.61 boxes. This is a positive point
+estimate, but it does not establish the required improvement. Even four
+further wins would leave the final 40-game bootstrap lower bound at 47.5%,
+below the strictly-above-50% gate. The candidate is rejected for release and
+the futile run stops, preserving every completed pair and the unfinished traces.
+This does not establish that additional component training is harmful.
+
+The dependent zero-first-play control stops at 6–2 over eight complete games
+(75%, interval 50–100%, mean margin +45.25). That partial result cannot promote
+a model that fails primary confirmation. No smaller-board release matches
+are run. Exact benchmark start timestamps are unavailable and recorded as
+null; reconstructed settings and source hashes match the frozen snapshot.
+
+[Validated summaries](data/large-model-20261012/component-00034-confirm-summary.json),
+[primary receipt and stopping proof](data/large-model-20261012/component-00034-confirm.json),
+[primary unfinished traces](data/large-model-20261012/component-00034-confirm-inflight.json),
+[control receipt](data/large-model-20261012/component-00034-zero-control.json),
+and [control unfinished traces](data/large-model-20261012/component-00034-zero-control-inflight.json).
+Only the owned failed comparisons and workers are stopped. The retained model
+stays deployed; the [safe-move hypothesis](safe-move-search.md) is activated,
+and the independent eightfold-search confirmation continues.
