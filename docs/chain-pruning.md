@@ -68,3 +68,18 @@ the 1.9-second supervisor; reference search uses the same internal budget.
 Require at least 50% score separately on each board and every candidate
 decision below two seconds. This check runs while the large-board confirmation
 continues and cannot substitute for it.
+
+## Smaller-board Deep results
+
+The completed checks pass their non-regression gates: 4×4 scores 13 wins,
+4 draws and 3 losses (75%, paired interval 57.5–90%); 5×5 scores 14 wins
+and 6 losses (70%, paired interval 50–90%). Mean margins are +2.7 and +5.7
+boxes. All 955 candidate decisions finish below two seconds, maximum
+1.781 seconds, with no supervisor fallback.
+
+The [validated summary](data/large-model-20261012/chain-small-deep-summary.json)
+and [full histories](data/large-model-20261012/chain-small-deep.json) retain
+both sides' actual search counts. These timed results can vary with scheduling.
+They compare against the retained constant-0.33 agent, a different baseline
+from the earlier release's zero-first-play comparison. They do not establish
+a 10×10 gain, and the large-board confirmation remains necessary.
