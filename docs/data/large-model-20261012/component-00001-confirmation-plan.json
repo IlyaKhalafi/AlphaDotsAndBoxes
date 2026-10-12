@@ -1,0 +1,35 @@
+{
+  "frozen_utc": "2026-10-12T11:08:11.999353+00:00",
+  "candidate": "runs/large-model-20261012/selection/component-00001.npz",
+  "candidate_sha256": "7b82732a17fa2b7fac526ed49ac34ff89ba96392ee753c50b1f6ec477b27962d",
+  "selection_screen": "component-00001-screen.json",
+  "selection_seed": 10001,
+  "reference": "models/larger.npz",
+  "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "candidate_search_options": {
+    "fpu_reduction": 0.33
+  },
+  "confirmation": {
+    "games": 40,
+    "seed": 200001,
+    "simulations": 1024,
+    "reference_search_options": {
+      "fpu_reduction": 0.33
+    },
+    "gate": "score > 0.5 and paired bootstrap lower bound > 0.5"
+  },
+  "legacy_control": {
+    "games": 20,
+    "seed": 300001,
+    "simulations": 1024,
+    "reference_search_options": {
+      "fpu_reduction": 0.0
+    },
+    "gate": "score >= 0.5"
+  },
+  "root_exact_edges": 12,
+  "timers": false,
+  "oracle": false,
+  "tree_reuse": false,
+  "proof": false
+}

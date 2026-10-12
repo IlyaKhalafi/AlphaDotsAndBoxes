@@ -1,0 +1,55 @@
+{
+  "torch": "2.12.1+cu130",
+  "batch_size": 16,
+  "capacity": 456,
+  "checkpoint_sha256": "c94d73588070cac7d16cbf213e0046546f0e6539608a73a8aa7da11e8d594aa5",
+  "iteration": 2,
+  "results": [
+    {
+      "precision": "ieee",
+      "seconds_per_batch": [
+        0.009122619024128652,
+        0.00928535315033514,
+        0.010255914050503634,
+        0.01056139330030419,
+        0.010061897625564597
+      ]
+    },
+    {
+      "precision": "tf32",
+      "seconds_per_batch": [
+        0.007139855850255117,
+        0.008147747124894522,
+        0.009615057322662324,
+        0.010826930750044993,
+        0.010924081050325185
+      ]
+    },
+    {
+      "precision": "tf32",
+      "seconds_per_batch": [
+        0.009759473823942244,
+        0.0087185714248335,
+        0.00984478737518657,
+        0.009585547802271322,
+        0.00819844517391175
+      ]
+    },
+    {
+      "precision": "ieee",
+      "seconds_per_batch": [
+        0.007637644823989831,
+        0.0058002463250886645,
+        0.007835621200501918,
+        0.010861778850085102,
+        0.010384118350339122
+      ]
+    }
+  ],
+  "max_policy_absolute_error": 0.00011089444160461426,
+  "max_value_absolute_error": 9.059906005859375e-05,
+  "argmax_changes": 0,
+  "peak_allocated_mb": 65.7568359375,
+  "scope": "Isolated probe; active training precision remains unchanged.",
+  "source_sha256": "54fa67b8ea9fdbd6850702d21e0cbef41b0f39d3f175e7c3fc676b9168a07bb1"
+}

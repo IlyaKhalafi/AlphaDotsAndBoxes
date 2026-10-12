@@ -110,5 +110,38 @@ now carries distinguishing information, but more learning is needed.
 [Structured diagnostic](data/large-model-20261012/component-00001-representation.json),
 [control diagnostic](data/large-model-20261012/data-control-00001-representation.json).
 
-The first structured match screen uses seed 10001. It is running independently
-of the continuing training jobs; the snapshot is frozen throughout the matches.
+## First model screen and frozen confirmation
+
+The first structured screen (seed 10001) finished **9 wins, 1 draw and 2 losses**
+on 10×10: 79.17% score, paired bootstrap interval 62.5–95.83%, and mean margin
++20.33 boxes. Both sides completed 512 simulations on every nonexact decision;
+there were no oracle solves, proof propagation, inherited visits or deadlines.
+Full legal replays were validated. This is a selection screen, not a fresh
+confirmation. [Raw games](data/large-model-20261012/component-00001-screen.json),
+[validated summary](data/large-model-20261012/screen-summary.json).
+
+The same iteration-one checkpoint is frozen for 40 fresh games at 1,024
+simulations, seed 200001, against released constant-0.33 search. A separate
+20-game control uses seed 300001 against zero-first-play search. The settings
+and gates were saved before either match started in the
+[confirmation plan](data/large-model-20261012/component-00001-confirmation-plan.json).
+Training continues independently; no serving weights have been replaced.
+
+After two iterations each run has completed 96 games. Structured replay contains
+14,965 positions, control replay 13,397. Value loss is 0.5965 versus 0.5992;
+value MAE is 0.6080 versus 0.6101. Sampling took 967.71 and 745.95 seconds in the
+second iteration. Trajectories now differ, so sampling times are observations
+of these runs rather than a matched speed comparison.
+
+## GPU arithmetic probe
+
+An isolated CUDA-graph probe compared IEEE float32 and TF32 matrix operations
+with batch size 16, padded capacity 456, the structured iteration-two weights,
+and legal random positions on 10×10 and 12×12. Each mode was measured twice
+in alternating order, with five groups of 40 predictions per measurement.
+Shared-GPU timings varied substantially. Median batch times were 9.674 ms
+for IEEE and 9.600 ms for TF32; this does not establish a useful speed gain.
+Maximum policy and value differences were 0.000111 and 0.000091, with no
+argmax changes on the 16 probe positions. Active training precision remains
+unchanged. The probe's peak allocation was 65.8 MiB.
+[Probe measurements](data/large-model-20261012/tf32-probe.json).
