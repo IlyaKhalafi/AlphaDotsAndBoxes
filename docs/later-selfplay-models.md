@@ -72,3 +72,26 @@ compared with one float32 rounding step for the retained representation. Its
 predictions remain negative for both states (−0.0475 and −0.0865), so this
 demonstrates sensitivity to the additional information, not solved endgames
 or full-game strength.
+
+## Diagnostic: first 12 fresh games
+
+The first 12 complete confirmation games finish 5–7. This partial result is
+not a release decision. [Exact endgame checks](data/large-model-20261012/component-00025-endgame-diagnostic.json)
+cover 183 candidate and 262 reference decisions where the chain-and-loop
+oracle returns a complete answer. Each side makes five locally suboptimal
+margin choices; none reduces the available win/draw/loss outcome. One timed-out
+oracle call is excluded. These local regrets must not be added up as predicted
+match losses.
+
+At the first successful oracle answer in each game, 5–65 edges remain. Every
+eventual candidate loss is already losing against perfect continuation at that
+point. The diagnostic supports examining earlier decisions, rather than assuming
+more exact play only in recognized late positions will repair these losses.
+It says nothing about unrecognized positions or other openings.
+
+`scripts/inspect_endgame_choices.py` can reproduce the first-12 subset from the
+final confirmation receipt with `--limit 12`. The canonical game-subset hash
+identifies that input independently of the containing receipt; oracle coverage
+can vary with scheduling when a call reaches its 50-millisecond limit.
+Eight focused tests cover legal replay, a known win-to-loss mistake, incomplete
+histories, invalid budgets and timeout exclusion.

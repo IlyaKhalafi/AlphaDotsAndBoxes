@@ -1,0 +1,268 @@
+{
+  "scope": "Exact oracle answers only in its recognized domain. Regrets are local, not additive predicted match losses. Timeouts are excluded; coverage can depend on CPU scheduling.",
+  "receipt_sha256": "47abe7e7bcbbdbf059808cf4b79b1ce73261f6f18bdcb697b7da93276a8c17b0",
+  "game_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "canonical_games_sha256": "34ee1738396c45f350422dda4e60db0c9d9a3c0d24f4cc53fc38d5ea5ce3e720",
+  "candidate_sha256": "15e0230ea9cad3572c742aaf157a782f9bb9d3deb136e5daecca35b481712463",
+  "oracle_seconds_per_decision": 0.05,
+  "source_sha256": {
+    "inspect_endgame_choices.py": "28c5f79ab8ec08d0755fe414173d67b3cc1b7dc5f59fd6a2ceca153e4da11ee5",
+    "game.py": "18c33f55b9d990bcfb3792f5ed701c591f90e36f957f6b16c70a7dbd8cafe13a",
+    "endgame.py": "00f3c360cea71c4a8bd9da2a95e1ac70d3d9daf4b9e87b3ce30dfbd0a1e762d5",
+    "components.py": "b5c20384bc97d4fa6b4210b4164fa7bd7e02e7535a1578df139caacf2f3ca953"
+  },
+  "counts": {
+    "candidate": {
+      "decisions": 1233,
+      "exactly_diagnosed_decisions": 183,
+      "margin_regret_boxes": 22,
+      "suboptimal_margin_decisions": 5,
+      "outcome_reducing_decisions": 0,
+      "oracle_timeouts": 1
+    },
+    "reference": {
+      "decisions": 1335,
+      "exactly_diagnosed_decisions": 262,
+      "margin_regret_boxes": 24,
+      "suboptimal_margin_decisions": 5,
+      "outcome_reducing_decisions": 0
+    }
+  },
+  "first_exact_decisions": [
+    {
+      "game": 0,
+      "ply": 151,
+      "side": "candidate",
+      "remaining_edges": 63,
+      "action": 43,
+      "best_margin_boxes": -18,
+      "chosen_margin_boxes": -18,
+      "outcome_reducing": false
+    },
+    {
+      "game": 1,
+      "ply": 209,
+      "side": "candidate",
+      "remaining_edges": 5,
+      "action": 168,
+      "best_margin_boxes": -38,
+      "chosen_margin_boxes": -38,
+      "outcome_reducing": false
+    },
+    {
+      "game": 2,
+      "ply": 177,
+      "side": "reference",
+      "remaining_edges": 37,
+      "action": 117,
+      "best_margin_boxes": -52,
+      "chosen_margin_boxes": -52,
+      "outcome_reducing": false
+    },
+    {
+      "game": 3,
+      "ply": 203,
+      "side": "candidate",
+      "remaining_edges": 11,
+      "action": 60,
+      "best_margin_boxes": -62,
+      "chosen_margin_boxes": -62,
+      "outcome_reducing": false
+    },
+    {
+      "game": 4,
+      "ply": 179,
+      "side": "candidate",
+      "remaining_edges": 35,
+      "action": 89,
+      "best_margin_boxes": -44,
+      "chosen_margin_boxes": -44,
+      "outcome_reducing": false
+    },
+    {
+      "game": 5,
+      "ply": 175,
+      "side": "candidate",
+      "remaining_edges": 39,
+      "action": 54,
+      "best_margin_boxes": -70,
+      "chosen_margin_boxes": -70,
+      "outcome_reducing": false
+    },
+    {
+      "game": 6,
+      "ply": 184,
+      "side": "candidate",
+      "remaining_edges": 30,
+      "action": 117,
+      "best_margin_boxes": 64,
+      "chosen_margin_boxes": 64,
+      "outcome_reducing": false
+    },
+    {
+      "game": 7,
+      "ply": 187,
+      "side": "reference",
+      "remaining_edges": 27,
+      "action": 216,
+      "best_margin_boxes": 38,
+      "chosen_margin_boxes": 38,
+      "outcome_reducing": false
+    },
+    {
+      "game": 8,
+      "ply": 149,
+      "side": "reference",
+      "remaining_edges": 65,
+      "action": 27,
+      "best_margin_boxes": 42,
+      "chosen_margin_boxes": 42,
+      "outcome_reducing": false
+    },
+    {
+      "game": 9,
+      "ply": 192,
+      "side": "candidate",
+      "remaining_edges": 22,
+      "action": 67,
+      "best_margin_boxes": 62,
+      "chosen_margin_boxes": 62,
+      "outcome_reducing": false
+    },
+    {
+      "game": 10,
+      "ply": 159,
+      "side": "reference",
+      "remaining_edges": 55,
+      "action": 37,
+      "best_margin_boxes": -34,
+      "chosen_margin_boxes": -34,
+      "outcome_reducing": false
+    },
+    {
+      "game": 11,
+      "ply": 157,
+      "side": "candidate",
+      "remaining_edges": 57,
+      "action": 65,
+      "best_margin_boxes": 52,
+      "chosen_margin_boxes": 52,
+      "outcome_reducing": false
+    }
+  ],
+  "mistakes": [
+    {
+      "game": 0,
+      "ply": 176,
+      "side": "candidate",
+      "remaining_edges": 38,
+      "action": 11,
+      "best_margin_boxes": -18,
+      "chosen_margin_boxes": -20,
+      "outcome_reducing": false
+    },
+    {
+      "game": 6,
+      "ply": 196,
+      "side": "candidate",
+      "remaining_edges": 18,
+      "action": 142,
+      "best_margin_boxes": 64,
+      "chosen_margin_boxes": 60,
+      "outcome_reducing": false
+    },
+    {
+      "game": 6,
+      "ply": 198,
+      "side": "reference",
+      "remaining_edges": 16,
+      "action": 111,
+      "best_margin_boxes": -60,
+      "chosen_margin_boxes": -64,
+      "outcome_reducing": false
+    },
+    {
+      "game": 10,
+      "ply": 160,
+      "side": "reference",
+      "remaining_edges": 54,
+      "action": 34,
+      "best_margin_boxes": -34,
+      "chosen_margin_boxes": -42,
+      "outcome_reducing": false
+    },
+    {
+      "game": 10,
+      "ply": 171,
+      "side": "candidate",
+      "remaining_edges": 43,
+      "action": 159,
+      "best_margin_boxes": 42,
+      "chosen_margin_boxes": 34,
+      "outcome_reducing": false
+    },
+    {
+      "game": 10,
+      "ply": 174,
+      "side": "reference",
+      "remaining_edges": 40,
+      "action": 67,
+      "best_margin_boxes": -34,
+      "chosen_margin_boxes": -38,
+      "outcome_reducing": false
+    },
+    {
+      "game": 10,
+      "ply": 177,
+      "side": "candidate",
+      "remaining_edges": 37,
+      "action": 56,
+      "best_margin_boxes": 38,
+      "chosen_margin_boxes": 34,
+      "outcome_reducing": false
+    },
+    {
+      "game": 10,
+      "ply": 180,
+      "side": "reference",
+      "remaining_edges": 34,
+      "action": 93,
+      "best_margin_boxes": -34,
+      "chosen_margin_boxes": -38,
+      "outcome_reducing": false
+    },
+    {
+      "game": 10,
+      "ply": 185,
+      "side": "candidate",
+      "remaining_edges": 29,
+      "action": 92,
+      "best_margin_boxes": 38,
+      "chosen_margin_boxes": 34,
+      "outcome_reducing": false
+    },
+    {
+      "game": 11,
+      "ply": 179,
+      "side": "reference",
+      "remaining_edges": 35,
+      "action": 106,
+      "best_margin_boxes": -52,
+      "chosen_margin_boxes": -56,
+      "outcome_reducing": false
+    }
+  ]
+}
