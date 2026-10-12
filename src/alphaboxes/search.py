@@ -151,6 +151,7 @@ class SearchConfig:
     time_limit: float | None = None
     fpu_reduction: float = 0.0
     fpu_mode: str = "constant"
+    fpu_parent: str = "network"
     degree_two: bool = False
     prove_results: bool = False
 
@@ -165,6 +166,8 @@ class SearchConfig:
             raise ValueError("First-play reduction must be finite and nonnegative.")
         if self.fpu_mode not in {"constant", "policy_mass", "branching"}:
             raise ValueError("First-play mode must be constant, policy_mass or branching.")
+        if self.fpu_parent not in {"network", "mean"}:
+            raise ValueError("First-play parent must be network or mean.")
         if (
             not 0 <= self.noise_fraction <= 1
             or not 0 <= self.exact_threshold <= 18
@@ -324,7 +327,10 @@ class MCTS:
             reduction *= np.sqrt(visited_mass)
         elif self.config.fpu_mode == "branching":
             reduction *= min(1.0, np.sqrt(54 / len(node.children)))
-        first_play = node.evaluation - reduction
+        parent_value = (
+            node.value if self.config.fpu_parent == "mean" and node.visits else node.evaluation
+        )
+        first_play = parent_value - reduction
         if self.config.prove_results:
             unresolved = [child for child in children if child.solved_value is None]
             if unresolved:

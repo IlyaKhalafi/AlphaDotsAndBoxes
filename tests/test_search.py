@@ -291,3 +291,18 @@ def test_branching_mode_preserves_constant_search_on_small_roots():
     expected, expected_value = base.policy(state)
     np.testing.assert_array_equal(actual, expected)
     assert value == expected_value
+
+
+def test_first_play_can_use_the_backed_up_parent_mean():
+    root = Node(None, player=0, evaluation=0.0, visits=1, value_sum=-0.2)
+    visited = Node(None, prior=0.25, visits=1, value_sum=0.2, player=1)
+    unvisited = Node(None, prior=0.75, player=-1)
+    root.children = {0: visited, 1: unvisited}
+    network = MCTS(uniform, SearchConfig(fpu_reduction=0.33, fpu_mode="policy_mass"))
+    mean = MCTS(
+        uniform, SearchConfig(fpu_reduction=0.33, fpu_mode="policy_mass", fpu_parent="mean")
+    )
+    assert network._select(root, 0) is unvisited
+    assert mean._select(root, 0) is visited
+    root.visits = 0
+    assert mean._select(root, 0) is unvisited
