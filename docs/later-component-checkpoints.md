@@ -46,6 +46,15 @@ The [validated summary](data/large-model-20261012/later-screen-summary.json)
 links complete histories for both candidates. The live weights are unchanged
 pending confirmation and deployment checks.
 
+The [NumPy parity check](data/large-model-20261012/data-control-00015-export-parity.json)
+covers 738 legally reached positions across eight board shapes, including
+10×10 and 12×12, with seven padding nodes. It passes relative/absolute
+tolerances: maximum logit difference 3.82e−6 and value difference 8.35e−7.
+The [responsiveness probe](data/large-model-20261012/data-control-00015-deadline-probe.json)
+checks 36 supervised decisions on 4×4, 5×5 and 10×10. All finish below two
+seconds (maximum 1.768 seconds), with no fallback. Neither probe is a
+full-game strength comparison under the web deadline.
+
 ## Contingency: deeper planning with retained weights
 
 If neither later snapshot passes screening, the next isolated test keeps the

@@ -60,3 +60,11 @@ The [deadline probe](data/large-model-20261012/chain-deadline-probe.json) checks
 positions on 4×4, 5×5 and 10×10 boards. All finished below two seconds
 (maximum 1.774 seconds), without a fallback. This checks responsiveness;
 the fixed-work strength screen does not establish strength under that deadline.
+
+Before a release, the smaller-board check uses 20 fresh paired games per board
+on 4×4 and 5×5, seed 208001, with the ordinary Deep settings: 1.75-second
+internal search, 8,192 ceiling and 12-edge root aid. Candidate responses use
+the 1.9-second supervisor; reference search uses the same internal budget.
+Require at least 50% score separately on each board and every candidate
+decision below two seconds. This check runs while the large-board confirmation
+continues and cannot substitute for it.
