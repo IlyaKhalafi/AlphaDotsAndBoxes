@@ -74,3 +74,16 @@ compiled game loop; neural inference remains NumPy. It is selected explicitly
 with `--rollout-backend cython`, independently of search/endgame acceleration.
 Kernel builds replace extension files atomically so running processes retain
 their loaded code.
+
+The late-phase arm also finished **1 win and 11 losses**, with mean margin
+−45 boxes. It is rejected; no confirmation runs. Both implementations preserve
+the rules, but their heuristic continuations are poor value estimates for this
+opponent. [Validated summaries](data/large-model-20261012/rollout-summary.json).
+Later tests return to [additional learned checkpoints](later-component-checkpoints.md).
+
+A four-position 10×10 timing probe compares uncached two-playout values after
+the neural cache warms. At 220 / 170 / 110 / 60 remaining edges, Python medians
+were approximately 19.7 / 16.9 / 12.1 / 5.76 ms, versus 4.21 / 3.46 / 2.28 /
+1.28 ms for Cython. Predictions were identical, with roughly 4.5–5× lower
+playout/evaluation cost. These measurements do not reverse the strength failure.
+[Probe receipt](data/large-model-20261012/compiled-rollout-probe.json).
