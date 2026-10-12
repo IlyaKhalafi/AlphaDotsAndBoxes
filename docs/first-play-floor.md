@@ -28,3 +28,15 @@ A score above 50% advances to 40 fresh games, seed 212001, with score above
 control uses 20 games, seed 312001, and requires at least 50% score. Smaller-board
 and actual web-setting checks remain necessary before release. No improvement
 is assumed from this local allocation example.
+
+## Screen: rejected
+
+The complete screen scores 5 wins and 7 losses (41.67%, paired interval
+25–50%), with mean margin −10.67 boxes. Candidate decisions above the common
+root-aid threshold average 1.48 seconds versus 1.33 for the reference. The
+local allocation behavior changes as intended but does not improve these
+complete games. The floor remains disabled and is not deployed.
+
+[Full histories](data/large-model-20261012/fpu-floor-screen.json) and
+[legal replay validation](data/large-model-20261012/fpu-floor-screen-summary.json)
+retain all 12 games. The complete regression suite passes 213 tests.
