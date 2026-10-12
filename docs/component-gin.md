@@ -168,3 +168,24 @@ Maximum policy and value differences were 0.000111 and 0.000091, with no
 argmax changes on the 16 probe positions. Active training precision remains
 unchanged. The probe's peak allocation was 65.8 MiB.
 [Probe measurements](data/large-model-20261012/tf32-probe.json).
+
+## Optional compiled feature encoding
+
+Profiling identified component traversal as a substantial part of Python
+encoding work. The optional `_components` kernel uses typed traversal buffers
+and emits the same node/context arrays. Complete-game and player-perspective
+comparisons cover eight board shapes through 12×12, including constructed
+chain/loop starts. All 16 targeted acceleration, encoding and CUDA tests passed.
+
+An alternating Python/compiled probe with batch 16 and capacity 456 measured
+median feature time of 182.8 versus 40.9 microseconds per state, about 4.5× faster.
+Median end-to-end CUDA batch times were 9.482 versus 7.777 ms, an 18.0% reduction
+under shared load. Predictions were identical on every probe input. This is an
+encoding/inference measurement, not an observed self-play or strength gain.
+[Probe receipt](data/large-model-20261012/compiled-component-probe.json).
+
+Build all optional kernels with `python scripts/build_acceleration.py` after
+installing the acceleration extra. Ordinary deployment needs no compiler.
+`ALPHABOXES_PURE_NUMPY=1` disables this kernel as well as the optional search and
+endgame kernels. Existing sampling actors retain their imported implementation
+until a controlled restart; the matches in this campaign use Python/NumPy.

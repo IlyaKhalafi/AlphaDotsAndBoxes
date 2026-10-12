@@ -13,7 +13,7 @@ if __name__ == "__main__":
         ext_modules=cythonize(
             [
                 Extension(f"alphaboxes.{name}", [str(ROOT / f"src/alphaboxes/{name}.pyx")])
-                for name in ("_endgame", "_search")
+                for name in ("_endgame", "_search", "_components")
             ],
             build_dir=str(ROOT / "build/cython"),
             compiler_directives={"language_level": 3},

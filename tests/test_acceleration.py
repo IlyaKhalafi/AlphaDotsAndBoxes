@@ -52,3 +52,25 @@ def test_compiled_child_scoring_preserves_ties_policies_and_turns(monkeypatch):
         actual, value = search.MCTS(evaluator, config, 11).policy(state, explore=True)
         np.testing.assert_array_equal(actual, reference)
         assert value == expected
+
+
+@pytest.mark.parametrize(
+    "size", [(1, 1), (1, 4), (2, 3), (4, 4), (5, 5), (10, 10), (12, 12), (3, 7)]
+)
+def test_compiled_component_features_match_python_through_complete_games(size):
+    from dataclasses import replace
+
+    from alphaboxes.components import python_structural_features
+    from alphaboxes.curriculum import sample_endgame
+
+    compiled = pytest.importorskip("alphaboxes._components").structural_features
+    rng = np.random.default_rng(922)
+    for state in (State.new(*size), sample_endgame(size, rng)):
+        while True:
+            for position in (state, replace(state, player=1 - state.player)):
+                expected, actual = python_structural_features(position), compiled(position)
+                for first, second in zip(expected, actual, strict=True):
+                    np.testing.assert_array_equal(first, second)
+            if state.terminal:
+                break
+            state = state.play(int(rng.choice(state.legal_actions)))

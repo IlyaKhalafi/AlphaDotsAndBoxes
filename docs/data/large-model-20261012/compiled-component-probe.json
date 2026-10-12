@@ -1,0 +1,74 @@
+{
+  "batch_size": 16,
+  "capacity": 456,
+  "checkpoint_sha256": "7185d4f820cb2dba33ed9bfead8ce3496572ebde1403df03ffce15cd5ffa505e",
+  "torch": "2.12.1+cu130",
+  "numpy": "2.5.1",
+  "seed": 661,
+  "results": [
+    {
+      "mode": "python",
+      "seconds_per_batch": [
+        0.009407234298996626,
+        0.007998112780041993,
+        0.010661758319474756,
+        0.009638290000148118,
+        0.009633608020376414
+      ]
+    },
+    {
+      "mode": "compiled",
+      "seconds_per_batch": [
+        0.007971960259601474,
+        0.008064670539461076,
+        0.008216333480086178,
+        0.00543654790148139,
+        0.006461012100335211
+      ]
+    },
+    {
+      "mode": "compiled",
+      "seconds_per_batch": [
+        0.0076498695602640505,
+        0.008557324740104377,
+        0.007903922218829393,
+        0.006668225459288806,
+        0.005568631100468338
+      ]
+    },
+    {
+      "mode": "python",
+      "seconds_per_batch": [
+        0.00714570812182501,
+        0.007323025797959417,
+        0.009189703359734267,
+        0.009557173401117326,
+        0.010509678421076387
+      ]
+    }
+  ],
+  "feature_seconds_per_state": {
+    "python": [
+      0.00018210119313152973,
+      0.00021306999937223737,
+      0.00018747375121165534,
+      0.000181013245601207,
+      0.0001827937950292835
+    ],
+    "compiled": [
+      4.176108312094584e-05,
+      4.306372873543296e-05,
+      4.039542691316456e-05,
+      4.037561746372376e-05,
+      4.093557872693054e-05
+    ]
+  },
+  "max_prediction_error": 0.0,
+  "peak_allocated_mb": 65.7568359375,
+  "scope": "Isolated probe; sampling actors have not yet been restarted",
+  "source_sha256": {
+    "/home/ubuntu8/ilya/research/AlphaDotsAndBoxes/runs/probe_compiled_components.py": "f1cb32cc710d8f10a032460534d56cefad91052761599b7ad1581990688478f7",
+    "src/alphaboxes/_components.pyx": "8171d26df2156b38c227cc09b3545828737bacd5cdaded2afd2cdbaafaabb388",
+    "src/alphaboxes/components.py": "b5c20384bc97d4fa6b4210b4164fa7bd7e02e7535a1578df139caacf2f3ca953"
+  }
+}

@@ -1,5 +1,6 @@
 """Components of unclaimed boxes connected through undrawn shared edges."""
 
+import os
 from dataclasses import dataclass
 
 import numpy as np
@@ -8,6 +9,13 @@ from alphaboxes.game import State
 
 NODE_FEATURES = 4
 CONTEXT_FEATURES = 14
+
+try:
+    if os.environ.get("ALPHABOXES_PURE_NUMPY") == "1":
+        raise ImportError
+    from alphaboxes._components import structural_features as compiled_features
+except ImportError:
+    compiled_features = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,6 +68,13 @@ def free_components(state: State) -> tuple[Component, ...]:
 
 
 def structural_features(state: State) -> tuple[np.ndarray, np.ndarray]:
+    """Return the component encoding, using the optional exact compiled path."""
+    if compiled_features is not None:
+        return compiled_features(state)
+    return python_structural_features(state)
+
+
+def python_structural_features(state: State) -> tuple[np.ndarray, np.ndarray]:
     """Return box features and global counts, in fixed box units across sizes.
 
     Sizes and counts use four-box units, matching the largest standard handout.
