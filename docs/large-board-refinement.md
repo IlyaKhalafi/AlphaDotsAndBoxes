@@ -56,3 +56,31 @@ positions, not strength measurements.
 ## Results
 
 Initial screens are running. No larger-board improvement is claimed yet.
+
+## Exact endgame refinement
+
+The structural solver now collapses collections of closed chains of length at
+least three and even loops of length at least four into complete-turn choices:
+take all offered boxes, or keep control by leaving two boxes in a chain or four
+in a loop. It also recognizes one partially captured component. Short closed
+chains and multiple open components retain the existing general exact solver.
+This restricted recurrence follows the control alternatives in
+[Buzzard and Ciere (2014)](https://math.colgate.edu/~integers/og8/og8.pdf).
+
+Correctness checks compare exact margins and every optimal action against full
+edge-subset minimax on all recognized 2×2 positions, random 3×3 positions, and
+all 1,024 descendants of a mixed five-box chain/four-box loop. A dedicated
+position checks that leaving two boxes can beat immediate captures. A synthetic
+10×10 position containing 25 independent four-box loops is solved in 26
+structural nodes, including all 100 optimal opening actions, in 0.020 seconds
+with the deployment's pure NumPy environment. This is a correctness and speed
+diagnostic, not a playing-strength result.
+
+[Synthetic-position receipt](data/large-search-20261012/loony-diagnostic.json).
+
+After the first-play screens, a separate endgame arm will use constant reduction
+0.33 plus structural solving and proof propagation, against released constant
+0.33 alone. Its screen uses 12 paired-seat 10×10 games, 512 simulations as a
+ceiling, seed 4801, and no timers. Exact solutions can finish before that ceiling;
+both actual simulations and solve hits must be reported. Any further combination
+with a first-play rule requires its own fresh screen before confirmation.

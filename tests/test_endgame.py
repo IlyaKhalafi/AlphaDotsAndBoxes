@@ -70,3 +70,57 @@ def test_deadline_does_not_cache_unfinished_results(monkeypatch):
         solver.solve(state, deadline=1.0)
     assert not solver.cache
     assert solver.solve(state) == solve(state)
+
+
+def test_every_descendant_of_mixed_chain_and_loop_matches_edge_oracle():
+    state = State.new(3, 3)
+    chain = (2, 5, 8, 7, 6)
+    connections = {(0, 1), (0, 3), (1, 4), (3, 4)}
+    connections.update(tuple(sorted(pair)) for pair in zip(chain, chain[1:], strict=False))
+    free = {
+        edge for edge, boxes in enumerate(state.board.edge_boxes) if tuple(boxes) in connections
+    }
+    free.update((state.board.boxes[2][0], state.board.boxes[6][1]))
+    assert len(free) == 10
+    base = sum(1 << edge for edge in range(state.board.num_edges) if edge not in free)
+    free = sorted(free)
+    solver = DegreeTwoSolver()
+    for subset in range(1 << len(free)):
+        mask = base | sum(1 << edge for bit, edge in enumerate(free) if subset & (1 << bit))
+        current = occupied_state(3, 3, mask, subset % 2)
+        assert solver.solve(current) == solve(current)
+
+
+def test_partially_captured_chain_can_require_a_two_box_handout():
+    state = State.new(2, 3)
+    for edge, (r1, _, r2, _) in enumerate(state.board.edges):
+        if r1 == r2:
+            state = state.play(edge)
+    state = state.play(state.board.boxes[0][2])
+    state = state.play(state.board.boxes[0][3])
+    assert position(state) == ((2, 1), (3, 2))
+    result = DegreeTwoSolver().solve(state)
+    assert result == solve(state)
+    assert result[0] == pytest.approx(1 / 3)
+    assert all(not state.captures(action) for action in result[1])
+
+
+def test_twenty_five_closed_loops_use_component_counts():
+    state = State.new(10, 10)
+    connections = set()
+    for row in range(0, 10, 2):
+        for col in range(0, 10, 2):
+            a = row * 10 + col
+            connections.update(((a, a + 1), (a, a + 10), (a + 1, a + 11), (a + 10, a + 11)))
+    free = {
+        edge for edge, boxes in enumerate(state.board.edge_boxes) if tuple(boxes) in connections
+    }
+    mask = sum(1 << edge for edge in range(state.board.num_edges) if edge not in free)
+    state = occupied_state(10, 10, mask)
+    assert position(state) == ((4, -1),) * 25
+    solver = DegreeTwoSolver()
+    value, actions = solver.solve(state)
+    assert value == pytest.approx(-0.04)
+    assert actions == state.legal_actions
+    # One state per closed-loop count, plus opened loops: no edge-subset search.
+    assert solver.nodes <= 50

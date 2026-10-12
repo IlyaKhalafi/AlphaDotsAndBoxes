@@ -73,6 +73,49 @@ class DegreeTwoSolver:
         self.cache: OrderedDict[Position, int] = OrderedDict()
         self.nodes = 0
 
+    def _loony_future(self, groups: Position, deadline: float | None) -> int | None:
+        """Collapse complete long chains/loops into take-all or handout turns.
+
+        Closed chains need at least three boxes; closed loops need an even
+        length of at least four. One partially captured component is supported.
+        Short closed chains and multiple capture fronts use the general solver.
+        See Buzzard and Ciere, Playing Simple Loony Dots-and-Boxes Endgames
+        Optimally (2014), for the two-box/four-box control alternatives.
+        """
+        active = []
+        closed = []
+        for group in groups:
+            length, boundaries = group
+            if boundaries == 2 and length >= 3:
+                closed.append(group)
+            elif boundaries == -1 and length >= 4 and length % 2 == 0:
+                closed.append(group)
+            elif boundaries in (0, 1) and length >= 2 - boundaries:
+                active.append(group)
+            else:
+                return None
+        if len(active) > 1:
+            return None
+        if active:
+            length, boundaries = active[0]
+            continuation = self._future(tuple(closed), deadline)
+            best = length + continuation
+            handout = 2 if boundaries == 1 else 4
+            if length >= handout:
+                best = max(best, length - 2 * handout - continuation)
+            return best
+        best = -sum(length for length, _ in groups)
+        previous = None
+        for index, group in enumerate(groups):
+            if group == previous:
+                continue
+            previous = group
+            length, boundaries = group
+            continuation = self._future(groups[:index] + groups[index + 1 :], deadline)
+            handout = 2 if boundaries == 2 else 4
+            best = max(best, min(-length - continuation, -length + 2 * handout + continuation))
+        return best
+
     def _future(self, groups: Position, deadline: float | None) -> int:
         if deadline is not None and monotonic() >= deadline:
             raise EndgameTimeout
@@ -82,23 +125,25 @@ class DegreeTwoSolver:
             self.cache.move_to_end(groups)
             return self.cache[groups]
         self.nodes += 1
-        best = -sum(length for length, _ in groups)
-        previous = None
-        successors = set()
-        for index, group in enumerate(groups):
-            if group == previous:
-                continue
-            previous = group
-            rest = groups[:index] + groups[index + 1 :]
-            for captured, pieces in cuts(group):
-                successors.add((captured, tuple(sorted(rest + pieces))))
-        # Captures first often reach a tight bound before noncapturing cuts.
-        for captured, child in sorted(successors, reverse=True):
-            continuation = self._future(child, deadline)
-            value = captured + continuation if captured else -continuation
-            best = max(best, value)
-            if best == sum(length for length, _ in groups):
-                break
+        best = self._loony_future(groups, deadline)
+        if best is None:
+            best = -sum(length for length, _ in groups)
+            previous = None
+            successors = set()
+            for index, group in enumerate(groups):
+                if group == previous:
+                    continue
+                previous = group
+                rest = groups[:index] + groups[index + 1 :]
+                for captured, pieces in cuts(group):
+                    successors.add((captured, tuple(sorted(rest + pieces))))
+            # Captures first often reach a tight bound before noncapturing cuts.
+            for captured, child in sorted(successors, reverse=True):
+                continuation = self._future(child, deadline)
+                value = captured + continuation if captured else -continuation
+                best = max(best, value)
+                if best == sum(length for length, _ in groups):
+                    break
         if self.cache_size > 0:
             self.cache[groups] = best
             if len(self.cache) > self.cache_size:
