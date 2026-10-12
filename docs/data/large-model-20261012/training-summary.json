@@ -1,0 +1,196 @@
+{
+  "python": "3.12.3",
+  "software": {
+    "torch": "2.12.1",
+    "ray": "2.58.0",
+    "gymnasium": "1.2.2",
+    "numpy": "2.5.1",
+    "fastapi": "0.143.0"
+  },
+  "runs": [
+    {
+      "label": "component-v2",
+      "config": {
+        "sizes": [
+          [
+            4,
+            4
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            8,
+            8
+          ],
+          [
+            10,
+            10
+          ],
+          [
+            10,
+            10
+          ],
+          [
+            12,
+            12
+          ]
+        ],
+        "iterations": 10000,
+        "games_per_iteration": 48,
+        "workers": 3,
+        "selfplay_device": "cuda",
+        "selfplay_batch_size": 16,
+        "selfplay_cuda_graphs": true,
+        "selfplay_gpu_workers": 3,
+        "games_per_worker": null,
+        "updates_per_iteration": 16,
+        "batch_size": 2048,
+        "replay_capacity": 300000,
+        "learning_rate": 0.0001,
+        "width": 96,
+        "depth": 6,
+        "structure": true,
+        "seed": 75,
+        "temperature_moves": 12,
+        "start_fraction": 0.1,
+        "start_min_moves": 12,
+        "start_max_moves": 200,
+        "start_archive_capacity": 4096,
+        "endgame_fraction": 0.25,
+        "device": "cuda",
+        "gpu_memory_gb": 24.0,
+        "gpu_duty_cycle": 0.65,
+        "checkpoint_every": 5,
+        "max_seconds": 28312,
+        "search": {
+          "simulations": 256,
+          "cpuct": 1.5,
+          "noise_fraction": 0.25,
+          "dirichlet_alpha": 0.3,
+          "exact_threshold": 12,
+          "leaf_exact_threshold": 0,
+          "reuse_tree": true,
+          "time_limit": null,
+          "fpu_reduction": 0.0,
+          "fpu_mode": "constant",
+          "fpu_parent": "network",
+          "root_candidates": 0,
+          "degree_two": true,
+          "prove_results": false
+        }
+      },
+      "first_iteration": 1,
+      "last_iteration": 14,
+      "games_total": 672,
+      "positions_total": 90442,
+      "initialization": {
+        "checkpoint_sha256": "5c7bed891c467ffcb86bcbe5a046b3097b617b914b9e062520be323ca23ec0b2",
+        "training_games": 320,
+        "training_positions": 13934,
+        "structure_initialization": {
+          "method": "zero_new_component_input_columns",
+          "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+          "source_parameters": 272648,
+          "parameters": 277064
+        }
+      },
+      "stop_reason": null,
+      "elapsed_seconds": 12493.523421830032,
+      "median_iteration_seconds": 861.2044610389858,
+      "peak_allocated_mb": 19516.78759765625,
+      "last10_mean_policy_loss": 3.0470328330993652,
+      "last10_mean_value_loss": 0.5785326957702637
+    },
+    {
+      "label": "data-control-v2",
+      "config": {
+        "sizes": [
+          [
+            4,
+            4
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            8,
+            8
+          ],
+          [
+            10,
+            10
+          ],
+          [
+            10,
+            10
+          ],
+          [
+            12,
+            12
+          ]
+        ],
+        "iterations": 10000,
+        "games_per_iteration": 48,
+        "workers": 3,
+        "selfplay_device": "cuda",
+        "selfplay_batch_size": 16,
+        "selfplay_cuda_graphs": true,
+        "selfplay_gpu_workers": 3,
+        "games_per_worker": null,
+        "updates_per_iteration": 16,
+        "batch_size": 2048,
+        "replay_capacity": 300000,
+        "learning_rate": 0.0001,
+        "width": 96,
+        "depth": 6,
+        "structure": false,
+        "seed": 75,
+        "temperature_moves": 12,
+        "start_fraction": 0.1,
+        "start_min_moves": 12,
+        "start_max_moves": 200,
+        "start_archive_capacity": 4096,
+        "endgame_fraction": 0.25,
+        "device": "cuda",
+        "gpu_memory_gb": 24.0,
+        "gpu_duty_cycle": 0.65,
+        "checkpoint_every": 5,
+        "max_seconds": 28800,
+        "search": {
+          "simulations": 256,
+          "cpuct": 1.5,
+          "noise_fraction": 0.25,
+          "dirichlet_alpha": 0.3,
+          "exact_threshold": 12,
+          "leaf_exact_threshold": 0,
+          "reuse_tree": true,
+          "time_limit": null,
+          "fpu_reduction": 0.0,
+          "fpu_mode": "constant",
+          "fpu_parent": "network",
+          "root_candidates": 0,
+          "degree_two": true,
+          "prove_results": false
+        }
+      },
+      "first_iteration": 1,
+      "last_iteration": 17,
+      "games_total": 816,
+      "positions_total": 106806,
+      "initialization": {
+        "checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+        "training_games": 320,
+        "training_positions": 13934
+      },
+      "stop_reason": null,
+      "elapsed_seconds": 13094.936547413003,
+      "median_iteration_seconds": 798.2130484009394,
+      "peak_allocated_mb": 19337.5947265625,
+      "last10_mean_policy_loss": 3.032659101486206,
+      "last10_mean_value_loss": 0.5969593167304993
+    }
+  ]
+}

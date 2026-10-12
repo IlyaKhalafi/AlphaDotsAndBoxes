@@ -200,3 +200,22 @@ budget; the resumed training-clock cap is 28,312 seconds, including saved elapse
 time. [Restart and configuration receipt](data/large-model-20261012/component-cython-restart.json).
 Subsequent metrics identify the component feature backend. The complete current
 suite passes 185 tests, including compiled playout parity and mutable-game replays.
+
+## Progress snapshot
+
+The recorded snapshot contains 14 component iterations (672 games, 90,442
+positions) and 17 data-only iterations (816 games, 106,806 positions).
+Component value loss is 0.5768 and policy loss 3.0337; data-only values are
+0.6095 and 3.0391. These are final-minibatch metrics. Different starts and
+trajectories make direct loss comparisons an imperfect quality measure;
+full-game matches remain the selection criterion.
+
+![Component-model policy and outcome losses](assets/component-large-training.svg)
+
+![Data-only control policy and outcome losses](assets/data-large-training.svg)
+
+[Iteration records](data/large-model-20261012/training-progress.json),
+[CSV exports and current configurations](data/large-model-20261012/training-summary.json).
+Training continues beyond this dated snapshot. The component plot spans the
+sampler restart before iteration 14; it is one resumed run, with restarted
+worker streams and preserved optimizer/driver state.
