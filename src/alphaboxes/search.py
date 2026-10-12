@@ -247,7 +247,9 @@ class MCTS:
                 continue
             if key == wanted and node.player == state.player:
                 # Bound repeated searches without a move, such as repeated UI hints.
-                return node if node.visits < 8192 else None
+                # A value-only solved leaf has no action strategy. Search it as
+                # a fresh root if the root oracle cannot finish an action solve.
+                return node if node.visits < 8192 and node.children is not None else None
             if node.children:
                 pending.extend(node.children.values())
         return None

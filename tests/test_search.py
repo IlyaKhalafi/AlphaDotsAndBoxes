@@ -306,3 +306,26 @@ def test_first_play_can_use_the_backed_up_parent_mean():
     assert mean._select(root, 0) is visited
     root.visits = 0
     assert mean._select(root, 0) is unvisited
+
+
+def test_reuse_discards_value_only_solved_leaf_when_root_action_solve_times_out(monkeypatch):
+    from alphaboxes.endgame import EndgameTimeout
+
+    state = State.new(3, 3)
+    for action, (r1, _, r2, _) in enumerate(state.board.edges):
+        if r1 == r2:
+            state = state.play(action)
+    search = MCTS(uniform, SearchConfig(simulations=8, degree_two=True, reuse_tree=True))
+    search._roots = [
+        Node(state, player=state.player, visits=16, value_sum=-16, solved_value=-1, children=None)
+    ]
+
+    def timeout(*args):
+        raise EndgameTimeout
+
+    monkeypatch.setattr("alphaboxes.search.shared_solver.solve", timeout)
+    policy, _ = search.policy(state, explore=True)
+    assert search.inherited_visits == 0
+    assert search._roots[0].children
+    assert policy.argmax() in state.legal_actions
+    assert np.isclose(policy.sum(), 1)
