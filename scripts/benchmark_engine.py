@@ -336,6 +336,7 @@ def main():
             "rollouts",
             "chain_moves",
             "forced_captures",
+            "selection",
             "checkpoint",
             "endgame",
             "timed_search",

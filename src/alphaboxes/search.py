@@ -6,6 +6,7 @@ import os
 from collections import OrderedDict
 from collections.abc import Callable
 from dataclasses import dataclass
+from math import isfinite
 from time import monotonic
 from typing import TYPE_CHECKING, Protocol
 
@@ -17,6 +18,7 @@ from alphaboxes.game import State
 from alphaboxes.graph import encode, encode_batch
 from alphaboxes.opponents import solve
 from alphaboxes.root_halving import RootHalving
+from alphaboxes.selection import ChildSelection
 
 try:
     if os.environ.get("ALPHABOXES_PURE_NUMPY") == "1":
@@ -162,6 +164,7 @@ class SearchConfig:
     degree_two: bool = False
     prove_results: bool = False
     chain_pruning: bool = False
+    sparse_selection: bool = False
 
     def __post_init__(self):
         if self.time_limit is not None and (
@@ -200,6 +203,7 @@ class Node:
     solved_value: float | None = None
     evaluation: float = 0.0
     chain_restricted: bool = False
+    selection: ChildSelection | None = None
 
     @property
     def value(self) -> float:
@@ -362,6 +366,24 @@ class MCTS:
             node.value if self.config.fpu_parent == "mean" and node.visits else node.evaluation
         )
         first_play = parent_value - reduction
+        if (
+            self.config.sparse_selection
+            and self.config.fpu_mode == "constant"
+            and not self.config.prove_results
+            and len(node.children) >= 16
+            and isfinite(scale)
+            and scale > 0
+            and isfinite(first_play)
+        ):
+            if (
+                node.selection is None
+                or node.selection.children is not node.children
+                or node.selection.size != len(node.children)
+            ):
+                node.selection = ChildSelection(node.children)
+            return node.selection.select(
+                node.player, scale, first_play if self.config.fpu_reduction else 0.0
+            )
         if self.config.prove_results:
             unresolved = [child for child in children if child.solved_value is None]
             if unresolved:
@@ -438,6 +460,7 @@ class MCTS:
         if not roots:
             return results
         for _, root in roots:
+            root.selection = None
             if self.config.reuse_tree and root.visits:
                 # A repeated exploratory search must start from network priors,
                 # rather than mixing new noise into yesterday's noisy priors.

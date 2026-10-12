@@ -112,3 +112,18 @@ checks 36 supervised NumPy decisions on 4×4, 5×5 and 10×10, spanning opening,
 middle, late and exact-root positions. Every decision finishes below two
 seconds, maximum 1.779 seconds, with no fallback. This proves responsiveness
 for these samples, not full-game strength under the deadline.
+
+## Search screen: selected for confirmation
+
+The 1,024-simulation screen completes 8 wins and 4 losses (66.67%, paired
+interval 33.33–91.67%), with mean margin +25.83 boxes. It selects the frozen
+update-300 model for the predeclared 40-game confirmation at seed 209001.
+[Validated summary](data/large-model-20261012/policy-teaching-screen-summary.json)
+and [complete histories](data/large-model-20261012/policy-teaching-screen.json).
+The wide interval makes fresh confirmation essential.
+
+Confirmation restarts before any completed opening pair to load an immutable
+source snapshot; the same seed, weights and settings are retained. The new
+receipt uses the `policy-teaching-confirm-v2` label. This restart and the
+[search-runtime optimization](sparse-selection.md) are documented separately;
+the taught-model confirmation does not enable the new selector.

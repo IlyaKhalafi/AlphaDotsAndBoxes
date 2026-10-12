@@ -1,0 +1,248 @@
+{
+  "scope": "Instrumented call profile, not uninstrumented decision latency",
+  "board": [
+    10,
+    10
+  ],
+  "opening": [
+    82,
+    197,
+    19,
+    94,
+    9,
+    112
+  ],
+  "simulations": 1024,
+  "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "source_sha256": "6f7a046337b08ab145a4fc987975522c4aff08294565cb856ad28bb2a10ad1f3",
+  "action": 43,
+  "value": -0.0006175858179631177,
+  "profile_seconds": 11.712287066999995,
+  "functions": [
+    {
+      "file": "search.py",
+      "line": 285,
+      "function": "policy",
+      "primitive_calls": 1,
+      "calls": 1,
+      "own_seconds": 0.006962296000000001,
+      "cumulative_seconds": 11.823510129
+    },
+    {
+      "file": "search.py",
+      "line": 381,
+      "function": "policies",
+      "primitive_calls": 1,
+      "calls": 1,
+      "own_seconds": 0.273157906,
+      "cumulative_seconds": 11.816547833000001
+    },
+    {
+      "file": "search.py",
+      "line": 349,
+      "function": "_select",
+      "primitive_calls": 69762,
+      "calls": 69762,
+      "own_seconds": 0.092842115,
+      "cumulative_seconds": 7.192293488000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.max>",
+      "primitive_calls": 70359,
+      "calls": 70359,
+      "own_seconds": 2.641216478,
+      "cumulative_seconds": 7.083276919
+    },
+    {
+      "file": "search.py",
+      "line": 371,
+      "function": "<lambda>",
+      "primitive_calls": 12412002,
+      "calls": 12412002,
+      "own_seconds": 4.412659432,
+      "cumulative_seconds": 4.442060441000001
+    },
+    {
+      "file": "search.py",
+      "line": 288,
+      "function": "_expand_many",
+      "primitive_calls": 1025,
+      "calls": 1025,
+      "own_seconds": 0.011262702000000001,
+      "cumulative_seconds": 4.300906336000001
+    },
+    {
+      "file": "search.py",
+      "line": 72,
+      "function": "evaluate_many",
+      "primitive_calls": 1025,
+      "calls": 1025,
+      "own_seconds": 0.013781726000000001,
+      "cumulative_seconds": 3.919167749
+    },
+    {
+      "file": "search.py",
+      "line": 92,
+      "function": "_predict_many",
+      "primitive_calls": 1025,
+      "calls": 1025,
+      "own_seconds": 0.001531234,
+      "cumulative_seconds": 3.8473673890000004
+    },
+    {
+      "file": "numpy_network.py",
+      "line": 104,
+      "function": "_predict",
+      "primitive_calls": 595,
+      "calls": 595,
+      "own_seconds": 0.010089255,
+      "cumulative_seconds": 3.845836155
+    },
+    {
+      "file": "numpy_network.py",
+      "line": 63,
+      "function": "forward",
+      "primitive_calls": 595,
+      "calls": 595,
+      "own_seconds": 1.4938733190000002,
+      "cumulative_seconds": 3.7288953140000003
+    },
+    {
+      "file": "numpy_network.py",
+      "line": 60,
+      "function": "linear",
+      "primitive_calls": 10115,
+      "calls": 10115,
+      "own_seconds": 1.364173722,
+      "cumulative_seconds": 1.364173722
+    },
+    {
+      "file": "numpy_network.py",
+      "line": 38,
+      "function": "silu",
+      "primitive_calls": 5355,
+      "calls": 5355,
+      "own_seconds": 0.40137656200000005,
+      "cumulative_seconds": 0.548193467
+    },
+    {
+      "file": "search.py",
+      "line": 260,
+      "function": "_expand",
+      "primitive_calls": 1025,
+      "calls": 1025,
+      "own_seconds": 0.190589728,
+      "cumulative_seconds": 0.365485514
+    },
+    {
+      "file": "_methods.py",
+      "line": 115,
+      "function": "_mean",
+      "primitive_calls": 7140,
+      "calls": 7140,
+      "own_seconds": 0.06799859500000001,
+      "cumulative_seconds": 0.24665796
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+      "primitive_calls": 15141,
+      "calls": 15141,
+      "own_seconds": 0.185732649,
+      "cumulative_seconds": 0.185732649
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'mean' of 'numpy.ndarray' objects>",
+      "primitive_calls": 3570,
+      "calls": 3570,
+      "own_seconds": 0.005484908,
+      "cumulative_seconds": 0.14503037400000002
+    },
+    {
+      "file": "fromnumeric.py",
+      "line": 2245,
+      "function": "clip",
+      "primitive_calls": 5355,
+      "calls": 5355,
+      "own_seconds": 0.013328393000000001,
+      "cumulative_seconds": 0.144762642
+    },
+    {
+      "file": "fromnumeric.py",
+      "line": 48,
+      "function": "_wrapfunc",
+      "primitive_calls": 5355,
+      "calls": 5355,
+      "own_seconds": 0.0075483930000000005,
+      "cumulative_seconds": 0.131434249
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'clip' of 'numpy.ndarray' objects>",
+      "primitive_calls": 5355,
+      "calls": 5355,
+      "own_seconds": 0.00633138,
+      "cumulative_seconds": 0.12076977700000001
+    },
+    {
+      "file": "fromnumeric.py",
+      "line": 3737,
+      "function": "mean",
+      "primitive_calls": 3570,
+      "calls": 3570,
+      "own_seconds": 0.010272288000000001,
+      "cumulative_seconds": 0.11738478200000001
+    },
+    {
+      "file": "_methods.py",
+      "line": 96,
+      "function": "_clip",
+      "primitive_calls": 5355,
+      "calls": 5355,
+      "own_seconds": 0.11443839700000001,
+      "cumulative_seconds": 0.11443839700000001
+    },
+    {
+      "file": "graph.py",
+      "line": 40,
+      "function": "encode",
+      "primitive_calls": 595,
+      "calls": 595,
+      "own_seconds": 0.056841714,
+      "cumulative_seconds": 0.10174166300000001
+    },
+    {
+      "file": "search.py",
+      "line": 45,
+      "function": "_key",
+      "primitive_calls": 1025,
+      "calls": 1025,
+      "own_seconds": 0.004707117,
+      "cumulative_seconds": 0.052387074000000006
+    },
+    {
+      "file": "game.py",
+      "line": 64,
+      "function": "legal_actions",
+      "primitive_calls": 1026,
+      "calls": 1026,
+      "own_seconds": 0.024678524,
+      "cumulative_seconds": 0.049982891
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.sum>",
+      "primitive_calls": 3078,
+      "calls": 3078,
+      "own_seconds": 0.017583246,
+      "cumulative_seconds": 0.047766952
+    }
+  ]
+}

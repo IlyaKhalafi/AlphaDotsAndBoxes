@@ -1,0 +1,332 @@
+{
+  "scope": "Alternating cold-cache fixed-work probes; all policies, values and root visits identical",
+  "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "simulations": 1024,
+  "seed": 25001,
+  "source_sha256": {
+    "src/alphaboxes/search.py": "905bd4d22c7b866b3ededc4e46b643e7f23d89429fb6eebf67d8c28e50b8c592",
+    "src/alphaboxes/selection.py": "8d8c96443d16b71357a6a75085fea2da672301b431891c239bfb9faf20f4ff29"
+  },
+  "records": [
+    {
+      "board": [
+        4,
+        4
+      ],
+      "opening": [
+        3,
+        29,
+        7,
+        33,
+        32,
+        38
+      ],
+      "repeat": 0,
+      "sparse_selection": false,
+      "seconds": 1.0003020720323548,
+      "action": 19,
+      "value": -0.00036783272972229497,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "opening": [
+        3,
+        29,
+        7,
+        33,
+        32,
+        38
+      ],
+      "repeat": 0,
+      "sparse_selection": true,
+      "seconds": 1.0185960580129176,
+      "action": 19,
+      "value": -0.00036783272972229497,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "opening": [
+        3,
+        29,
+        7,
+        33,
+        32,
+        38
+      ],
+      "repeat": 1,
+      "sparse_selection": true,
+      "seconds": 1.0132510990370065,
+      "action": 19,
+      "value": -0.00036783272972229497,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        4,
+        4
+      ],
+      "opening": [
+        3,
+        29,
+        7,
+        33,
+        32,
+        38
+      ],
+      "repeat": 1,
+      "sparse_selection": false,
+      "seconds": 1.0375666689360514,
+      "action": 19,
+      "value": -0.00036783272972229497,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "opening": [
+        26,
+        11,
+        8,
+        6,
+        21,
+        29
+      ],
+      "repeat": 0,
+      "sparse_selection": false,
+      "seconds": 1.5091352480230853,
+      "action": 27,
+      "value": -0.0017515770035174683,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "opening": [
+        26,
+        11,
+        8,
+        6,
+        21,
+        29
+      ],
+      "repeat": 0,
+      "sparse_selection": true,
+      "seconds": 1.5029201400466263,
+      "action": 27,
+      "value": -0.0017515770035174683,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "opening": [
+        26,
+        11,
+        8,
+        6,
+        21,
+        29
+      ],
+      "repeat": 1,
+      "sparse_selection": true,
+      "seconds": 1.4857480899663642,
+      "action": 27,
+      "value": -0.0017515770035174683,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "opening": [
+        26,
+        11,
+        8,
+        6,
+        21,
+        29
+      ],
+      "repeat": 1,
+      "sparse_selection": false,
+      "seconds": 1.4947769349673763,
+      "action": 27,
+      "value": -0.0017515770035174683,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "opening": [
+        59,
+        0,
+        27,
+        65,
+        132,
+        158
+      ],
+      "repeat": 0,
+      "sparse_selection": false,
+      "seconds": 6.83532957197167,
+      "action": 72,
+      "value": 0.0018003725012363248,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "opening": [
+        59,
+        0,
+        27,
+        65,
+        132,
+        158
+      ],
+      "repeat": 0,
+      "sparse_selection": true,
+      "seconds": 3.978836252936162,
+      "action": 72,
+      "value": 0.0018003725012363248,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "opening": [
+        59,
+        0,
+        27,
+        65,
+        132,
+        158
+      ],
+      "repeat": 1,
+      "sparse_selection": true,
+      "seconds": 4.022786877932958,
+      "action": 72,
+      "value": 0.0018003725012363248,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "opening": [
+        59,
+        0,
+        27,
+        65,
+        132,
+        158
+      ],
+      "repeat": 1,
+      "sparse_selection": false,
+      "seconds": 6.816747036995366,
+      "action": 72,
+      "value": 0.0018003725012363248,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        12,
+        12
+      ],
+      "opening": [
+        32,
+        8,
+        291,
+        285,
+        213,
+        26
+      ],
+      "repeat": 0,
+      "sparse_selection": false,
+      "seconds": 14.37743914895691,
+      "action": 79,
+      "value": 0.001306181114955507,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        12,
+        12
+      ],
+      "opening": [
+        32,
+        8,
+        291,
+        285,
+        213,
+        26
+      ],
+      "repeat": 0,
+      "sparse_selection": true,
+      "seconds": 7.665154592948966,
+      "action": 79,
+      "value": 0.001306181114955507,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        12,
+        12
+      ],
+      "opening": [
+        32,
+        8,
+        291,
+        285,
+        213,
+        26
+      ],
+      "repeat": 1,
+      "sparse_selection": true,
+      "seconds": 8.073657538974658,
+      "action": 79,
+      "value": 0.001306181114955507,
+      "simulations": 1024
+    },
+    {
+      "board": [
+        12,
+        12
+      ],
+      "opening": [
+        32,
+        8,
+        291,
+        285,
+        213,
+        26
+      ],
+      "repeat": 1,
+      "sparse_selection": false,
+      "seconds": 13.859620267059654,
+      "action": 79,
+      "value": 0.001306181114955507,
+      "simulations": 1024
+    }
+  ]
+}
