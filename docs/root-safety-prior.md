@@ -34,3 +34,10 @@ The 67 relevant tests pass. Coverage includes preserving all root actions,
 unchanged internal and open-capture priors, normalization when multiple gifts
 exist, unchanged late decisions, reused roots without accumulated penalties,
 and identical cached/ordinary-selector results.
+
+The package and benchmark are frozen from commit `cc5e415` in the
+[source fingerprint](data/large-model-20261012/root-safety-source-snapshot.json).
+Both sides read the same immutable retained NumPy snapshot, SHA-256
+`21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0`.
+The screen starts with six CPU workers and exactly the settings above.
+The hard filter remains disabled, including throughout internal search.
