@@ -50,6 +50,7 @@ def main():
     parser.add_argument("--modes", nargs="+", default=["constant"])
     parser.add_argument("--parents", nargs="+", choices=("network", "mean"), default=["network"])
     parser.add_argument("--reductions", type=float, nargs="+", default=[0.33])
+    parser.add_argument("--root-candidates", type=int, nargs="+", default=[0])
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.simulations < 1 or any(not 3 <= size <= 12 for size in args.boards):
@@ -63,30 +64,31 @@ def main():
             action = int(rng.choice(state.legal_actions))
             opening.append(action)
             state = state.play(action)
-        settings = [(0.0, "constant", "network")] + [
-            (reduction, mode, parent)
+        settings = [(0.0, "constant", "network", 0)] + [
+            (reduction, mode, parent, width)
             for reduction in args.reductions
             for mode in args.modes
             for parent in args.parents
+            for width in args.root_candidates
         ]
-        for reduction, mode, parent in settings:
+        for reduction, mode, parent, width in settings:
             evaluator.clear_cache()
-            # Each planner is fresh. Reuse merely retains its tree for inspection;
-            # no visits are inherited and no second policy call is performed.
+            # The observer retains this fresh tree only for inspection.
             config = SearchConfig(
                 simulations=args.simulations,
                 fpu_reduction=reduction,
                 fpu_mode=mode,
                 fpu_parent=parent,
+                root_candidates=width,
                 exact_threshold=12,
-                reuse_tree=True,
             )
-            planner = MCTS(evaluator, config)
+            observed = []
+            planner = MCTS(evaluator, config, root_observer=observed.append)
             started = monotonic()
             policy, value = planner.policy(state)
             elapsed = monotonic() - started
             assert planner.inherited_visits == 0
-            root = planner._roots[0]
+            root = observed[0]
             metrics = tree_metrics(root)
             records.append(
                 {

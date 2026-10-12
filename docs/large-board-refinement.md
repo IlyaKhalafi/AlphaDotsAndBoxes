@@ -187,3 +187,30 @@ the same move. Increasing the penalty deepens this example but does not resolve
 its lack of alternatives. This diagnostic alone does not justify a match arm.
 
 [Constant-penalty diagnostic](data/large-search-20261012/allocation-reductions.json).
+
+## Root shortlist and sequential halving
+
+The next acting experiment starts with the 16 highest-prior legal moves. It
+allocates equal visits within a round, ranks the moves by log prior plus
+`(50 + maximum root-child visits) × parent-perspective mean value`, then keeps
+half the shortlist and repeats. Interior nodes retain constant-reduction 0.33
+PUCT. The final policy selects the best evaluated finalist. This deterministic
+root variant is inspired by
+[Danihelka et al. (ICLR 2022)](https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/gumbel-alphazero.pdf);
+it does not implement Gumbel sampling or replace interior-node search. It is
+currently an acting experiment: self-play training, proof propagation and tree
+reuse are deliberately excluded from this mode.
+
+On the same diagnostic opening at 1,024 simulations, it visited 16 root moves,
+median endpoint depth 48.5, maximum 107, and selected a different move. This
+addresses the allocation tradeoff directly, but says nothing yet about wins.
+The optional root observer records fresh trees without enabling reuse.
+
+[Full shortlist diagnostic](data/large-search-20261012/allocation-halving.json).
+
+Its screen starts after the tree-reuse screen, with two workers, 12 paired-seat
+10×10 games, 512 simulations, seed 5801, and released constant-0.33 search as
+reference. Width 16 and the ranking constants above are fixed before the games.
+No timers, noise, oracle, proof or reuse are enabled. If it advances, fresh
+40-game confirmation and 20-game older-reference control use seeds 5901/6001
+at 1,024 simulations. The raw-parent confirmation remains independent.

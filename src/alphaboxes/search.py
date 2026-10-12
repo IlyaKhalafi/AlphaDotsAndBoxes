@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from collections import OrderedDict
+from collections.abc import Callable
 from dataclasses import dataclass
 from time import monotonic
 from typing import TYPE_CHECKING, Protocol
@@ -14,6 +15,7 @@ from alphaboxes.endgame import EndgameTimeout, shared_solver
 from alphaboxes.game import State
 from alphaboxes.graph import encode, encode_batch
 from alphaboxes.opponents import solve
+from alphaboxes.root_halving import RootHalving
 
 try:
     if os.environ.get("ALPHABOXES_PURE_NUMPY") == "1":
@@ -152,6 +154,7 @@ class SearchConfig:
     fpu_reduction: float = 0.0
     fpu_mode: str = "constant"
     fpu_parent: str = "network"
+    root_candidates: int = 0
     degree_two: bool = False
     prove_results: bool = False
 
@@ -168,6 +171,10 @@ class SearchConfig:
             raise ValueError("First-play mode must be constant, policy_mass or branching.")
         if self.fpu_parent not in {"network", "mean"}:
             raise ValueError("First-play parent must be network or mean.")
+        if not isinstance(self.root_candidates, int) or not 0 <= self.root_candidates <= 512:
+            raise ValueError("Root candidates must be an integer in 0..512.")
+        if self.root_candidates and (self.reuse_tree or self.prove_results):
+            raise ValueError("Root halving requires fresh trees without proof propagation.")
         if (
             not 0 <= self.noise_fraction <= 1
             or not 0 <= self.exact_threshold <= 18
@@ -198,8 +205,16 @@ def perspective(value: float, from_player: int, to_player: int) -> float:
 
 
 class MCTS:
-    def __init__(self, evaluator: Evaluator, config: SearchConfig | None = None, seed: int = 0):
+    def __init__(
+        self,
+        evaluator: Evaluator,
+        config: SearchConfig | None = None,
+        seed: int = 0,
+        *,
+        root_observer: Callable[[Node], None] | None = None,
+    ):
         self.evaluator = evaluator
+        self.root_observer = root_observer
         self.config = config or SearchConfig()
         self.rng = np.random.default_rng(seed)
         self._solved: OrderedDict[tuple, float] = OrderedDict()
@@ -353,6 +368,10 @@ class MCTS:
         """Search independent games together, with one leaf per tree per simulation."""
         if any(state.terminal for state in states):
             raise ValueError("Cannot search a finished game.")
+        if self.config.root_candidates and explore:
+            raise ValueError(
+                "Root halving is an acting experiment; self-play uses standard search."
+            )
         deadline = monotonic() + self.config.time_limit if self.config.time_limit else None
         self._deadline = deadline
         self.completed_simulations = 0
@@ -423,6 +442,21 @@ class MCTS:
             fraction = self.config.noise_fraction
             for child, sample in zip(root.children.values(), noise, strict=True):
                 child.prior = (1 - fraction) * child.prior + fraction * float(sample)
+        halving = (
+            {
+                id(root): RootHalving(
+                    root.children,
+                    self.config.simulations,
+                    self.config.root_candidates,
+                    lambda child, player=root.player: perspective(
+                        child.value, child.player, player
+                    ),
+                )
+                for _, root in roots
+            }
+            if self.config.root_candidates
+            else {}
+        )
         for _ in range(self.config.simulations):
             if deadline is not None and monotonic() >= deadline:
                 break
@@ -433,13 +467,16 @@ class MCTS:
                 node, path = root, [root]
                 while node.children:
                     scale = self.config.cpuct * np.sqrt(node.visits + 1)
-                    child = (
-                        choose_child(node.children, node.player, float(scale))
-                        if choose_child
-                        and not self.config.fpu_reduction
-                        and not self.config.prove_results
-                        else self._select(node, scale)
-                    )
+                    if node is root and halving:
+                        child = halving[id(root)].select()
+                    else:
+                        child = (
+                            choose_child(node.children, node.player, float(scale))
+                            if choose_child
+                            and not self.config.fpu_reduction
+                            and not self.config.prove_results
+                            else self._select(node, scale)
+                        )
                     if child.state is None:
                         child.state = node.state.play(child.action)
                         child.player = child.state.player
@@ -458,6 +495,9 @@ class MCTS:
             self.completed_simulations += 1
         for index, root in roots:
             eligible = root.children
+            if halving:
+                best = halving[id(root)].best_action()
+                eligible = {best: root.children[best]}
             if self.config.prove_results and root.solved_value is not None:
                 eligible = {
                     action: child
@@ -484,6 +524,8 @@ class MCTS:
             if self.config.prove_results and root.solved_value is not None:
                 value = root.solved_value
             results[index] = results[index][0], value
+            if self.root_observer is not None:
+                self.root_observer(root)
         return results
 
     def action(self, state: State) -> int:

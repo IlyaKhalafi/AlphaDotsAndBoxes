@@ -286,6 +286,7 @@ def main():
             "numpy_network",
             "opponents",
             "search",
+            "root_halving",
             "checkpoint",
             "endgame",
             "timed_search",
