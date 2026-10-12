@@ -79,6 +79,7 @@ def main():
                 Path(__file__),
                 Path("src/alphaboxes/numpy_network.py"),
                 Path("src/alphaboxes/graph.py"),
+                Path("src/alphaboxes/components.py"),
                 Path("src/alphaboxes/endgame.py"),
             )
         },

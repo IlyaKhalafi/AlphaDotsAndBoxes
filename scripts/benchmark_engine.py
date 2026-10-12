@@ -283,6 +283,7 @@ def main():
             "engine",
             "game",
             "graph",
+            "components",
             "numpy_network",
             "opponents",
             "search",

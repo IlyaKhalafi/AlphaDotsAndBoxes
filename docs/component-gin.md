@@ -89,3 +89,26 @@ a value-only solved leaf with no action list. Search now rebuilds such nodes as
 fresh roots when the root oracle cannot finish an action solve. A regression
 test reproduces the timed-out root solve. Settings are unchanged; restarted runs
 use `runs/large-model-20261012/component-v2` and `data-control-v2`.
+
+## First completed iteration
+
+Both runs completed 48 games and 7,095 positions, with 32,768 sample
+presentations. Structured value loss was 0.5888 and value MAE 0.6042;
+control values were 0.5999 and 0.6165. Sampling took 842.77 and 802.46 seconds,
+updates 20.33 and 16.02 seconds, and own learner peaks were 19,516.8 and
+19,337.6 MiB. These losses are training observations, not evidence of stronger
+play. [Full progress records](data/large-model-20261012/training-progress.json).
+
+The frozen structured NumPy snapshot has SHA-256
+`7b82732a17fa2b7fac526ed49ac34ff89ba96392ee753c50b1f6ec477b27962d`;
+control snapshot SHA-256 is
+`9419146ed63e7dd7a4af8029ef16f29df1347956b628bef7758eabea748f0c7c`.
+On the diagnostic win/loss pair, structured predictions differ by 0.01872;
+the control still differs by only one float32 step. Both structured predictions
+are still negative, so the winning fixture remains misclassified. The encoding
+now carries distinguishing information, but more learning is needed.
+[Structured diagnostic](data/large-model-20261012/component-00001-representation.json),
+[control diagnostic](data/large-model-20261012/data-control-00001-representation.json).
+
+The first structured match screen uses seed 10001. It is running independently
+of the continuing training jobs; the snapshot is frozen throughout the matches.
