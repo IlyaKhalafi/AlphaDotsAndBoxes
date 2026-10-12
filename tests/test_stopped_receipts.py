@@ -63,7 +63,31 @@ def test_stopped_run_retains_complete_out_of_order_pairs():
 def test_completed_run_cannot_hide_missing_opening_pairs():
     receipt = stopped_receipt()
     receipt["status"] = "completed"
+    with pytest.raises(ValueError, match="planned"):
+        module.summarize(receipt)
+
+
+def test_completed_run_requires_consecutive_indices_even_with_matching_count():
+    receipt = stopped_receipt()
+    receipt["status"] = "completed"
+    receipt["planned_games_per_board"] = receipt["games_per_board"]
     with pytest.raises(ValueError, match="consecutive"):
+        module.summarize(receipt)
+
+
+def test_completed_run_cannot_hide_missing_pairs_by_renumbering():
+    receipt = stopped_receipt()
+    receipt["status"] = "completed"
+    for index, game in enumerate(receipt["games"]):
+        game["index"] = index
+    with pytest.raises(ValueError, match="all planned"):
+        module.summarize(receipt)
+
+
+def test_empty_receipt_cannot_report_nonzero_completed_games():
+    receipt = stopped_receipt()
+    receipt["games"] = []
+    with pytest.raises(ValueError, match="planned number"):
         module.summarize(receipt)
 
 

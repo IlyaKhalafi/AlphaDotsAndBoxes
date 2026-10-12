@@ -12,6 +12,15 @@ from alphaboxes.game import State
 
 
 def summarize(receipt):
+    stopped = receipt.get("status", "").startswith("stopped_")
+    if (
+        not stopped
+        and receipt.get("planned_games_per_board", receipt["games_per_board"])
+        != receipt["games_per_board"]
+    ):
+        raise ValueError("Completed receipts require all planned opening pairs.")
+    if not receipt["games"] and receipt["games_per_board"]:
+        raise ValueError("Receipt does not contain the planned number of paired games.")
     rows = []
     for board in sorted({tuple(game["board"]) for game in receipt["games"]}):
         games = sorted(
@@ -23,7 +32,7 @@ def summarize(receipt):
         indices = [game["index"] for game in games]
         if any(type(index) is not int for index in indices) or len(set(indices)) != len(indices):
             raise ValueError("Game indices must be distinct integers.")
-        if receipt.get("status", "").startswith("stopped_"):
+        if stopped:
             planned = receipt.get("planned_games_per_board")
             if (
                 type(planned) is not int
