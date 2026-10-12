@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Protocol
 
 import numpy as np
 
+from alphaboxes.chain_moves import allowed_actions
 from alphaboxes.endgame import EndgameTimeout, shared_solver
 from alphaboxes.game import State
 from alphaboxes.graph import encode, encode_batch
@@ -160,6 +161,7 @@ class SearchConfig:
     root_candidates: int = 0
     degree_two: bool = False
     prove_results: bool = False
+    chain_pruning: bool = False
 
     def __post_init__(self):
         if self.time_limit is not None and (
@@ -197,6 +199,7 @@ class Node:
     action: int = -1
     solved_value: float | None = None
     evaluation: float = 0.0
+    chain_restricted: bool = False
 
     @property
     def value(self) -> float:
@@ -258,6 +261,10 @@ class MCTS:
         if node.state.terminal:
             return node.state.outcome(node.state.player)
         legal = node.state.legal_actions
+        if self.config.chain_pruning:
+            reduced = allowed_actions(node.state)
+            node.chain_restricted = len(reduced) < len(legal)
+            legal = reduced
         probabilities, value = prediction if prediction is not None else self.evaluator(node.state)
         priors = np.maximum(probabilities[list(legal)], 0).astype(np.float64)
         priors = priors / priors.sum() if priors.sum() > 0 else np.full(len(legal), 1 / len(legal))
@@ -341,6 +348,10 @@ class MCTS:
 
     def _select(self, node: Node, scale: float) -> Node:
         children = node.children.values()
+        if node.chain_restricted and len(node.children) == 2 and not self.config.prove_results:
+            unvisited = [child for child in children if not child.visits]
+            if unvisited:
+                return max(unvisited, key=lambda child: child.prior)
         reduction = self.config.fpu_reduction
         if self.config.fpu_mode == "policy_mass":
             visited_mass = sum(child.prior for child in children if child.visits)
@@ -480,6 +491,7 @@ class MCTS:
                             if choose_child
                             and not self.config.fpu_reduction
                             and not self.config.prove_results
+                            and not (node.chain_restricted and len(node.children) == 2)
                             else self._select(node, scale)
                         )
                     if child.state is None:

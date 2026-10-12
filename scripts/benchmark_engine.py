@@ -324,6 +324,7 @@ def main():
             "search",
             "root_halving",
             "rollouts",
+            "chain_moves",
             "checkpoint",
             "endgame",
             "timed_search",
