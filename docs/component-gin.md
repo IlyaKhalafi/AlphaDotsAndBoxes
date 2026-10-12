@@ -129,6 +129,15 @@ and gates were saved before either match started in the
 [confirmation plan](data/large-model-20261012/component-00001-confirmation-plan.json).
 Training continues independently; no serving weights have been replaced.
 
+The frozen learned weights also passed a Torch-versus-NumPy comparison on 101
+legal positions across seven board shapes, from 1×2 through 14×14, with seven
+padding nodes. Maximum logit and value differences were 0.00000572 and
+0.000000358. The logit comparison uses absolute tolerance 0.000003 and relative
+tolerance 0.00003. This checks numerical export, not playing strength.
+[Parity receipt](data/large-model-20261012/component-00001-parity.json).
+The export regression now tests both encodings with nonzero component weights;
+all 22 targeted export, growth and learner tests passed.
+
 After two iterations each run has completed 96 games. Structured replay contains
 14,965 positions, control replay 13,397. Value loss is 0.5965 versus 0.5992;
 value MAE is 0.6080 versus 0.6101. Sampling took 967.71 and 745.95 seconds in the

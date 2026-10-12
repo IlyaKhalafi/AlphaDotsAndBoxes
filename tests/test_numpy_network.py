@@ -11,22 +11,24 @@ from alphaboxes.numpy_network import NumpyEvaluator, NumpyNetwork, export_agent,
 
 
 @pytest.mark.parametrize("size", [(1, 2), (3, 3), (4, 4), (3, 5), (5, 5), (2, 7)])
-def test_numpy_matches_torch_on_live_games_and_padding(tmp_path, size):
+@pytest.mark.parametrize("structure", [False, True])
+def test_numpy_matches_torch_on_live_games_and_padding(tmp_path, size, structure):
     torch.manual_seed(41)
     torch.set_num_threads(1)
-    module = module_spec(width=96, depth=6).build().eval()
+    module = module_spec(width=96, depth=6, structure=structure).build().eval()
     checkpoint = tmp_path / "agent.pt"
     output = tmp_path / "agent.npz"
-    save_agent(checkpoint, module.state_dict(), 96, 6, {"games_total": 12})
+    save_agent(checkpoint, module.state_dict(), 96, 6, {"games_total": 12}, structure=structure)
     metadata = export_agent(checkpoint, output)
     network, loaded = load_network(output)
     assert metadata == loaded
     assert loaded["games_total"] == 12
+    assert network.structure == structure
     assert loaded["source_checkpoint_sha256"] != loaded["checkpoint_sha256"]
     rng = np.random.default_rng(67)
     state = State.new(*size)
     while not state.terminal:
-        obs = encode(state, capacity=state.board.num_nodes + 5)
+        obs = encode(state, capacity=state.board.num_nodes + 5, structure=structure)
         with torch.inference_mode():
             expected = module.forward_inference({Columns.OBS: tensor_observations([obs])})
         logits, value = network.forward(obs)
