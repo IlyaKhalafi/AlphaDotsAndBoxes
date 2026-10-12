@@ -276,3 +276,17 @@ current encoder. New input columns start at zero so the retained predictions
 are preserved before learning. Training remains in RLlib, deployment remains
 NumPy, and fresh larger-board evaluation is required before promotion. This
 addresses missing game information rather than increasing width alone.
+
+The reuse confirmation retained 36 of 40 planned games: 17 wins, 19 losses,
+47.22% score, interval 30.56–66.67%, mean margin −1.89. Even winning the last
+four games gives only 52.5% and optimistic interval 35–70%, which cannot meet
+the release gate. The run was rejected for futility; its dependent control
+retained eight paired games (3–5). Both partial receipts preserve their original
+settings and source revision, and every retained history replays legally.
+
+[Reuse confirmation](data/large-search-20261012/reuse-confirmation.json),
+[reuse control](data/large-search-20261012/reuse-control.json), and
+[validated partial summaries](data/large-search-20261012/reuse-rejected-summary.json).
+
+The next phase is documented in [Component-aware GIN refinement](component-gin.md).
+The live NumPy agent remains the earlier validated release during training.

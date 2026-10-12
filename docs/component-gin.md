@@ -83,3 +83,9 @@ replays and actual work are checked. An optimistic completion may reject a
 mathematically futile run; stopped receipts must identify planned and retained
 counts. Smaller-board behavior and actual web settings are checked before
 deployment. No larger-board improvement is claimed at launch.
+
+The first launches stopped before their first update: reuse attempted to promote
+a value-only solved leaf with no action list. Search now rebuilds such nodes as
+fresh roots when the root oracle cannot finish an action solve. A regression
+test reproduces the timed-out root solve. Settings are unchanged; restarted runs
+use `runs/large-model-20261012/component-v2` and `data-control-v2`.
