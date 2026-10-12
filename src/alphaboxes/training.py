@@ -7,6 +7,7 @@ import time
 from collections import deque
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from tempfile import mkdtemp
 
 import numpy as np
 import ray
@@ -44,12 +45,14 @@ class TrainConfig:
     learning_rate: float = 3e-4
     width: int = 96
     depth: int = 6
+    structure: bool = False
     seed: int = 42
     temperature_moves: int = 12
     start_fraction: float = 0.0
     start_min_moves: int = 12
     start_max_moves: int = 28
     start_archive_capacity: int = 4096
+    endgame_fraction: float = 0.0
     device: str = "cpu"
     gpu_memory_gb: float = 4.0
     gpu_duty_cycle: float = 0.15
@@ -107,6 +110,7 @@ class TrainConfig:
             "min_moves": self.start_min_moves,
             "max_moves": self.start_max_moves,
             "capacity": self.start_archive_capacity,
+            "endgame_fraction": self.endgame_fraction,
         }
 
     @classmethod
@@ -137,9 +141,11 @@ def sampling_plan(config: TrainConfig) -> list[tuple[str, int]]:
     ]
 
 
-def make_batch(examples: list[Example]) -> MultiAgentBatch:
+def make_batch(examples: list[Example], *, structure: bool = False) -> MultiAgentBatch:
     capacity = max(example.state.board.num_nodes for example in examples)
-    observations = encode_batch([example.state for example in examples], capacity)
+    observations = encode_batch(
+        [example.state for example in examples], capacity, structure=structure
+    )
     policies = np.zeros((len(examples), capacity), dtype=np.float32)
     for i, example in enumerate(examples):
         policies[i, : len(example.policy)] = example.policy
@@ -154,6 +160,18 @@ def make_batch(examples: list[Example]) -> MultiAgentBatch:
 
 
 def build_learner(config: TrainConfig) -> LearnerGroup:
+    if not ray.is_initialized():
+        # GPU device discovery in RLlib can initialize Ray implicitly. Make the
+        # local instance and its session directory explicit before that happens.
+        ray.init(
+            address="local",
+            _temp_dir=mkdtemp(prefix="adb-ray-"),
+            num_cpus=max(2, config.workers),
+            num_gpus=1 if config.device == "cuda" else 0,
+            include_dashboard=False,
+            object_store_memory=256 * 1024**2,
+            log_to_driver=False,
+        )
     if config.device == "cuda":
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA requested but unavailable. Use --device cpu.")
@@ -163,7 +181,7 @@ def build_learner(config: TrainConfig) -> LearnerGroup:
     capacity = max(board(*size).num_nodes for size in config.sizes)
     spec = MultiRLModuleSpec(
         rl_module_specs={
-            DEFAULT_POLICY_ID: module_spec(capacity, config.width, config.depth),
+            DEFAULT_POLICY_ID: module_spec(capacity, config.width, config.depth, config.structure),
         }
     )
     learner_config = (
@@ -203,16 +221,18 @@ def train(
         load_agent(initial_checkpoint) if initial_checkpoint else (None, {})
     )
     if initial_model and any(
-        initial_model.model_config[key] != getattr(config, key) for key in ("width", "depth")
+        initial_model.model_config[key] != getattr(config, key)
+        for key in ("width", "depth", "structure")
     ):
         raise ValueError(
-            "Initial checkpoint width and depth must match the training configuration."
+            "Initial checkpoint width, depth and structure must match the training configuration."
         )
     output.mkdir(parents=True, exist_ok=True)
     torch.set_num_threads(2)
     torch.manual_seed(config.seed)
     rng = np.random.default_rng(config.seed)
     random.seed(config.seed)
+    owns_ray = not ray.is_initialized()
     learner = build_learner(config)
     initialization = {}
     if initial_model:
@@ -224,6 +244,10 @@ def train(
         }
         if "expansion" in initial_metadata:
             initialization["expansion"] = initial_metadata["expansion"]
+        if "structure_initialization" in initial_metadata:
+            initialization["structure_initialization"] = initial_metadata[
+                "structure_initialization"
+            ]
     replay: deque[Example] = deque(maxlen=config.replay_capacity)
     start_iteration, games_total, positions_total = 0, 0, 0
     elapsed_before_resume = 0.0
@@ -236,6 +260,8 @@ def train(
         for key in ("width", "depth", "sizes"):
             if old_config[key] != asdict(config)[key]:
                 raise ValueError(f"Cannot resume with a different {key}.")
+        if state["config"].get("structure", False) != config.structure:
+            raise ValueError("Cannot resume with a different structure encoding.")
         learner.set_state(state["learner"])
         initialization = state.get("initialization", {})
         replay.extend(state["replay"])
@@ -260,21 +286,9 @@ def train(
                     with metrics_path.open("a") as log:
                         log.write(json.dumps(state["last_metric"]) + "\n")
     workers = []
-    owns_ray = False
     local_search = None
     plan = sampling_plan(config)
     if config.workers:
-        if not ray.is_initialized():
-            # Always a new local instance. Never attach to someone else's Ray cluster.
-            ray.init(
-                address="local",
-                num_cpus=config.workers,
-                num_gpus=1 if config.selfplay_device == "cuda" else 0,
-                include_dashboard=False,
-                object_store_memory=256 * 1024**2,
-                log_to_driver=False,
-            )
-            owns_ray = True
         workers = [
             SelfPlayWorker.options(num_gpus=0.01 if device == "cuda" else 0).remote(
                 config.width,
@@ -288,11 +302,14 @@ def train(
                 else None,
                 config.start_options,
                 [example.state for example in list(replay)[-config.start_archive_capacity :]],
+                config.structure,
             )
             for i, (device, _) in enumerate(plan)
         ]
     else:
-        module = module_spec(width=config.width, depth=config.depth).build()
+        module = module_spec(
+            width=config.width, depth=config.depth, structure=config.structure
+        ).build()
         local_search = MCTS(NeuralEvaluator(module), config.search, config.seed)
     local_starts = StartPositionArchive(**config.start_options)
     local_starts.observe(example.state for example in replay)
@@ -335,7 +352,12 @@ def train(
                     start_rows = [local_starts.statistics()]
                 start_stats = {
                     key: sum(row[key] for row in start_rows)
-                    for key in ("sampled_games", "midgame_starts", "initial_moves_total")
+                    for key in (
+                        "sampled_games",
+                        "midgame_starts",
+                        "endgame_starts",
+                        "initial_moves_total",
+                    )
                 }
                 sample_seconds = time.monotonic() - iteration_start
                 replay.extend(examples)
@@ -348,7 +370,9 @@ def train(
                     indices = rng.choice(
                         len(replay), min(config.batch_size, len(replay)), replace=False
                     )
-                    batch = make_batch([replay[int(index)] for index in indices])
+                    batch = make_batch(
+                        [replay[int(index)] for index in indices], structure=config.structure
+                    )
                     sample_presentations += len(indices)
                     result = learner.update(batch=batch)
                     metrics = metric_values(result)
@@ -369,6 +393,7 @@ def train(
                     "seed": config.seed,
                     "sizes": [list(size) for size in config.sizes],
                     "simulations": config.search.simulations,
+                    "structure": config.structure,
                     "selfplay_device": config.selfplay_device,
                     "selfplay_batch_size": config.selfplay_batch_size,
                     "selfplay_cuda_graphs": config.selfplay_cuda_graphs,
@@ -377,6 +402,7 @@ def train(
                     "training_leaf_exact_threshold": config.search.leaf_exact_threshold,
                     "training_reuse_tree": config.search.reuse_tree,
                     "start_fraction": config.start_fraction,
+                    "endgame_fraction": config.endgame_fraction,
                     "initialization": initialization,
                 }
                 budget_exhausted = (
@@ -408,7 +434,14 @@ def train(
                     }
                 )
                 weights = learner.get_weights()[DEFAULT_POLICY_ID]
-                save_agent(output / "latest.pt", weights, config.width, config.depth, metadata)
+                save_agent(
+                    output / "latest.pt",
+                    weights,
+                    config.width,
+                    config.depth,
+                    metadata,
+                    structure=config.structure,
+                )
                 if (
                     iteration % config.checkpoint_every == 0
                     or iteration == config.iterations
@@ -420,6 +453,7 @@ def train(
                         config.width,
                         config.depth,
                         metadata,
+                        structure=config.structure,
                     )
                 state = {
                     "config": asdict(config),

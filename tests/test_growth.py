@@ -114,3 +114,31 @@ def test_component_expansion_preserves_predictions_and_numpy_export(tmp_path):
     torch.testing.assert_close(
         actual[Columns.VF_PREDS], extra[Columns.VF_PREDS], atol=3e-6, rtol=3e-5
     )
+
+
+def test_structured_checkpoint_and_curriculum_train_with_rllib(tmp_path):
+    model = module_spec(width=16, depth=2).build()
+    source, structured = tmp_path / "original.pt", tmp_path / "structured.pt"
+    save_agent(source, model.state_dict(), 16, 2, {})
+    enable_structure(source, structured)
+    before, _ = load_agent(structured)
+    config = TrainConfig(
+        sizes=((2, 3),),
+        structure=True,
+        endgame_fraction=1,
+        width=16,
+        depth=2,
+        iterations=1,
+        games_per_iteration=2,
+        workers=0,
+        updates_per_iteration=1,
+        batch_size=8,
+        search=SearchConfig(simulations=4, degree_two=True),
+    )
+    checkpoint = train(config, tmp_path / "train", initial_checkpoint=structured)
+    after, metadata = load_agent(checkpoint)
+    assert after.structure and metadata["structure"] and metadata["endgame_fraction"] == 1
+    assert any(
+        not torch.equal(value, after.state_dict()[key])
+        for key, value in before.state_dict().items()
+    )

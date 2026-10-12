@@ -1,10 +1,34 @@
 import numpy as np
 import pytest
 
-from alphaboxes.curriculum import StartPositionArchive
+from alphaboxes.curriculum import StartPositionArchive, sample_endgame
+from alphaboxes.endgame import position
 from alphaboxes.game import State
 from alphaboxes.search import MCTS, SearchConfig
 from alphaboxes.selfplay import play_episode, play_episodes
+
+
+def test_endgame_sampler_generates_repeatable_unfinished_structural_positions():
+    first, second = np.random.default_rng(741), np.random.default_rng(741)
+    for size in ((1, 1), (1, 2), (2, 3), (3, 3), (5, 5), (8, 8), (10, 10), (12, 12)):
+        for _ in range(10):
+            state = sample_endgame(size, first)
+            assert state == sample_endgame(size, second)
+            assert not state.terminal and position(state) is not None
+            for owner, edges in zip(state.owners, state.board.boxes, strict=True):
+                free = sum(state.edges[e] < 0 for e in edges)
+                assert free == (2 if owner < 0 else 0)
+
+
+def test_endgame_curriculum_counts_starts_separately():
+    archive = StartPositionArchive(endgame_fraction=1)
+    rng = np.random.default_rng(742)
+    for _ in range(4):
+        state = archive.choose((5, 5), rng)
+        assert position(state) is not None
+    stats = archive.statistics()
+    assert stats["endgame_starts"] == stats["sampled_games"] == 4
+    assert stats["midgame_starts"] == 0 and stats["initial_moves_total"] > 0
 
 
 def test_disabled_curriculum_preserves_random_stream():

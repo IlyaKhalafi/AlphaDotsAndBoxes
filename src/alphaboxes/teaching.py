@@ -219,6 +219,7 @@ def fine_tune(
         sizes=tuple(sorted({(s.board.rows, s.board.cols) for s in dataset.states})),
         width=model.model_config["width"],
         depth=model.model_config["depth"],
+        structure=model.structure,
         device=device,
         gpu_memory_gb=gpu_memory_gb,
         workers=0,
@@ -274,7 +275,9 @@ def fine_tune(
                         ),
                     ]
                 )
-                batch = make_batch(teaching_examples(dataset, indices, teach_policy))
+                batch = make_batch(
+                    teaching_examples(dataset, indices, teach_policy), structure=config.structure
+                )
                 metrics = metric_values(learner.update(batch=batch))
                 if device == "cuda":
                     torch.cuda.synchronize()
@@ -306,6 +309,7 @@ def fine_tune(
                         config.width,
                         config.depth,
                         metadata,
+                        structure=config.structure,
                     )
                 if step % 25 == 0:
                     print(json.dumps(record), flush=True)

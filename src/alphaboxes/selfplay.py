@@ -92,12 +92,13 @@ class SelfPlayWorker:
         cuda_graph_capacity: int | None = None,
         start_options: dict | None = None,
         archived_states: list[State] | None = None,
+        structure: bool = False,
     ):
         torch.set_num_threads(1)
         if device == "cuda":
             total = torch.cuda.get_device_properties(0).total_memory
             torch.cuda.set_per_process_memory_fraction(1024**3 / total)
-        self.module = module_spec(width=width, depth=depth).build().to(device)
+        self.module = module_spec(width=width, depth=depth, structure=structure).build().to(device)
         self.batch_size = batch_size
         self.search = MCTS(
             NeuralEvaluator(
