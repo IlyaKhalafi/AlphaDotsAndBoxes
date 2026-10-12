@@ -24,6 +24,7 @@ def main():
     parser.add_argument("--seconds", type=float, default=1.75)
     parser.add_argument("--fpu-reduction", type=float, default=0.33)
     parser.add_argument("--chain-pruning", action="store_true")
+    parser.add_argument("--safe-moves", action="store_true")
     args = parser.parse_args()
     evaluator, _ = load_evaluator(args.checkpoint)
     config = SearchConfig(
@@ -32,6 +33,7 @@ def main():
         exact_threshold=12,
         fpu_reduction=args.fpu_reduction,
         chain_pruning=args.chain_pruning,
+        **({"safe_moves": True} if args.safe_moves else {}),
     )
     records = []
     with BoundedSearch(evaluator, config, timeout=1.9) as search:
@@ -73,6 +75,7 @@ def main():
         "response_deadline": 1.9,
         "fpu_reduction": args.fpu_reduction,
         "chain_pruning": args.chain_pruning,
+        "safe_moves": args.safe_moves,
         "threads": {
             key: os.environ.get(key)
             for key in (

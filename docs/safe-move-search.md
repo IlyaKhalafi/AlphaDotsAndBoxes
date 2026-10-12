@@ -68,3 +68,10 @@ same-position speed benchmark. The screen advances unchanged settings to the
 specified 40-game fresh confirmation and 20-game zero-first-play control, using
 six and two CPU workers. Neither the screen nor its interval replaces fresh
 confirmation and actual web-setting checks. The live agent remains unchanged.
+
+The [supervised deadline probe](data/large-model-20261012/safe-moves-deadline-probe.json)
+passes all 36 decisions across opening, middle, late and exact-root positions
+on 4×4, 5×5 and 10×10. Maximum response is 1.774 seconds with no fallback.
+It uses the web deadlines and leaves the cached selector disabled. The
+deadline tool accepts `--safe-moves` to reproduce this enabled-feature check.
+Responsiveness alone does not establish strength or pass the release gates.
