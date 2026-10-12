@@ -165,3 +165,58 @@ def test_distinct_checkpoints_and_search_algorithms(tmp_path, candidate_engine):
                 candidate_engine if move["side"] == "candidate" else "alpha_beta"
             )
             assert (move["side"] == "candidate") == (move["player"] == game["alpha_player"])
+
+
+def test_untimed_matches_have_equal_work_and_reproducible_parallel_histories(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    histories = []
+    for workers in (1, 2):
+        output = tmp_path / f"untimed-{workers}.json"
+        move_logs = tmp_path / f"moves-{workers}"
+        command = [
+            sys.executable,
+            str(root / "scripts/benchmark_engine.py"),
+            "--candidate-engine",
+            "mcts",
+            "--search-options",
+            '{"fpu_reduction":0.33}',
+            "--match-boards",
+            "3",
+            "--games",
+            "2",
+            "--match-simulations",
+            "16",
+            "--untimed",
+            "--skip-latency",
+            "--workers",
+            str(workers),
+            "--move-progress-dir",
+            str(move_logs),
+            "--output",
+            str(output),
+        ]
+        subprocess.run(
+            command,
+            cwd=root,
+            env={**os.environ, "OPENBLAS_NUM_THREADS": "1"},
+            capture_output=True,
+            check=True,
+            timeout=30,
+        )
+        receipt = json.loads(output.read_text())
+        assert receipt["budget_mode"] == "simulations"
+        assert receipt["match_seconds"] is None and receipt["reference_seconds"] is None
+        games = receipt["games"]
+        histories.append([[move["action"] for move in game["moves"]] for game in games])
+        moves = [move for game in games for move in game["moves"]]
+        assert any(move["remaining_edges"] > 12 for move in moves)
+        assert all(move["simulations"] == 16 for move in moves if move["remaining_edges"] > 12)
+        for game in games:
+            log = move_logs / f"3x3-game-{game['index']:04d}.jsonl"
+            rows = [json.loads(line) for line in log.read_text().splitlines()]
+            assert rows[0]["opening"] == game["opening"]
+            assert [row["action"] for row in rows[1:]] == [move["action"] for move in game["moves"]]
+            assert rows[-1]["scores"] == game["scores"]
+        refused = subprocess.run(command, cwd=root, capture_output=True, timeout=30)
+        assert refused.returncode != 0
+    assert histories[0] == histories[1]

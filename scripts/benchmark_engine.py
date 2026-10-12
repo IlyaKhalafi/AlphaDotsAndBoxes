@@ -1,4 +1,4 @@
-"""Compare timed search engines with independently selected NumPy checkpoints.
+"""Compare search engines with independently selected NumPy checkpoints.
 
 Run with one BLAS thread for reproducible CPU resource use. Matches swap seats
 on identical random openings; wall-clock budgets make exact traces nondeterministic.
@@ -26,8 +26,8 @@ from alphaboxes.search import MCTS, SearchConfig, choose_child
 from alphaboxes.timed_search import BoundedSearch
 
 
-def planner(evaluator, engine, seconds, search_options=None):
-    options = {"simulations": 8192, "time_limit": seconds, "exact_threshold": 12}
+def planner(evaluator, engine, seconds, search_options=None, simulations=8192):
+    options = {"simulations": simulations, "time_limit": seconds, "exact_threshold": 12}
     options.update(search_options or {})
     if isinstance(evaluator, BoundedSearch):
         evaluator.config = (
@@ -102,14 +102,27 @@ def play_pair(evaluators, args, size, pair_index):
             state = state.play(action)
         alpha_player = index % 2
         moves = []
+        move_log = None
+        if args.move_progress_dir:
+            move_log = args.move_progress_dir / f"{size}x{size}-game-{index:04d}.jsonl"
+            with move_log.open("x") as output:
+                output.write(json.dumps({"opening": opening, "alpha_player": alpha_player}) + "\n")
         while not state.terminal:
             side = "candidate" if state.player == alpha_player else "reference"
             engine = args.candidate_engine if side == "candidate" else args.reference_engine
             seconds = args.match_seconds if side == "candidate" else args.reference_seconds
             options = args.search_options if side == "candidate" else None
-            step = measure(planner(evaluators[side], engine, seconds, options), state)
+            step = measure(
+                planner(evaluators[side], engine, seconds, options, args.match_simulations), state
+            )
             moves.append({"player": state.player, "side": side, "engine": engine, **step})
             state = state.play(step["action"])
+            if move_log:
+                with move_log.open("a") as output:
+                    output.write(
+                        json.dumps({"move": len(moves), "scores": list(state.scores), **moves[-1]})
+                        + "\n"
+                    )
         margin = state.scores[alpha_player] - state.scores[1 - alpha_player]
         games.append(
             {
@@ -187,18 +200,39 @@ def main():
     parser.add_argument("--repeats", type=int, default=2)
     parser.add_argument("--match-boards", type=int, nargs="+", default=[4, 5])
     parser.add_argument("--match-seconds", type=float, default=0.1)
+    parser.add_argument("--match-simulations", type=int, default=8192)
+    parser.add_argument(
+        "--untimed", action="store_true", help="Equal MCTS work without move timers"
+    )
     parser.add_argument("--games", type=int, default=8)
     parser.add_argument("--seed", type=int, default=3501)
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--skip-latency", action="store_true")
     parser.add_argument("--progress", type=Path)
+    parser.add_argument("--move-progress-dir", type=Path)
     args = parser.parse_args()
-    if args.reference_seconds is None:
-        args.reference_seconds = args.match_seconds
-    if args.response_deadline is not None and not 0 < args.response_deadline < 2:
-        parser.error("Response deadline must be positive and below two seconds.")
     if not isinstance(args.search_options, dict):
         parser.error("Search options must be a JSON object.")
+    if args.reference_seconds is None:
+        args.reference_seconds = args.match_seconds
+    if args.match_simulations < 1:
+        parser.error("Match simulations must be positive.")
+    if args.untimed:
+        if (
+            args.candidate_engine != "mcts"
+            or args.reference_engine != "mcts"
+            or args.response_deadline is not None
+            or not args.skip_latency
+        ):
+            parser.error(
+                "Untimed matches require both MCTS engines, no response deadline "
+                "and --skip-latency."
+            )
+        if "time_limit" in args.search_options or "simulations" in args.search_options:
+            parser.error("Untimed match budgets must be set with --match-simulations.")
+        args.match_seconds = args.reference_seconds = None
+    if args.response_deadline is not None and not 0 < args.response_deadline < 2:
+        parser.error("Response deadline must be positive and below two seconds.")
     try:
         SearchConfig(**args.search_options)
     except (TypeError, ValueError) as error:
@@ -211,10 +245,15 @@ def main():
         args.progress.parent.mkdir(parents=True, exist_ok=True)
         if args.progress.exists():
             parser.error("Progress output already exists; use a fresh path.")
+    if args.move_progress_dir:
+        args.move_progress_dir.mkdir(parents=True, exist_ok=True)
+        if any(args.move_progress_dir.iterdir()):
+            parser.error("Move progress directory must be empty; use a fresh path.")
     if not all(2 <= size <= 12 for size in args.boards + args.match_boards):
         parser.error("Benchmark board sizes must be 2..12.")
     for seconds in args.seconds + [args.match_seconds, args.reference_seconds]:
-        EngineConfig(time_limit=seconds)
+        if seconds is not None:
+            EngineConfig(time_limit=seconds)
     evaluators = load_players(args)
     modules = [
         sys.modules[f"alphaboxes.{name}"]
@@ -248,6 +287,8 @@ def main():
         },
         "seed": args.seed,
         "match_seconds": args.match_seconds,
+        "match_simulations": args.match_simulations,
+        "budget_mode": "simulations" if args.untimed else "seconds",
         "reference_seconds": args.reference_seconds,
         "response_deadline": args.response_deadline,
         "games_per_board": args.games,
