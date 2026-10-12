@@ -47,6 +47,12 @@ def summarize(receipt):
                     or move["remaining_edges"] != len(state.legal_actions)
                 ):
                     raise ValueError("Move receipt disagrees with the replayed state or player.")
+                if receipt.get("budget_mode") == "simulations" and engine == "mcts":
+                    simulations = move["simulations"]
+                    if not isinstance(simulations, int) or not (
+                        0 <= simulations <= receipt["match_simulations"]
+                    ):
+                        raise ValueError("Move exceeds the recorded simulation budget.")
                 state = state.play(move["action"])
             if not state.terminal or list(state.scores) != game["scores"]:
                 raise ValueError("Incomplete game or incorrect recorded final scores.")
@@ -116,6 +122,11 @@ def summarize(receipt):
                 "median_simulations": float(np.median([move["simulations"] for move in neural]))
                 if neural
                 else None,
+                "simulation_counts": dict(
+                    sorted(Counter(move["simulations"] for move in neural).items())
+                ),
+                "structural_solve_hits": sum(move.get("endgame_hits", 0) for move in neural),
+                "proven_nodes": sum(move.get("proven_nodes", 0) for move in neural),
                 "opening_positions": len(openings),
                 "opening_depth_counts": dict(
                     sorted(Counter(move["depth"] for move in alpha_openings).items())

@@ -180,6 +180,8 @@ def test_untimed_matches_have_equal_work_and_reproducible_parallel_histories(tmp
             "mcts",
             "--search-options",
             '{"fpu_reduction":0.33}',
+            "--reference-search-options",
+            '{"fpu_reduction":0.15}',
             "--match-boards",
             "3",
             "--games",
@@ -205,12 +207,34 @@ def test_untimed_matches_have_equal_work_and_reproducible_parallel_histories(tmp
         )
         receipt = json.loads(output.read_text())
         assert receipt["budget_mode"] == "simulations"
+        assert receipt["reference_search_options"] == {"fpu_reduction": 0.15}
         assert receipt["match_seconds"] is None and receipt["reference_seconds"] is None
         games = receipt["games"]
         histories.append([[move["action"] for move in game["moves"]] for game in games])
         moves = [move for game in games for move in game["moves"]]
         assert any(move["remaining_edges"] > 12 for move in moves)
         assert all(move["simulations"] == 16 for move in moves if move["remaining_edges"] > 12)
+        if workers == 1:
+            damaged = json.loads(output.read_text())
+            damaged["games"][0]["moves"][0]["simulations"] = 17
+            corrupt = tmp_path / "excess-work.json"
+            corrupt.write_text(json.dumps(damaged))
+            invalid = subprocess.run(
+                [
+                    sys.executable,
+                    str(root / "scripts/summarize_engine.py"),
+                    "--receipts",
+                    str(corrupt),
+                    "--output",
+                    str(tmp_path / "invalid-summary.json"),
+                ],
+                cwd=root,
+                env={**os.environ, "OPENBLAS_NUM_THREADS": "1"},
+                capture_output=True,
+                timeout=30,
+            )
+            assert invalid.returncode != 0
+            assert b"simulation budget" in invalid.stderr
         for game in games:
             log = move_logs / f"3x3-game-{game['index']:04d}.jsonl"
             rows = [json.loads(line) for line in log.read_text().splitlines()]
