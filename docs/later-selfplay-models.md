@@ -48,3 +48,27 @@ component snapshot now runs the specified 40-game confirmation and 20-game
 zero-first-play control with unchanged weights and search settings. These
 CPU evaluations use six and two workers respectively, after GPU training ends.
 The deployed agent remains unchanged pending the release gates.
+
+## Release checks
+
+Before reading fresh confirmation outcomes, smaller-board validation is fixed
+to 20 games each on 4×4 and 5×5, fresh seed 214001. Both sides use the web's
+constant-0.33 search, fresh trees, 8,192-simulation ceiling and 1.75-second
+internal deadline. Supervise the candidate with the web's 1.9-second deadline;
+leave the optional cached selector disabled, matching the deployed setting.
+Require at least 50% score on each board and every candidate response below
+two seconds. These samples are regression checks, rather than proof of superiority
+on smaller boards. A candidate that fails large-board confirmation is not released.
+
+The selected snapshot already passes [NumPy parity](data/large-model-20261012/component-00025-export-parity.json)
+on 738 legally reached positions across eight shapes, including 10×10 and
+12×12 with padding. Maximum absolute logit/value errors are 3.82e−6 and
+8.34e−7. The [deadline probe](data/large-model-20261012/component-00025-deadline-probe.json)
+passes all 36 supervised decisions, maximum 1.761 seconds, with no fallback.
+
+On the prior [reachable 14×14 loop diagnostic](data/large-model-20261012/component-00025-representation.json),
+the component snapshot separates opposite-outcome states by 0.03898 in value,
+compared with one float32 rounding step for the retained representation. Its
+predictions remain negative for both states (−0.0475 and −0.0865), so this
+demonstrates sensitivity to the additional information, not solved endgames
+or full-game strength.
