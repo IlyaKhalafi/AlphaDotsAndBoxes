@@ -99,3 +99,16 @@ and [unfinished opening-pair traces](data/large-model-20261012/policy-one-screen
 are preserved. Metadata reconstruction verifies matching commit-cf2310f
 sources and the frozen update-300 model hash. This arm is not deployed.
 The same model's 1,024-simulation screen continues independently.
+
+## Export and responsiveness checks
+
+The [export check](data/large-model-20261012/policy-00300-export-parity.json)
+passes on 738 legal positions across eight shapes, including 10×10 and
+12×12, with seven padding nodes. Maximum logit difference is 3.82e−6 and
+value difference 9.17e−7. Both use the structured graph encoding.
+
+The [deadline probe](data/large-model-20261012/policy-00300-deadline-probe.json)
+checks 36 supervised NumPy decisions on 4×4, 5×5 and 10×10, spanning opening,
+middle, late and exact-root positions. Every decision finishes below two
+seconds, maximum 1.779 seconds, with no fallback. This proves responsiveness
+for these samples, not full-game strength under the deadline.
