@@ -127,3 +127,29 @@ source snapshot; the same seed, weights and settings are retained. The new
 receipt uses the `policy-teaching-confirm-v2` label. This restart and the
 [search-runtime optimization](sparse-selection.md) are documented separately;
 the taught-model confirmation does not enable the new selector.
+
+## Fresh confirmation: rejected
+
+The retained 26 opening-paired games score 11 wins and 15 losses (42.31%,
+paired interval 23.08–61.54%), with mean margin +1.15 boxes. This fails the
+promotion gate. Better closed-endgame move accuracy and a promising screen
+did not establish stronger complete-game play.
+
+The planned 40-game confirmation stops after its confidence gate becomes
+unreachable. Even 14 further wins produce only 45% for the final paired
+bootstrap lower bound, below the required strictly-above-50% threshold.
+The [receipt](data/large-model-20261012/policy-teaching-confirm-v2.json) records
+the bound and reconstructed metadata verified against the immutable
+commit-317d36f source snapshot. [Legal replay validation](data/large-model-20261012/policy-teaching-confirm-v2-summary.json)
+checks all retained games; [unfinished opening-pair traces](data/large-model-20261012/policy-teaching-confirm-v2-inflight.json)
+are preserved separately.
+
+The dependent zero-first-play control stops with 5 wins and 3 losses among
+eight retained games (62.5%, paired interval 50–87.5%, mean margin +22.5).
+It cannot rescue a candidate rejected against the stronger retained search.
+Its planned count was 20; [partial receipt](data/large-model-20261012/policy-teaching-legacy-control-v2.json),
+[validation](data/large-model-20261012/policy-teaching-legacy-control-v2-summary.json)
+and [unfinished traces](data/large-model-20261012/policy-teaching-legacy-control-v2-inflight.json)
+remain available. Neither comparison is reported as a completed planned run.
+Only the matched benchmarks and their workers were stopped. The released
+model remains unchanged; the next hypothesis tests a [first-play floor](first-play-floor.md).
