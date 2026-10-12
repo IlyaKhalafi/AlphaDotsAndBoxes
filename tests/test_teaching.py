@@ -88,7 +88,7 @@ def test_teacher_dataset_and_actual_rllib_update(tmp_path, structure):
         fine_tune(other, path, tmp_path / "invalid", steps=1, device="cpu")
 
 
-def test_component_teacher_has_exact_targets_and_replay_anchors(tmp_path):
+def test_component_teacher_has_exact_targets_and_replay_anchors(tmp_path, monkeypatch):
     import torch
 
     from alphaboxes.checkpoint import save_agent
@@ -97,6 +97,18 @@ def test_component_teacher_has_exact_targets_and_replay_anchors(tmp_path):
     from alphaboxes.selfplay import Example
     from alphaboxes.teaching import build_component_dataset, load_dataset
 
+    original = DegreeTwoSolver.solve
+    calls = 0
+
+    def interrupt_once(self, state, deadline=None):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            assert deadline is not None
+            raise TimeoutError
+        return original(self, state, deadline)
+
+    monkeypatch.setattr(DegreeTwoSolver, "solve", interrupt_once)
     source = tmp_path / "source.pt"
     module = module_spec(width=16, depth=2, structure=True).build()
     save_agent(source, module.state_dict(), 16, 2, {}, structure=True)
@@ -116,6 +128,7 @@ def test_component_teacher_has_exact_targets_and_replay_anchors(tmp_path):
     report = build_component_dataset(source, replay, output, positions=12)
     dataset = load_dataset(output)
     assert report["exact_positions"] == report["anchor_positions"] == 12
+    assert report["skipped_oracle_timeouts"] >= 1
     assert report["sources"][0]["sha256"] == hashlib.sha256(replay.read_bytes()).hexdigest()
     for index, position in enumerate(dataset.states[:12]):
         margin, actions = DegreeTwoSolver().solve(position)

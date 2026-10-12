@@ -165,18 +165,7 @@ class DegreeTwoSolver:
         if all((c.closed_chain and len(c.boxes) >= 3) or c.closed_loop for c in components):
             # Any opening in a complete long component offers the same take-all
             # or handout alternatives. Avoid enumerating two-front child states.
-            groups = tuple(sorted((len(c.boxes), 2 if c.closed_chain else -1) for c in components))
-            opening_values = {}
-            for index, group in enumerate(groups):
-                if group in opening_values:
-                    continue
-                length, boundary = group
-                rest = groups[:index] + groups[index + 1 :]
-                continuation = self._future(rest, deadline)
-                handout = 2 if boundary == 2 else 4
-                opening_values[group] = min(
-                    -length - continuation, -length + 2 * handout + continuation
-                )
+            opening_values = self._opening_values(components, deadline)
             best = max(opening_values.values())
             by_box = {
                 box: (len(c.boxes), 2 if c.closed_chain else -1)
@@ -198,6 +187,39 @@ class DegreeTwoSolver:
             if abs(child_value - value) < 1e-10:
                 actions.append(action)
         return value, tuple(actions)
+
+    def _opening_values(self, components, deadline):
+        groups = tuple(sorted((len(c.boxes), 2 if c.closed_chain else -1) for c in components))
+        values = {}
+        for index, group in enumerate(groups):
+            if group in values:
+                continue
+            length, boundary = group
+            continuation = self._future(groups[:index] + groups[index + 1 :], deadline)
+            handout = 2 if boundary == 2 else 4
+            values[group] = min(-length - continuation, -length + 2 * handout + continuation)
+        return values
+
+    def action_value(self, state: State, action: int, deadline: float | None = None):
+        """Exact normalized margin after an action, from the original player's view.
+
+        A closed-chain interior cut creates two fronts. Its opening value is
+        available directly from the control recurrence, without expanding those
+        fronts or opening further components during a general minimax solve.
+        """
+        if not isinstance(action, int) or action not in state.legal_actions:
+            raise ValueError("Action must be a legal edge.")
+        components = free_components(state)
+        if all((c.closed_chain and len(c.boxes) >= 3) or c.closed_loop for c in components):
+            box = state.board.edge_boxes[action][0]
+            component = next(c for c in components if box in c.boxes)
+            group = len(component.boxes), 2 if component.closed_chain else -1
+            future = self._opening_values(components, deadline)[group]
+            ours, theirs = state.scores[state.player], state.scores[1 - state.player]
+            return (ours - theirs + future) / state.board.num_boxes
+        child = state.play(action)
+        value = self.value(child, deadline)
+        return value if value is None or child.player == state.player else -value
 
 
 # Keys describe game structure, independent of board size, score and weights.

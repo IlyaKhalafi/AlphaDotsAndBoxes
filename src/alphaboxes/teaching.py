@@ -119,19 +119,29 @@ def build_component_dataset(
     sizes = replay["config"]["sizes"]
     rng = np.random.default_rng(seed)
     solver = DegreeTwoSolver()
-    exact = {}
+    exact, targets = {}, {}
+    timeouts = 0
     for _ in range(positions * 20):
         if len(exact) == positions:
             break
         size = sizes[int(rng.integers(len(sizes)))]
         state = sample_endgame(tuple(size), rng)
-        for _ in range(int(rng.integers(7))):
-            if state.terminal:
-                break
-            _, actions = solver.solve(state)
-            state = state.play(int(rng.choice(actions)))
-        if not state.terminal:
-            exact[state_key(state)] = state
+        deadline = time.monotonic() + 0.05
+        try:
+            for _ in range(int(rng.integers(7))):
+                if state.terminal:
+                    break
+                _, actions = solver.solve(state, deadline=deadline)
+                state = state.play(int(rng.choice(actions)))
+            if not state.terminal:
+                margin, actions = solver.solve(state, deadline=deadline)
+                key = state_key(state)
+                exact[key] = state
+                policy = np.zeros(state.board.num_edges, dtype=np.float32)
+                policy[list(actions)] = 1 / len(actions)
+                targets[key] = policy, float(np.sign(margin))
+        except TimeoutError:
+            timeouts += 1
     if len(exact) != positions:
         raise ValueError("Could not generate enough distinct exact positions.")
     pool = {
@@ -147,14 +157,13 @@ def build_component_dataset(
         "source_seeds": [replay["config"]["seed"]],
         "source_iteration": replay["iteration"],
         "generator": "Legally reached closed components, followed by 0..6 optimal moves",
+        "oracle_seconds_per_candidate": 0.05,
+        "skipped_oracle_timeouts": timeouts,
         "sizes": sizes,
     }
 
     def target(state):
-        margin, actions = solver.solve(state)
-        policy = np.zeros(state.board.num_edges, dtype=np.float32)
-        policy[list(actions)] = 1 / len(actions)
-        return policy, float(np.sign(margin))
+        return targets[state_key(state)]
 
     return _write_dataset(checkpoint, list(exact.values()), anchors, output, target, provenance)
 
@@ -197,6 +206,7 @@ def _write_dataset(checkpoint, exact, anchors, output, target, provenance):
             str(value): int((oracle_value[: len(exact)] == value).sum()) for value in [-1, 0, 1]
         },
         "generation_seconds": time.monotonic() - started,
+        "generation_seconds_scope": "Materialization; position proposal generation excluded",
         "oracle": "Exact final WDL value and uniform best-box-margin policy",
         "anchors": "Frozen released-network policy and value, earlier in source games",
     }

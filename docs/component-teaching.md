@@ -21,6 +21,12 @@ final win/draw/loss labels, including scores already earned. Another 2,048
 distinct earlier replay positions anchor the starting model's predictions.
 No confirmation history or human move supplies a target.
 
+Each proposed exact position gets a 50 ms cooperative oracle budget. Slow
+multi-front continuations are skipped, and completed exact targets are retained
+instead of solved again after cache eviction. Timeout counts are recorded;
+cutoff values never become labels. This bounds generation work and makes the
+resulting sampling bias explicit.
+
 This first arm changes **value targets only**: policies on all positions remain
 the frozen starting network's policies. RLlib uses 300 updates, batch size 512,
 25% exact positions, learning rate 0.00003 and an 8 GiB allocator limit.

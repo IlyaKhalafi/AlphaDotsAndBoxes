@@ -26,6 +26,12 @@ def test_all_recognized_two_by_two_positions_match_full_edge_oracle():
             continue
         recognized += 1
         assert solver.solve(state) == solve(state)
+        for action in state.legal_actions:
+            child = state.play(action)
+            expected = solve(child)[0]
+            if child.player != state.player:
+                expected = -expected
+            assert solver.action_value(state, action) == pytest.approx(expected)
     assert recognized > 100
 
 
@@ -124,3 +130,17 @@ def test_twenty_five_closed_loops_use_component_counts():
     assert actions == state.legal_actions
     # One state per closed-loop count, plus opened loops: no edge-subset search.
     assert solver.nodes <= 50
+
+
+def test_large_closed_chain_openings_skip_two_front_enumeration():
+    state = State.new(10, 10)
+    for edge, (r1, _, r2, _) in enumerate(state.board.edges):
+        if r1 == r2:
+            state = state.play(edge)
+    solver = DegreeTwoSolver()
+    expected, actions = solver.solve(state)
+    assert expected == pytest.approx(-0.64)
+    assert actions == state.legal_actions
+    for action in actions:
+        assert solver.action_value(state, action) == pytest.approx(expected)
+    assert solver.nodes <= 25
