@@ -33,3 +33,18 @@ Frozen NumPy hashes are
 (component) and
 `373152b489f73aed95746281bf2b27cb147bd0982f815a4fc2d8405adfb1dad4`
 (original encoding). Both screens have started with the above settings.
+
+## Completed screens
+
+The component snapshot wins 8–4 (66.67%, paired 95% interval 50–83.33%),
+with mean margin +24 boxes. The original-encoding snapshot wins 7–5
+(58.33%, interval 33.33–83.33%), with mean margin +20.5. The predeclared
+rule selects the component snapshot for fresh confirmation; neither result
+establishes a large-board improvement by itself.
+
+[Legally replayed summaries](data/large-model-20261012/later-selfplay-screen-summary.json)
+include both screens and the independent deeper-search screen. The selected
+component snapshot now runs the specified 40-game confirmation and 20-game
+zero-first-play control with unchanged weights and search settings. These
+CPU evaluations use six and two workers respectively, after GPU training ends.
+The deployed agent remains unchanged pending the release gates.

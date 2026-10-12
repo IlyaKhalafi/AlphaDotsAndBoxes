@@ -97,3 +97,12 @@ The fallback is activated after both later models fail confirmation. Its
 original opening seed 19001 has not been used by another arm. The trigger
 was broadened from failed screening to failed confirmation before launch;
 budgets, seeds and promotion gates are unchanged.
+
+The deeper-search screen completes 9–3 (75%, paired 95% interval
+41.67–100%), with mean margin +23 boxes. Candidate neural decisions average
+18.91 seconds and reach 49.93 seconds, versus 1.54 seconds on average for
+the reference. This is an unequal-computation result, outside the web deadline.
+The wide interval still includes no improvement. The frozen settings enter
+the specified 40-game fresh confirmation and 20-game zero-first-play control,
+using six and two CPU workers respectively. Training has ended; these matches
+do not reserve GPU memory.
