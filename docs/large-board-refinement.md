@@ -149,3 +149,12 @@ reuse and move timers remain off. Six active confirmation/control workers plus
 this screen keep match work at eight cores. It does not alter the already
 running raw-parent confirmation. If it advances, its own fresh confirmation
 and older-reference control use seeds 5301 and 5401.
+
+On the same diagnostic opening used earlier, the backed-mean policy-mass rule
+visited 84 of 214 root actions at 1,024 simulations, median endpoint depth 4 and
+maximum 11. Its raw-parent counterpart visited 92, median depth 2 and maximum 9.
+Constant reduction with the backed mean still visited only one root action,
+median depth 77. The broader/deeper allocation is a mechanism observation;
+playing-strength results are assessed separately.
+
+[Parent-value allocation diagnostic](data/large-search-20261012/allocation-parents.json).
