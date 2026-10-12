@@ -239,3 +239,40 @@ With those six worker slots released, the already specified shortlist screen
 starts with six workers alongside the last two tree-reuse pairs. Its settings,
 opening seeds and advancement rule are unchanged; combined active match work
 stays at eight cores. No experimental candidate has been deployed.
+
+## Remaining search screens and representation diagnosis
+
+Tree reuse finished 7–5, 58.33% score, paired-bootstrap interval 33.33–83.33%,
+mean margin +1.5. All 2,424 nonexact decisions completed 512 new simulations.
+The candidate reused visits on 1,174 of 1,239 such decisions; inherited totals
+can count the same earlier work at several successive decisions. The shortlist
+arm finished 4–8, 33.33%, interval 8.33–66.67%, mean margin −20.33, and does not
+advance. Both complete sets of histories replay legally.
+
+[Reuse screen](data/large-search-20261012/reuse-screen.json),
+[reuse summary](data/large-search-20261012/reuse-summary.json),
+[shortlist screen](data/large-search-20261012/halving-screen.json), and
+[shortlist summary](data/large-search-20261012/halving-summary.json).
+
+The surviving reuse candidate advances with its declared settings to 40 fresh
+games against released search (seed 5601), plus 20 against the older zero-first-play
+baseline (seed 5701), at 1,024 new simulations. Six and two workers respectively
+keep combined match work at eight cores. No new search setting is introduced.
+
+A separate reachable-position diagnostic exposes information missing from the
+local network. Two 14×14 positions have the same current 3–1 score from the
+active player's perspective and differ only in central loops. Exact structural
+play gives a forced win in one and a forced loss in the other, with margins
+±2/196. The retained network predicts −0.94764596 and −0.94764602: a difference
+of one float32 step (5.96×10⁻⁸). Full legal prefixes are included. This is a
+representation diagnostic outside the 10×10 match set, not a strength result.
+
+[Reachable fixtures and predictions](data/large-search-20261012/representation-diagnostic.json).
+
+The next network experiment will expose the free-edge graph's components to
+the existing GIN: component size/type/capture fronts on box nodes, plus global
+chain/loop counts, parity and score in box units. Legacy checkpoints keep their
+current encoder. New input columns start at zero so the retained predictions
+are preserved before learning. Training remains in RLlib, deployment remains
+NumPy, and fresh larger-board evaluation is required before promotion. This
+addresses missing game information rather than increasing width alone.
