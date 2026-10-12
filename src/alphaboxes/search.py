@@ -158,6 +158,7 @@ class SearchConfig:
     reuse_tree: bool = False
     time_limit: float | None = None
     fpu_reduction: float = 0.0
+    fpu_floor: float | None = None
     fpu_mode: str = "constant"
     fpu_parent: str = "network"
     root_candidates: int = 0
@@ -175,6 +176,10 @@ class SearchConfig:
             raise ValueError("Search budgets and exploration constants must be positive.")
         if not np.isfinite(self.fpu_reduction) or self.fpu_reduction < 0:
             raise ValueError("First-play reduction must be finite and nonnegative.")
+        if self.fpu_floor is not None and (
+            not np.isfinite(self.fpu_floor) or not -1 <= self.fpu_floor <= 1
+        ):
+            raise ValueError("First-play floor must be finite and within [-1, 1].")
         if self.fpu_mode not in {"constant", "policy_mass", "branching"}:
             raise ValueError("First-play mode must be constant, policy_mass or branching.")
         if self.fpu_parent not in {"network", "mean"}:
@@ -366,6 +371,8 @@ class MCTS:
             node.value if self.config.fpu_parent == "mean" and node.visits else node.evaluation
         )
         first_play = parent_value - reduction
+        if self.config.fpu_floor is not None:
+            first_play = max(self.config.fpu_floor, first_play)
         if (
             self.config.sparse_selection
             and self.config.fpu_mode == "constant"
