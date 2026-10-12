@@ -9,12 +9,20 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from alphaboxes.components import CONTEXT_FEATURES, NODE_FEATURES, structural_features
 from alphaboxes.game import State, board
 
 if TYPE_CHECKING:
     import gymnasium as gym
 
 FEATURES = 12
+CONTEXT = 3
+
+
+def dimensions(structure: bool = False) -> tuple[int, int]:
+    return (
+        (FEATURES + NODE_FEATURES, CONTEXT + CONTEXT_FEATURES) if structure else (FEATURES, CONTEXT)
+    )
 
 
 @lru_cache(maxsize=128)
@@ -29,7 +37,9 @@ def adjacency(rows: int, cols: int) -> np.ndarray:
     return result
 
 
-def encode(state: State, capacity: int | None = None) -> dict[str, np.ndarray]:
+def encode(
+    state: State, capacity: int | None = None, *, structure: bool = False
+) -> dict[str, np.ndarray]:
     """Encode a search leaf without batch grouping or advanced-indexing copies."""
     geometry = state.board
     n, e = geometry.num_nodes, geometry.num_edges
@@ -41,7 +51,8 @@ def encode(state: State, capacity: int | None = None) -> dict[str, np.ndarray]:
     box_edges, incidence, degree = encoding_geometry(geometry.rows, geometry.cols)
     remaining = free[box_edges].sum(axis=-1)
     ours, theirs = owners == state.player, owners == 1 - state.player
-    x = np.zeros((capacity, FEATURES), dtype=np.float32)
+    features, _ = dimensions(structure)
+    x = np.zeros((capacity, features), dtype=np.float32)
     x[:e, 0], x[e:n, 1] = 1, 1
     x[:e, 2], x[e:n, 3], x[e:n, 4] = ~free, ours, theirs
     x[e + np.arange(geometry.num_boxes), 5 + remaining] = 1
@@ -62,6 +73,10 @@ def encode(state: State, capacity: int | None = None) -> dict[str, np.ndarray]:
         ],
         dtype=np.float32,
     )
+    if structure:
+        nodes, extra = structural_features(state)
+        x[e:n, FEATURES:] = nodes
+        context = np.concatenate((context, extra))
     return {
         "x": x,
         "adjacency": adj,
@@ -82,7 +97,13 @@ def encoding_geometry(rows: int, cols: int) -> tuple[np.ndarray, np.ndarray, np.
     return boxes, incidence, degree
 
 
-def encode_batch(states: Sequence[State], capacity: int | None = None) -> dict[str, np.ndarray]:
+def encode_batch(
+    states: Sequence[State],
+    capacity: int | None = None,
+    *,
+    structure: bool = False,
+    include_adjacency: bool = True,
+) -> dict[str, np.ndarray]:
     """Vectorize each board shape, keeping batch order and zero-filled padding."""
     if not states:
         raise ValueError("Cannot encode an empty batch.")
@@ -91,13 +112,15 @@ def encode_batch(states: Sequence[State], capacity: int | None = None) -> dict[s
     if capacity < required:
         raise ValueError("Observation capacity is smaller than this board.")
     count = len(states)
+    features, contexts = dimensions(structure)
     result = {
-        "x": np.zeros((count, capacity, FEATURES), dtype=np.float32),
-        "adjacency": np.zeros((count, capacity, capacity), dtype=np.float32),
+        "x": np.zeros((count, capacity, features), dtype=np.float32),
         "action_mask": np.zeros((count, capacity), dtype=np.float32),
         "node_mask": np.zeros((count, capacity), dtype=np.float32),
-        "context": np.zeros((count, 3), dtype=np.float32),
+        "context": np.zeros((count, contexts), dtype=np.float32),
     }
+    if include_adjacency:
+        result["adjacency"] = np.zeros((count, capacity, capacity), dtype=np.float32)
     groups: dict[tuple[int, int], list[int]] = defaultdict(list)
     for index, state in enumerate(states):
         groups[(state.board.rows, state.board.cols)].append(index)
@@ -111,7 +134,7 @@ def encode_batch(states: Sequence[State], capacity: int | None = None) -> dict[s
         free = edges < 0
         remaining = free[:, box_edges].sum(axis=-1)
         ours, theirs = owners == players, owners == 1 - players
-        x = np.zeros((len(indices), n, FEATURES), dtype=np.float32)
+        x = np.zeros((len(indices), n, features), dtype=np.float32)
         x[:, :e, 0] = 1
         x[:, e:, 1] = 1
         x[:, :e, 2] = ~free
@@ -121,25 +144,34 @@ def encode_batch(states: Sequence[State], capacity: int | None = None) -> dict[s
         x[:, :e, 10] = degree
         x[:, :e, 11] = (remaining == 1).astype(np.float32) @ incidence.T / 2
         result["x"][indices, :n] = x
-        result["adjacency"][indices, :n, :n] = adj
+        if include_adjacency:
+            result["adjacency"][indices, :n, :n] = adj
         result["action_mask"][indices, :e] = free
         result["node_mask"][indices, :n] = 1
         result["context"][indices, 0] = (ours.sum(axis=1) - theirs.sum(axis=1)) / geometry.num_boxes
         result["context"][indices, 1] = free.sum(axis=1) / e
         result["context"][indices, 2] = (owners < 0).sum(axis=1) / geometry.num_boxes
+        if structure:
+            for index in indices:
+                nodes, extra = structural_features(states[index])
+                result["x"][index, e:n, FEATURES:] = nodes
+                result["context"][index, CONTEXT:] = extra
     return result
 
 
-def spaces(capacity: int) -> tuple[gym.spaces.Dict, gym.spaces.Discrete]:
+def spaces(capacity: int, structure: bool = False) -> tuple[gym.spaces.Dict, gym.spaces.Discrete]:
     import gymnasium as gym
 
+    features, contexts = dimensions(structure)
     observation = gym.spaces.Dict(
         {
-            "x": gym.spaces.Box(0, 1, (capacity, FEATURES), np.float32),
+            "x": gym.spaces.Box(0, np.inf if structure else 1, (capacity, features), np.float32),
             "adjacency": gym.spaces.Box(0, 1, (capacity, capacity), np.float32),
             "action_mask": gym.spaces.Box(0, 1, (capacity,), np.float32),
             "node_mask": gym.spaces.Box(0, 1, (capacity,), np.float32),
-            "context": gym.spaces.Box(-1, 1, (3,), np.float32),
+            "context": gym.spaces.Box(
+                -np.inf if structure else -1, np.inf if structure else 1, (contexts,), np.float32
+            ),
         }
     )
     return observation, gym.spaces.Discrete(capacity)

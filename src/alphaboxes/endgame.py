@@ -8,6 +8,7 @@ chains. Other positions are deliberately left to the neural search.
 from collections import OrderedDict
 from time import monotonic
 
+from alphaboxes.components import free_components
 from alphaboxes.game import State
 
 Position = tuple[tuple[int, int], ...]
@@ -19,32 +20,15 @@ class EndgameTimeout(TimeoutError):
 
 def position(state: State) -> Position | None:
     """Return (box count, boundary count), with -1 denoting a closed cycle."""
-    free = {
-        box: tuple(edge for edge in state.board.boxes[box] if state.edges[edge] < 0)
-        for box, owner in enumerate(state.owners)
-        if owner < 0
-    }
-    if any(not edges or len(edges) > 2 for edges in free.values()):
+    components = free_components(state)
+    if any(c.min_free == 0 or c.max_free > 2 for c in components):
         return None
-    unseen = set(free)
-    groups = []
-    while unseen:
-        pending = [unseen.pop()]
-        members, boundaries, active = set(), 0, False
-        while pending:
-            box = pending.pop()
-            members.add(box)
-            active |= len(free[box]) == 1
-            for edge in free[box]:
-                neighbors = state.board.edge_boxes[edge]
-                if len(neighbors) == 1:
-                    boundaries += 1
-                for other in neighbors:
-                    if other in unseen:
-                        unseen.remove(other)
-                        pending.append(other)
-        groups.append((len(members), boundaries if active or boundaries else -1))
-    return tuple(sorted(groups))
+    return tuple(
+        sorted(
+            (len(c.boxes), c.boundaries if c.capture_fronts or c.boundaries else -1)
+            for c in components
+        )
+    )
 
 
 def cuts(group: tuple[int, int]):
@@ -125,7 +109,14 @@ class DegreeTwoSolver:
             self.cache.move_to_end(groups)
             return self.cache[groups]
         self.nodes += 1
-        best = self._loony_future(groups, deadline)
+        forced = sum(
+            length for length, boundary in groups if (length, boundary) in {(1, 1), (2, 0)}
+        )
+        if forced:
+            rest = tuple(group for group in groups if group not in {(1, 1), (2, 0)})
+            best = forced + self._future(rest, deadline)
+        else:
+            best = self._loony_future(groups, deadline)
         if best is None:
             best = -sum(length for length, _ in groups)
             previous = None
@@ -165,6 +156,34 @@ class DegreeTwoSolver:
             return None
         if state.terminal:
             return value, ()
+        components = free_components(state)
+        if all((c.closed_chain and len(c.boxes) >= 3) or c.closed_loop for c in components):
+            # Any opening in a complete long component offers the same take-all
+            # or handout alternatives. Avoid enumerating two-front child states.
+            groups = tuple(sorted((len(c.boxes), 2 if c.closed_chain else -1) for c in components))
+            opening_values = {}
+            for index, group in enumerate(groups):
+                if group in opening_values:
+                    continue
+                length, boundary = group
+                rest = groups[:index] + groups[index + 1 :]
+                continuation = self._future(rest, deadline)
+                handout = 2 if boundary == 2 else 4
+                opening_values[group] = min(
+                    -length - continuation, -length + 2 * handout + continuation
+                )
+            best = max(opening_values.values())
+            by_box = {
+                box: (len(c.boxes), 2 if c.closed_chain else -1)
+                for c in components
+                for box in c.boxes
+            }
+            actions = tuple(
+                a
+                for a in state.legal_actions
+                if opening_values[by_box[state.board.edge_boxes[a][0]]] == best
+            )
+            return value, actions
         actions = []
         for action in state.legal_actions:
             child = state.play(action)
