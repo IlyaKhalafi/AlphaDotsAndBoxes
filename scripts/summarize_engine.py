@@ -156,6 +156,10 @@ def main():
             {
                 "receipt": path.name,
                 "receipt_sha256": hashlib.sha256(snapshot).hexdigest(),
+                "status": receipt.get("status", "completed"),
+                "planned_games_per_board": receipt.get(
+                    "planned_games_per_board", receipt["games_per_board"]
+                ),
                 "candidate_sha256": receipt["checkpoint_sha256"],
                 "reference_sha256": receipt["reference_checkpoint_sha256"],
                 "reference_engine": receipt["reference_engine"],

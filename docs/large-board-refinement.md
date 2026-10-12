@@ -208,9 +208,34 @@ The optional root observer records fresh trees without enabling reuse.
 
 [Full shortlist diagnostic](data/large-search-20261012/allocation-halving.json).
 
-Its screen starts after the tree-reuse screen, with two workers, 12 paired-seat
+Its screen uses 12 paired-seat
 10×10 games, 512 simulations, seed 5801, and released constant-0.33 search as
 reference. Width 16 and the ranking constants above are fixed before the games.
 No timers, noise, oracle, proof or reuse are enabled. If it advances, fresh
 40-game confirmation and 20-game older-reference control use seeds 5901/6001
 at 1,024 simulations. The raw-parent confirmation remains independent.
+
+## Raw-parent confirmation rejected for futility
+
+The first 24 completed paired games in the planned 40-game confirmation scored
+11 wins and 13 losses. Even assigning a win to every unplayed game gives a final
+score of 67.5% and paired-bootstrap interval 50.0–85.0%, using the predeclared
+20,000 resamples and seed 4199. Its lower bound cannot meet the strictly-above-50%
+gate. Each resampled mean is monotone in the remaining pair scores, so no actual
+completion can exceed this optimistic lower bound. The run was stopped and is
+rejected rather than spending CPU time on a candidate that cannot qualify.
+
+The completed paired histories were recovered from the append-only progress
+file; the receipt explicitly distinguishes 24 retained games from 40 planned
+games and records the historical source revision. Its dependent older-reference
+control was stopped as well, retaining eight completed paired games (three wins,
+five losses). Interrupted/unpaired games are excluded. These are partial runs,
+not completed 40-game or 20-game results.
+
+[Retained confirmation games](data/large-search-20261012/mass-confirmation.json) and
+[retained control games](data/large-search-20261012/mass-control.json).
+
+With those six worker slots released, the already specified shortlist screen
+starts with six workers alongside the last two tree-reuse pairs. Its settings,
+opening seeds and advancement rule are unchanged; combined active match work
+stays at eight cores. No experimental candidate has been deployed.
