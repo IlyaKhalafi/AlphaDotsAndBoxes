@@ -158,3 +158,15 @@ median depth 77. The broader/deeper allocation is a mechanism observation;
 playing-strength results are assessed separately.
 
 [Parent-value allocation diagnostic](data/large-search-20261012/allocation-parents.json).
+
+The next isolated screen retains the candidate's tree between decisions instead
+of starting a fresh planner on each move. It uses constant reduction 0.33 with
+the network parent, no structural solver/proof/noise/timer, 512 new simulations
+per nonexact move, 12 paired-seat 10×10 games and seed 5501. The reference retains
+the released fresh-tree behavior at 512 simulations. Two workers start after
+the backed-mean screen finishes. Inherited visits are reported separately from
+new simulations; they represent reused prior work, not extra simulations in the
+current decision. Fresh confirmation/control, if needed, use seeds 5601/5701.
+This direct match path actually retains planners. The supervised web worker
+still creates a new planner per request, so the benchmark rejects supervised
+candidate reuse until that serving capability exists.

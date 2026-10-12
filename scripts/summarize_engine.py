@@ -127,6 +127,10 @@ def summarize(receipt):
                 ),
                 "structural_solve_hits": sum(move.get("endgame_hits", 0) for move in neural),
                 "proven_nodes": sum(move.get("proven_nodes", 0) for move in neural),
+                "inherited_visits": sum(move.get("inherited_visits", 0) for move in neural),
+                "decisions_with_reused_visits": sum(
+                    move.get("inherited_visits", 0) > 0 for move in neural
+                ),
                 "opening_positions": len(openings),
                 "opening_depth_counts": dict(
                     sorted(Counter(move["depth"] for move in alpha_openings).items())

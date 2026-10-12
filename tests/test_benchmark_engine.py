@@ -244,3 +244,49 @@ def test_untimed_matches_have_equal_work_and_reproducible_parallel_histories(tmp
         refused = subprocess.run(command, cwd=root, capture_output=True, timeout=30)
         assert refused.returncode != 0
     assert histories[0] == histories[1]
+
+
+def test_match_retains_search_trees_when_reuse_is_requested(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    checkpoint = tmp_path / "uniform.npz"
+    payload = {"format_version": 1, "model_config": {"width": 8, "depth": 1}, "metadata": {}}
+    weights = {key: np.zeros(shape, np.float32) for key, shape in weight_shapes(8, 1).items()}
+    np.savez_compressed(
+        checkpoint, _metadata=np.frombuffer(json.dumps(payload).encode(), np.uint8), **weights
+    )
+    output = tmp_path / "reused.json"
+    options = '{"fpu_reduction":0.33,"reuse_tree":true}'
+    subprocess.run(
+        [
+            sys.executable,
+            str(root / "scripts/benchmark_engine.py"),
+            "--checkpoint",
+            str(checkpoint),
+            "--candidate-engine",
+            "mcts",
+            "--search-options",
+            options,
+            "--reference-search-options",
+            options,
+            "--match-boards",
+            "3",
+            "--games",
+            "2",
+            "--match-simulations",
+            "16",
+            "--untimed",
+            "--skip-latency",
+            "--output",
+            str(output),
+        ],
+        cwd=root,
+        env={**os.environ, "OPENBLAS_NUM_THREADS": "1"},
+        capture_output=True,
+        check=True,
+        timeout=30,
+    )
+    receipt = json.loads(output.read_text())
+    moves = [move for game in receipt["games"] for move in game["moves"]]
+    assert any(move["inherited_visits"] > 0 for move in moves)
+    assert all(move["simulations"] == 16 for move in moves if move["remaining_edges"] > 12)
+    assert all(game["moves"][0]["inherited_visits"] == 0 for game in receipt["games"])

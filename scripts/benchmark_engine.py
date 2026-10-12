@@ -50,6 +50,7 @@ def measure(search, state):
         "simulations": getattr(search, "completed_simulations", 0),
         "endgame_hits": getattr(search, "endgame_hits", 0),
         "proven_nodes": getattr(search, "proven_nodes", 0),
+        "inherited_visits": getattr(search, "inherited_visits", 0),
         "timed_out": getattr(search, "timed_out", False),
         "depth": getattr(search, "depth", None),
         "nodes": getattr(search, "nodes", None),
@@ -102,6 +103,7 @@ def play_pair(evaluators, args, size, pair_index):
             state = state.play(action)
         alpha_player = index % 2
         moves = []
+        reused_planners = {}
         move_log = None
         if args.move_progress_dir:
             move_log = args.move_progress_dir / f"{size}x{size}-game-{index:04d}.jsonl"
@@ -112,9 +114,15 @@ def play_pair(evaluators, args, size, pair_index):
             engine = args.candidate_engine if side == "candidate" else args.reference_engine
             seconds = args.match_seconds if side == "candidate" else args.reference_seconds
             options = args.search_options if side == "candidate" else args.reference_search_options
-            step = measure(
-                planner(evaluators[side], engine, seconds, options, args.match_simulations), state
-            )
+            if engine == "mcts" and options.get("reuse_tree", False):
+                if side not in reused_planners:
+                    reused_planners[side] = planner(
+                        evaluators[side], engine, seconds, options, args.match_simulations
+                    )
+                search = reused_planners[side]
+            else:
+                search = planner(evaluators[side], engine, seconds, options, args.match_simulations)
+            step = measure(search, state)
             moves.append({"player": state.player, "side": side, "engine": engine, **step})
             state = state.play(step["action"])
             if move_log:
@@ -242,6 +250,10 @@ def main():
         args.match_seconds = args.reference_seconds = None
     if args.response_deadline is not None and not 0 < args.response_deadline < 2:
         parser.error("Response deadline must be positive and below two seconds.")
+    if args.response_deadline is not None and args.search_options.get("reuse_tree", False):
+        parser.error(
+            "The supervised worker does not retain search trees; omit --response-deadline."
+        )
     try:
         SearchConfig(**args.search_options)
         SearchConfig(**args.reference_search_options)
