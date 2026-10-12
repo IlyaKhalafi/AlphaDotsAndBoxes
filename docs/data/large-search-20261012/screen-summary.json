@@ -66,6 +66,70 @@
           }
         }
       ]
+    },
+    {
+      "receipt": "mass-screen.json",
+      "receipt_sha256": "6f79fa26b962f2125e67ed78c70d51da09861f9983fec44175d362d3ab339e93",
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 12,
+          "wins": 8,
+          "draws": 0,
+          "losses": 4,
+          "score": 0.6666666666666666,
+          "paired_bootstrap_95pct": [
+            0.5,
+            0.8333333333333334
+          ],
+          "mean_box_margin": 7.666666666666667,
+          "players": {
+            "candidate": {
+              "max_seconds": 3.400139385019429,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1283,
+              "mean_seconds": 1.3733799047717303,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 512.0,
+              "simulation_counts": {
+                "512": 1283
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 5.219983813003637,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1141,
+              "mean_seconds": 1.250499708052438,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 512.0,
+              "simulation_counts": {
+                "512": 1141
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
     }
   ]
 }

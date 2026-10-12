@@ -68,6 +68,25 @@ legally to the recorded scores.
 
 Other screens are running. No larger-board improvement is claimed yet.
 
+The policy-mass screen completed with 8 wins, no draws and 4 losses: 66.67%
+score, paired-bootstrap 95% interval 50.00–83.33%, mean box margin +7.67.
+All 2,424 nonexact decisions completed 512 simulations; all 2,568 post-opening
+moves replay legally. Candidate mean time was 1.373 seconds and maximum 3.400;
+reference mean was 1.250 seconds and maximum 5.220. Again, these are different
+trajectories rather than a controlled timing comparison.
+
+[Full policy-mass screen](data/large-search-20261012/mass-screen.json).
+
+Policy-mass scaling is selected for the first confirmation because it has the
+higher score in the completed isolated first-play screens. Before opening the
+fresh results, its fixed settings are reduction 0.33, mode `policy_mass`, 1,024
+simulations, exploration constant 1.5, exact 12-edge roots, and no structural
+solver, proof propagation, reuse, noise or timer. The confirmation and older
+reference control use seeds 4601 and 4701 as declared above. Four confirmation
+workers and two control workers overlap the final two endgame screening pairs,
+keeping active match work at eight cores. The independent endgame screen does
+not change this candidate's confirmation settings.
+
 ## Exact endgame refinement
 
 The structural solver now collapses collections of closed chains of length at
