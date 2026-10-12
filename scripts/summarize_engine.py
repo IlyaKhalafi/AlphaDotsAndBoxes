@@ -20,11 +20,27 @@ def summarize(receipt):
         )
         if len(games) != receipt["games_per_board"] or len(games) % 2:
             raise ValueError("Receipt does not contain the planned number of paired games.")
-        if [game["index"] for game in games] != list(range(len(games))):
-            raise ValueError("Game indices must be distinct and consecutive.")
+        indices = [game["index"] for game in games]
+        if any(type(index) is not int for index in indices) or len(set(indices)) != len(indices):
+            raise ValueError("Game indices must be distinct integers.")
+        if receipt.get("status", "").startswith("stopped_"):
+            planned = receipt.get("planned_games_per_board")
+            if (
+                type(planned) is not int
+                or planned < len(games)
+                or planned % 2
+                or any(not 0 <= index < planned for index in indices)
+            ):
+                raise ValueError("Stopped receipts require valid planned game bounds.")
+        elif indices != list(range(len(games))):
+            raise ValueError("Completed game indices must be consecutive.")
         for index in range(0, len(games), 2):
             first, second = games[index : index + 2]
-            if first["opening"] != second["opening"] or (
+            if (
+                first["index"] % 2
+                or second["index"] != first["index"] + 1
+                or first["opening"] != second["opening"]
+            ) or (
                 first["alpha_player"],
                 second["alpha_player"],
             ) != (0, 1):
