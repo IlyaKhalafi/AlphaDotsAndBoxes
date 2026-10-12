@@ -46,6 +46,8 @@ Choose Quick, Standard, or Deep thinking. NumPy play uses a supervised
 scored **66.25% on 4×4 and 82.5% on 5×5** against the previous agent in fresh
 matches. See [the results and timing checks](docs/two-second-search.md).
 An experimental alpha–beta engine is also available.
+A [10×10 transfer test](docs/ten-by-ten-search.md) finished evenly; larger-board
+strength remains unproven.
 
 The included model has trained on boards through 5×5. The UI also solves small
 endgames exactly when time allows. Launching `adb serve` without a

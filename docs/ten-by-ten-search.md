@@ -61,10 +61,49 @@ one root action. Greater depth does not by itself establish stronger play. These
 diagnostics illustrate the mechanism on individual positions; the paired games
 provide the playing-strength test. [Complete diagnostic receipt](data/ten-by-ten-20261012/search-allocation.json).
 
+A follow-up diagnostic on the same 10×10 opening used 8,192 simulations per
+side. Both settings visited all 214 root actions. The old median endpoint depth
+was 2; the new median was 19 (maximum 105). The decisions took 42.49 and 48.43
+seconds respectively on the shared CPU host. The new selected root move was the
+same as in its 1,024-simulation diagnostic. This demonstrates the breadth/depth
+tradeoff when more work is available; it is not an 8,192-simulation match result.
+[Higher-budget diagnostic receipt](data/ten-by-ten-20261012/search-allocation-8192.json).
+
 ## Results
 
-The run is in progress. No 10×10 superiority claim is made until it finishes.
-Raw outcomes will be saved under `docs/data/ten-by-ten-20261012/`.
+All 20 planned games finished and all 4,280 post-opening decisions replayed
+legally. The candidate won 10 games, lost 10, and drew none: **50% score**.
+Its paired-opening 95% bootstrap interval is **30%–70%**, and mean box margin
+is **−2.60**. This experiment does **not** establish a 10×10 improvement.
+
+| Search | Wins–draws–losses | Score | Mean nonexact decision | Slowest decision |
+| --- | --- | --- | --- | --- |
+| New first-play reduction 0.33 | 10–0–10 | 50% | 2.140 s | 10.608 s |
+| Previous first-play value zero | 10–0–10 | 50% | 2.982 s | 7.865 s |
+
+All 4,040 nonexact decisions completed the full 1,024 simulations. The remaining
+240 exact-root decisions bypassed MCTS. Neither side used a timeout or tactical
+fallback. Mean times describe different game positions and search trajectories;
+they are not a controlled inference-speed comparison.
+
+[Full game histories, source/checkpoint hashes and timing receipts](data/ten-by-ten-20261012/untimed-1024.json)
+and [validated summaries with paired confidence intervals](data/ten-by-ten-20261012/summary.json).
+
+### Interpretation
+
+The 4×4/5×5 gain from the same weights and first-play change is supported by its
+separate fresh tests. It did not produce a convincing advantage on 10×10 at this
+budget. A narrow, very deep line can overlook alternatives; the diagnostic's
+single visited opening action is a concrete example. At 8,192 simulations the
+same setting regained full root coverage, but no full matches were run at that
+higher budget, so its playing-strength effect is unknown.
+
+The next useful controlled tests would scale the first-play penalty or
+exploration bonus with branching factor, or use visited policy mass to moderate
+the initial penalty. Larger-board self-play is another separate hypothesis.
+These remain prospective experiments; neither the model weights nor the live
+UI's search settings were changed based on this result. The original deadline
+remains active in the web UI.
 
 ## Reproduce
 

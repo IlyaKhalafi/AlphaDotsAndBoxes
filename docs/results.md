@@ -365,3 +365,10 @@ weights and improved move selection. Fresh 40-game tests per board scored
 66.25% on 4×4 and 82.5% on 5×5 against the previous two-second agent, with all
 candidate decisions below two seconds. Exact endgame proofs and a smaller
 evaluator were screened separately and are not enabled in the release.
+
+## 10×10 transfer test
+
+An [untimed 20-game comparison](ten-by-ten-search.md) gave both versions 1,024
+full simulations per move. The first-play update scored 10 wins and 10 losses
+(50%; paired interval 30%–70%), so a 10×10 strength improvement is not established.
+Search-allocation diagnostics explain the larger-board breadth/depth tradeoff.
