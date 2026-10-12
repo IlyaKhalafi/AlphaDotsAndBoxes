@@ -38,3 +38,12 @@ for the supervised candidate), at least 50% score on each board and every
 candidate response below two seconds. Keep the cached selector disabled
 for timed release checks. The independent deeper-search arm continues with
 its original settings. No new GPU training is required.
+
+The package and scripts are frozen from commit `0e70928` in the
+[source fingerprint](data/large-model-20261012/safe-moves-source-snapshot.json).
+Both sides will read the same immutable retained NumPy snapshot, SHA-256
+`21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0`.
+The full CPU suite passes 238 tests with two GPU tests skipped; the extended
+diagnostic separately passes nine focused tests. The seeded tactical baseline
+retains identical actions on four board shapes after sharing the safe-action
+helper. Full-game testing has not started for this arm.
