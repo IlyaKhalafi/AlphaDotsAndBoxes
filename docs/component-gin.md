@@ -1,5 +1,7 @@
 # Component-aware GIN refinement
 
+![Component features, six residual GIN blocks, policy/value heads and self-play](assets/network-components.svg)
+
 ## Why change the encoding
 
 The retained six-block GIN gives effectively the same value to two reachable

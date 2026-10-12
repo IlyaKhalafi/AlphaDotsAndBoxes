@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="850" viewBox="0 0 1440 850" role="img" aria-labelledby="title description">
+  <title id="title">Component-aware graph network</title>
+  <desc id="description">The board becomes an edge and box incidence graph. Connected components add chain and loop features: 16 node features and 17 global features enter a shared 96-channel encoder. Six residual GIN blocks feed masked mean and maximum pooling. Shared policy and value heads guide search, and RLlib updates 277,064 parameters from self-play.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0l8 4-8 4" fill="none" stroke="#82937f" stroke-width="1.4"/></marker>
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="#dce1d6"/></pattern>
+    <linearGradient id="gin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#edf4ef"/><stop offset="1" stop-color="#dcebe1"/></linearGradient>
+    <style>
+      text{font-family:Arial,Helvetica,sans-serif;fill:#29362d}.label{font-size:12px;letter-spacing:2px;fill:#6a7867}.heading{font-family:Georgia,serif;font-size:29px;letter-spacing:-.6px}.body{font-size:15px;fill:#62715f}.small{font-size:13px;fill:#657761}.number{font-size:12px;fill:#c95435;letter-spacing:2px}.wire{fill:none;stroke:#82937f;stroke-width:1.8;marker-end:url(#arrow)}.card{fill:#fcfaf6;stroke:#d8dfd2;stroke-width:1.3}
+    </style>
+  </defs>
+  <rect width="1440" height="850" rx="20" fill="#f6f3ed"/>
+  <rect x="32" y="32" width="1376" height="786" rx="14" fill="url(#dots)" opacity=".65"/>
+  <text x="60" y="72" class="label">ALPHA DOTS &amp; BOXES / COMPONENT-AWARE GIN</text>
+  <text x="60" y="122" font-family="Georgia,serif" font-size="44" letter-spacing="-1.4">See the boxes. Understand the chains.</text>
+  <text x="60" y="155" class="body">Local relationships and whole-board structure, with one set of weights across board sizes.</text>
+  <line x1="60" y1="182" x2="1380" y2="182" stroke="#d8dfd2"/>
+
+  <rect x="60" y="218" width="310" height="422" rx="12" class="card"/>
+  <text x="84" y="250" class="number">01 / REPRESENT</text>
+  <text x="84" y="289" class="heading">Edges, boxes, chains</text>
+  <g fill="none" stroke="#b6c3b3" stroke-width="2"><path d="M128 335L183 373 238 335M128 413L183 373 238 413M238 335L299 373 238 413"/></g>
+  <g fill="#e3edf0" stroke="#316a86" stroke-width="2"><circle cx="128" cy="335" r="11"/><circle cx="238" cy="335" r="11"/><circle cx="128" cy="413" r="11"/><circle cx="238" cy="413" r="11"/></g>
+  <g fill="#f4e4dc" stroke="#c95435" stroke-width="2"><rect x="169" y="359" width="28" height="28" rx="6"/><rect x="285" y="359" width="28" height="28" rx="6"/></g>
+  <text x="84" y="458" font-size="15">16 node features</text>
+  <text x="84" y="482" class="small">12 local + 4 component features</text>
+  <text x="84" y="507" class="small">Size · chain · loop · capture fronts</text>
+  <line x1="84" y1="530" x2="346" y2="530" stroke="#d8dfd2"/>
+  <text x="84" y="558" font-size="15">17 global features</text>
+  <text x="84" y="582" class="small">3 game + 14 structure features</text>
+  <text x="84" y="606" class="small">Counts · box totals · parity · score</text>
+  <path d="M370 429H404" class="wire"/>
+
+  <rect x="420" y="218" width="318" height="422" rx="12" fill="url(#gin)" stroke="#b9cdc0" stroke-width="1.3"/>
+  <text x="444" y="250" class="number">02 / CONNECT</text>
+  <text x="444" y="289" class="heading">Residual GIN</text>
+  <rect x="446" y="322" width="266" height="49" rx="8" fill="#fcfaf6" stroke="#bfd0c0"/>
+  <text x="579" y="343" text-anchor="middle" font-size="14">Node + global features</text>
+  <text x="579" y="362" text-anchor="middle" class="small">Shared encoder → 96 channels</text>
+  <path d="M579 372V401" class="wire"/>
+  <rect x="456" y="419" width="246" height="68" rx="8" fill="#c8dcd1" stroke="#93b09e"/>
+  <rect x="451" y="413" width="256" height="68" rx="8" fill="#d4e4dc" stroke="#93b09e"/>
+  <rect x="446" y="407" width="266" height="68" rx="8" fill="#eaf2ed" stroke="#93b09e"/>
+  <text x="579" y="437" text-anchor="middle" font-size="17">6 message-passing blocks</text>
+  <text x="579" y="460" text-anchor="middle" class="small">Sum neighbors + learned self weight</text>
+  <text x="446" y="538" class="small">MLP: 96 → 192 → 96 · SiLU</text>
+  <text x="446" y="564" class="small">Residual connection + LayerNorm</text>
+  <text x="446" y="606" class="small">Same weights at every graph node</text>
+  <path d="M738 429H772" class="wire"/>
+
+  <rect x="788" y="218" width="302" height="422" rx="12" class="card"/>
+  <text x="812" y="250" class="number">03 / PREDICT</text>
+  <text x="812" y="289" class="heading">Two questions</text>
+  <rect x="812" y="322" width="254" height="57" rx="8" fill="#edf0e8"/>
+  <text x="939" y="346" text-anchor="middle" font-size="14">Masked mean + max pooling</text>
+  <text x="939" y="368" text-anchor="middle" class="small">Concatenate global features</text>
+  <path d="M889 380V412" class="wire"/>
+  <path d="M1066 350H1078V547H1068" class="wire"/>
+  <rect x="812" y="418" width="254" height="70" rx="8" fill="#e3edf0" stroke="#bacfd7"/>
+  <text x="829" y="445" font-size="18" fill="#316a86">Where should I draw?</text>
+  <text x="829" y="471" class="small">Local + global → legal edge policy</text>
+  <rect x="812" y="512" width="254" height="70" rx="8" fill="#f4e4dc" stroke="#e6c7b6"/>
+  <text x="829" y="539" font-size="18" fill="#c95435">Can I win?</text>
+  <text x="829" y="564" class="small">Global → value in [−1, 1]</text>
+  <text x="812" y="606" class="small">Shared heads · no fixed board output</text>
+  <path d="M1090 429H1124" class="wire"/>
+
+  <rect x="1140" y="218" width="240" height="422" rx="12" class="card"/>
+  <text x="1164" y="250" class="number">04 / PLAN</text>
+  <text x="1164" y="289" class="heading">Think ahead</text>
+  <g fill="none" stroke="#99ac91" stroke-width="1.8"><path d="M1260 343L1211 402M1260 343L1309 402M1211 402L1187 452M1211 402L1235 452M1309 402L1285 452M1309 402L1333 452"/></g>
+  <g fill="#fcfaf6" stroke="#91a689" stroke-width="2"><circle cx="1260" cy="343" r="9"/><circle cx="1211" cy="402" r="8"/><circle cx="1309" cy="402" r="8"/><circle cx="1187" cy="452" r="6"/><circle cx="1235" cy="452" r="6"/><circle cx="1285" cy="452" r="6"/><circle cx="1333" cy="452" r="6"/></g>
+  <path d="M1260 343L1211 402L1235 452" fill="none" stroke="#c95435" stroke-width="3"/>
+  <text x="1164" y="538" class="body">PUCT tree search</text>
+  <text x="1164" y="564" class="small">Policy guides exploration</text>
+  <text x="1164" y="606" class="small">Captures preserve the turn</text>
+
+  <path d="M1260 641V691H215V658" fill="none" stroke="#b18e72" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+  <rect x="425" y="672" width="590" height="38" rx="19" fill="#f6f3ed" stroke="#d9ccbd"/>
+  <text x="720" y="697" text-anchor="middle" font-size="14">Play → search probabilities + final outcome → learn</text>
+  <rect x="60" y="752" width="1320" height="64" rx="10" fill="#e9ede3"/>
+  <text x="84" y="779" class="label">RLLIB LEARNER</text>
+  <text x="84" y="802" font-size="14">Policy cross-entropy + value regression · replay across board sizes</text>
+  <text x="1356" y="790" text-anchor="end" font-size="14" fill="#52684d">277,064 parameters / 96 channels / 6 blocks</text>
+</svg>
