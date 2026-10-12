@@ -1,0 +1,171 @@
+{
+  "validation": "Full legal replays, final scores and seat-swapped openings checked",
+  "timing": "Only moves with more than 12 remaining edges enter search-work statistics",
+  "source_sha256": "d3902b9b74429f081b98a0b45f58ad6c23801b9059a12799fa7bbffee012d011",
+  "reports": [
+    {
+      "receipt": "component-00025-confirm.json",
+      "receipt_sha256": "e18a2445a86499351de3c68f13e94677cc7c6ea5aad28d972e4013fdb14a4c8d",
+      "status": "stopped_confidence_gate_unreachable",
+      "planned_games_per_board": 40,
+      "candidate_sha256": "15e0230ea9cad3572c742aaf157a782f9bb9d3deb136e5daecca35b481712463",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 26,
+          "wins": 13,
+          "draws": 0,
+          "losses": 13,
+          "score": 0.5,
+          "paired_bootstrap_95pct": [
+            0.3076923076923077,
+            0.6923076923076923
+          ],
+          "mean_box_margin": 0.0,
+          "players": {
+            "candidate": {
+              "max_seconds": 7.80717486795038,
+              "deadline_fallbacks": 0,
+              "neural_moves": 2606,
+              "mean_seconds": 2.1658052960610843,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 2606
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 13,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 6.174749154015444,
+              "deadline_fallbacks": 0,
+              "neural_moves": 2646,
+              "mean_seconds": 1.9793167660081563,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 2646
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 13,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "component-00025-zero-control.json",
+      "receipt_sha256": "37aafea38679605823f47983c7a122a6b223b8038334d5dea16e55b130167f9b",
+      "status": "stopped_dependent_primary_failed",
+      "planned_games_per_board": 20,
+      "candidate_sha256": "15e0230ea9cad3572c742aaf157a782f9bb9d3deb136e5daecca35b481712463",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 8,
+          "wins": 4,
+          "draws": 0,
+          "losses": 4,
+          "score": 0.5,
+          "paired_bootstrap_95pct": [
+            0.125,
+            0.875
+          ],
+          "mean_box_margin": 18.75,
+          "players": {
+            "candidate": {
+              "max_seconds": 6.357010739971884,
+              "deadline_fallbacks": 0,
+              "neural_moves": 866,
+              "mean_seconds": 2.111248051967605,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 866
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 4,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 7.962221537018195,
+              "deadline_fallbacks": 0,
+              "neural_moves": 750,
+              "mean_seconds": 3.2809134317828965,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 750
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 4,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

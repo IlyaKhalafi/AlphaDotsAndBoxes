@@ -95,3 +95,29 @@ identifies that input independently of the containing receipt; oracle coverage
 can vary with scheduling when a call reaches its 50-millisecond limit.
 Eight focused tests cover legal replay, a known win-to-loss mistake, incomplete
 histories, invalid budgets and timeout exclusion.
+
+## Fresh confirmation: rejected
+
+The retained 26 complete opening-paired games finish 13–13 (50%, paired 95%
+interval 30.77–69.23%), with mean margin exactly zero. Even 14 further wins
+would produce only a 50% lower confidence bound for the fixed final 40-game
+bootstrap, which cannot pass the required strictly-above-50% gate. The run
+therefore stops as a rejection. This bound uses all known complete pairs;
+workers may finish them out of original index order. Their original indices
+remain in the receipt, and every retained pair is legally replayed.
+
+The dependent zero-first-play control stops at 4–4 over eight complete games
+(50%, interval 12.5–87.5%, mean margin +18.75). It cannot promote a candidate
+that fails the primary comparison. No smaller-board release matches are run.
+
+[Validated summaries](data/large-model-20261012/component-00025-confirm-summary.json),
+[primary receipt and stopping proof](data/large-model-20261012/component-00025-confirm.json),
+[primary unfinished traces](data/large-model-20261012/component-00025-confirm-inflight.json),
+[control receipt](data/large-model-20261012/component-00025-zero-control.json),
+and [control unfinished traces](data/large-model-20261012/component-00025-zero-control-inflight.json)
+preserve the evidence. Settings are reconstructed from the launch command and
+source hashes verified against the immutable `fpu-floor-v1` snapshot; the exact
+benchmark start timestamp is unavailable and recorded as null. Only these owned
+benchmark processes and workers were stopped. The deployed weights remain the
+retained model, and the [final-checkpoint protocol](final-selfplay-models.md) is
+now activated while the independent deeper-search matches continue.

@@ -35,3 +35,7 @@ Frozen NumPy SHA-256 hashes:
 
 - Component iteration 34: `bd6c888f47c5c75eb093dc16ef692e55792d10c9f74b9774949ca733b74544a7`.
 - Original encoding iteration 36: `754f6a9d12440decdf67da322625f49777c82670103067ce5e2609412a97776b`.
+
+The contingency is activated after iteration 25 fails confirmation at 13–13
+and its confidence gate becomes unreachable. Both final-checkpoint screens
+start with the frozen settings above, using three CPU workers each.
