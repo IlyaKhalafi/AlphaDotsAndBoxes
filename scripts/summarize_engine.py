@@ -50,7 +50,9 @@ def summarize(receipt):
                 if receipt.get("budget_mode") == "simulations" and engine == "mcts":
                     simulations = move["simulations"]
                     if not isinstance(simulations, int) or not (
-                        0 <= simulations <= receipt["match_simulations"]
+                        0
+                        <= simulations
+                        <= receipt.get(f"{side}_simulations", receipt["match_simulations"])
                     ):
                         raise ValueError("Move exceeds the recorded simulation budget.")
                 state = state.play(move["action"])

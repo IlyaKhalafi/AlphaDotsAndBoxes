@@ -118,14 +118,15 @@ def play_pair(evaluators, args, size, pair_index):
             engine = args.candidate_engine if side == "candidate" else args.reference_engine
             seconds = args.match_seconds if side == "candidate" else args.reference_seconds
             options = args.search_options if side == "candidate" else args.reference_search_options
+            simulations = getattr(args, f"{side}_simulations", None) or args.match_simulations
             if engine == "mcts" and options.get("reuse_tree", False):
                 if side not in reused_planners:
                     reused_planners[side] = planner(
-                        evaluators[side], engine, seconds, options, args.match_simulations
+                        evaluators[side], engine, seconds, options, simulations
                     )
                 search = reused_planners[side]
             else:
-                search = planner(evaluators[side], engine, seconds, options, args.match_simulations)
+                search = planner(evaluators[side], engine, seconds, options, simulations)
             step = measure(search, state)
             moves.append({"player": state.player, "side": side, "engine": engine, **step})
             state = state.play(step["action"])
@@ -230,6 +231,8 @@ def main():
     parser.add_argument("--match-boards", type=int, nargs="+", default=[4, 5])
     parser.add_argument("--match-seconds", type=float, default=0.1)
     parser.add_argument("--match-simulations", type=int, default=8192)
+    parser.add_argument("--candidate-simulations", type=int)
+    parser.add_argument("--reference-simulations", type=int)
     parser.add_argument(
         "--untimed", action="store_true", help="Equal MCTS work without move timers"
     )
@@ -257,6 +260,11 @@ def main():
         args.reference_seconds = args.match_seconds
     if args.match_simulations < 1:
         parser.error("Match simulations must be positive.")
+    if any(
+        count is not None and count < 1
+        for count in (args.candidate_simulations, args.reference_simulations)
+    ):
+        parser.error("Side-specific simulation budgets must be positive.")
     if args.untimed:
         if (
             args.candidate_engine != "mcts"
@@ -356,6 +364,8 @@ def main():
         "seed": args.seed,
         "match_seconds": args.match_seconds,
         "match_simulations": args.match_simulations,
+        "candidate_simulations": args.candidate_simulations or args.match_simulations,
+        "reference_simulations": args.reference_simulations or args.match_simulations,
         "budget_mode": "simulations" if args.untimed else "seconds",
         "reference_seconds": args.reference_seconds,
         "response_deadline": args.response_deadline,

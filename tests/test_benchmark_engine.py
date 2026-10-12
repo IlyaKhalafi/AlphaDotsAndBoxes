@@ -167,7 +167,10 @@ def test_distinct_checkpoints_and_search_algorithms(tmp_path, candidate_engine):
             assert (move["side"] == "candidate") == (move["player"] == game["alpha_player"])
 
 
-def test_untimed_matches_have_equal_work_and_reproducible_parallel_histories(tmp_path):
+@pytest.mark.parametrize("candidate_budget,reference_budget", [(16, 16), (24, 8)])
+def test_untimed_budgets_and_parallel_histories_are_reproducible(
+    tmp_path, candidate_budget, reference_budget
+):
     root = Path(__file__).resolve().parents[1]
     histories = []
     for workers in (1, 2):
@@ -188,6 +191,10 @@ def test_untimed_matches_have_equal_work_and_reproducible_parallel_histories(tmp
             "2",
             "--match-simulations",
             "16",
+            "--candidate-simulations",
+            str(candidate_budget),
+            "--reference-simulations",
+            str(reference_budget),
             "--untimed",
             "--skip-latency",
             "--workers",
@@ -213,10 +220,15 @@ def test_untimed_matches_have_equal_work_and_reproducible_parallel_histories(tmp
         histories.append([[move["action"] for move in game["moves"]] for game in games])
         moves = [move for game in games for move in game["moves"]]
         assert any(move["remaining_edges"] > 12 for move in moves)
-        assert all(move["simulations"] == 16 for move in moves if move["remaining_edges"] > 12)
+        budgets = {"candidate": candidate_budget, "reference": reference_budget}
+        assert all(
+            move["simulations"] == budgets[move["side"]]
+            for move in moves
+            if move["remaining_edges"] > 12
+        )
         if workers == 1:
             damaged = json.loads(output.read_text())
-            damaged["games"][0]["moves"][0]["simulations"] = 17
+            damaged["games"][0]["moves"][0]["simulations"] = candidate_budget + 1
             corrupt = tmp_path / "excess-work.json"
             corrupt.write_text(json.dumps(damaged))
             invalid = subprocess.run(

@@ -32,3 +32,19 @@ component snapshots each visited one root action, with median endpoint depths
 edge 43. The component snapshot does not show the proposed broad-opening-search
 problem on this example, so no fixed first-play value is added in this experiment.
 This diagnostic is not a full-game strength result.
+
+## Contingency: deeper planning with retained weights
+
+If neither later snapshot passes screening, the next isolated test keeps the
+retained weights and constant-0.33 search and increases candidate work to 8,192
+simulations against reference 1,024. Use 12 paired-seat 10×10 games, seed 19001,
+without timers, structural aid, proofs, reuse or rollouts. This changes computation
+only and is explicitly an asymmetric cost/strength comparison. Record separate
+per-side budgets and every actual simulation count. A passing screen requires
+40 fresh games, seed 205001, and the same paired confidence gate, followed by
+20 zero-first-play controls at seed 305001. No result is assumed from more work.
+
+The benchmark accepts `--candidate-simulations` and `--reference-simulations`;
+omitting both retains the shared `--match-simulations` budget. Replay validation
+checks each side against its own ceiling. Serial/parallel regression tests cover
+equal and unequal budgets and reject receipts with excess work.
