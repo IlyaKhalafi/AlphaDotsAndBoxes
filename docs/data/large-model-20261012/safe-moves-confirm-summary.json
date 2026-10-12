@@ -1,0 +1,171 @@
+{
+  "validation": "Full legal replays, final scores and seat-swapped openings checked",
+  "timing": "Only moves with more than 12 remaining edges enter search-work statistics",
+  "source_sha256": "e78754080ff027f85c180b4f16192e5aa57dfb594778fad81d28ac6849c51ac2",
+  "reports": [
+    {
+      "receipt": "safe-moves-confirm.json",
+      "receipt_sha256": "9b56112d478213e6bce0cd31ec8fb8ac9a9d78b0a36960e16062991e6e1c6653",
+      "status": "stopped_confidence_gate_unreachable",
+      "planned_games_per_board": 40,
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 24,
+          "wins": 6,
+          "draws": 0,
+          "losses": 18,
+          "score": 0.25,
+          "paired_bootstrap_95pct": [
+            0.08333333333333333,
+            0.4583333333333333
+          ],
+          "mean_box_margin": -22.166666666666668,
+          "players": {
+            "candidate": {
+              "max_seconds": 5.308398278080858,
+              "deadline_fallbacks": 0,
+              "neural_moves": 2149,
+              "mean_seconds": 1.3677259986857109,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 2149
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 12,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 5.353331048972905,
+              "deadline_fallbacks": 0,
+              "neural_moves": 2699,
+              "mean_seconds": 1.2558036231395378,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 2699
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 12,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "safe-moves-zero-control.json",
+      "receipt_sha256": "31649e7d821a34fb77d2f9a9e06dba29f505b257ec97e72d62e63eef5bb425fc",
+      "status": "stopped_dependent_primary_failed",
+      "planned_games_per_board": 20,
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 4,
+          "wins": 2,
+          "draws": 0,
+          "losses": 2,
+          "score": 0.5,
+          "paired_bootstrap_95pct": [
+            0.5,
+            0.5
+          ],
+          "mean_box_margin": 6.5,
+          "players": {
+            "candidate": {
+              "max_seconds": 5.198555390001275,
+              "deadline_fallbacks": 0,
+              "neural_moves": 412,
+              "mean_seconds": 1.5500393988792356,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 412
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 2,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 7.166589118074626,
+              "deadline_fallbacks": 0,
+              "neural_moves": 396,
+              "mean_seconds": 2.9563426675408433,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 396
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 2,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

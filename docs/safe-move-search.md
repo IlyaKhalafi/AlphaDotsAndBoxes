@@ -75,3 +75,27 @@ on 4×4, 5×5 and 10×10. Maximum response is 1.774 seconds with no fallback.
 It uses the web deadlines and leaves the cached selector disabled. The
 deadline tool accepts `--safe-moves` to reproduce this enabled-feature check.
 Responsiveness alone does not establish strength or pass the release gates.
+
+## Fresh confirmation: rejected
+
+Fresh confirmation retains 24 complete opening-paired games: 6 wins and
+18 losses (25%, paired 95% interval 8.33–45.83%), mean margin −22.17 boxes.
+The screen's favorable result does not hold on these new openings. Even 16
+further wins would leave the final 40-game bootstrap lower bound at 35%,
+so the candidate cannot meet its release gate and the futile run stops.
+
+The dependent zero-first-play control stops at 2–2 over four games. Its
+two observed opening-pair scores are both 50%, yielding a degenerate empirical
+bootstrap interval; this tiny stopped sample is not a precision claim.
+No smaller-board release matches are run. The filter stays disabled in the UI.
+
+[Validated summaries](data/large-model-20261012/safe-moves-confirm-summary.json),
+[primary receipt and stopping proof](data/large-model-20261012/safe-moves-confirm.json),
+[primary unfinished traces](data/large-model-20261012/safe-moves-confirm-inflight.json),
+[control receipt](data/large-model-20261012/safe-moves-zero-control.json),
+and [control unfinished traces](data/large-model-20261012/safe-moves-zero-control-inflight.json)
+preserve the evidence. Start timestamps are unavailable and recorded as null;
+reconstructed settings and source hashes match the immutable snapshot. Only
+these owned failed comparisons and workers are stopped. The next
+[soft root preference](root-safety-prior.md) keeps sacrifices searchable,
+while the independent eightfold-search matches continue.
