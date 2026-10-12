@@ -1,7 +1,7 @@
 {
   "validation": "Full legal replays, final scores and seat-swapped openings checked",
   "timing": "Only moves with more than 12 remaining edges enter search-work statistics",
-  "source_sha256": "f291a64ad62ddd1ee64da7b36979fa18170f887e20b040876af4055fa95e6c3a",
+  "source_sha256": "c5597370a473bee8176e04c6b43c3bd51faf838a480da20ec61c519138784531",
   "reports": [
     {
       "receipt": "branch-screen.json",
@@ -41,6 +41,8 @@
               },
               "structural_solve_hits": 0,
               "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
               "opening_positions": 6,
               "opening_depth_counts": {},
               "opening_median_nodes": null
@@ -59,6 +61,8 @@
               },
               "structural_solve_hits": 0,
               "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
               "opening_positions": 6,
               "opening_depth_counts": {},
               "opening_median_nodes": null
@@ -105,6 +109,8 @@
               },
               "structural_solve_hits": 0,
               "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
               "opening_positions": 6,
               "opening_depth_counts": {},
               "opening_median_nodes": null
@@ -123,6 +129,8 @@
               },
               "structural_solve_hits": 0,
               "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
               "opening_positions": 6,
               "opening_depth_counts": {},
               "opening_median_nodes": null
@@ -233,6 +241,8 @@
               },
               "structural_solve_hits": 5933,
               "proven_nodes": 15705,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
               "opening_positions": 6,
               "opening_depth_counts": {},
               "opening_median_nodes": null
@@ -251,6 +261,76 @@
               },
               "structural_solve_hits": 0,
               "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "mean-screen.json",
+      "receipt_sha256": "715e9205f41657a49f5fcfb8c2f84c1978ff8007c9f74e0279db3581e0931bc3",
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 12,
+          "wins": 4,
+          "draws": 0,
+          "losses": 8,
+          "score": 0.3333333333333333,
+          "paired_bootstrap_95pct": [
+            0.08333333333333333,
+            0.6666666666666666
+          ],
+          "mean_box_margin": -18.666666666666668,
+          "players": {
+            "candidate": {
+              "max_seconds": 3.371495740953833,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1110,
+              "mean_seconds": 1.364023833268066,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 512.0,
+              "simulation_counts": {
+                "512": 1110
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 4.670040272991173,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1314,
+              "mean_seconds": 0.9335069320481972,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 512.0,
+              "simulation_counts": {
+                "512": 1314
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
               "opening_positions": 6,
               "opening_depth_counts": {},
               "opening_median_nodes": null

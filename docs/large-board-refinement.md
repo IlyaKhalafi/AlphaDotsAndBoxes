@@ -170,3 +170,20 @@ current decision. Fresh confirmation/control, if needed, use seeds 5601/5701.
 This direct match path actually retains planners. The supervised web worker
 still creates a new planner per request, so the benchmark rejects supervised
 candidate reuse until that serving capability exists.
+
+The backed-mean screen finished with 4 wins and 8 losses, 33.33% score,
+paired-bootstrap interval 8.33–66.67%, mean margin −18.67 boxes. All 2,424
+nonexact decisions completed 512 simulations and all histories replay legally.
+It does not advance. The raw-parent candidate's confirmation remains unchanged;
+the tree-reuse screen has started on its separately declared openings.
+
+[Full backed-mean screen](data/large-search-20261012/mean-screen.json).
+
+A further allocation diagnostic varies constant reduction without changing the
+weights or simulation budget. At 1,024 simulations on the same 10×10 opening,
+reductions 0.33, 0.66 and 0.90 reached median endpoint depths 71, 98 and 99
+(maxima 102, 113 and 116). Each still visited only one root action and selected
+the same move. Increasing the penalty deepens this example but does not resolve
+its lack of alternatives. This diagnostic alone does not justify a match arm.
+
+[Constant-penalty diagnostic](data/large-search-20261012/allocation-reductions.json).

@@ -49,6 +49,7 @@ def main():
     parser.add_argument("--seed", type=int, default=4451)
     parser.add_argument("--modes", nargs="+", default=["constant"])
     parser.add_argument("--parents", nargs="+", choices=("network", "mean"), default=["network"])
+    parser.add_argument("--reductions", type=float, nargs="+", default=[0.33])
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.simulations < 1 or any(not 3 <= size <= 12 for size in args.boards):
@@ -63,7 +64,10 @@ def main():
             opening.append(action)
             state = state.play(action)
         settings = [(0.0, "constant", "network")] + [
-            (0.33, mode, parent) for mode in args.modes for parent in args.parents
+            (reduction, mode, parent)
+            for reduction in args.reductions
+            for mode in args.modes
+            for parent in args.parents
         ]
         for reduction, mode, parent in settings:
             evaluator.clear_cache()
