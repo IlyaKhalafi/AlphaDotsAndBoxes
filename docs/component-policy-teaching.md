@@ -34,3 +34,18 @@ score. Smaller-board, export-parity and actual web-setting checks follow.
 The existing self-play jobs keep their eight-hour budgets and resource limits.
 The short additional learner raises owned allocator ceilings from 54 to 62 GiB;
 the unrelated GPU workload is left running.
+
+## Completed updates
+
+All 300 updates complete in 303.46 seconds of update-loop wall time, excluding
+loading and Ray startup. Peak allocated GPU memory is 4,971.6 MiB. Final mixed
+policy loss is 2.9966, value loss 0.03295, value MAE 0.07557 and policy KL
+0.04303. These metrics combine exact targets and anchors; they are not match
+results. The compiled component encoder supplies identical features to its
+tested Python counterpart.
+
+The frozen final NumPy snapshot has SHA-256
+`0810e8ab0e93eb8861645ec98038d4a00ccff91742c9679f6ef2e6b75f5bb111`.
+Its predeclared full-game screen has started. [All update records, settings and
+source hashes](data/large-model-20261012/component-policy-progress.json) are
+preserved. The live model is unchanged pending fresh game and deployment gates.

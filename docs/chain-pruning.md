@@ -83,3 +83,24 @@ both sides' actual search counts. These timed results can vary with scheduling.
 They compare against the retained constant-0.33 agent, a different baseline
 from the earlier release's zero-first-play comparison. They do not establish
 a 10×10 gain, and the large-board confirmation remains necessary.
+
+## Large-board confirmation: rejected
+
+Fresh confirmation retains 24 complete paired-seat games: 8 wins and 16 losses
+(33.33%, paired interval 16.67–50%), mean margin −18.17 boxes. It fails the
+promotion gate. The initial screen's improvement did not generalize to these
+new openings, despite the successful smaller-board timed checks.
+
+The planned 40-game run stops because the confidence gate is mathematically
+unreachable. Counting all 16 unrecorded games as wins would yield 60% score,
+but only 42.5% for the final paired-bootstrap lower bound. The required lower
+bound is strictly above 50%. With the fixed bootstrap resample indices, any
+other future outcome can only reduce that bound. No favorable partial score
+is used for promotion.
+
+The [receipt](data/large-model-20261012/chain-pruning-confirm.json) records this
+optimistic bound, planned count and reconstructed metadata provenance;
+[legal replay validation](data/large-model-20261012/chain-pruning-confirm-summary.json)
+checks all 24 retained histories. [Unfinished opening-pair traces](data/large-model-20261012/chain-pruning-confirm-inflight.json)
+are preserved separately. Only the matched benchmark process and its own
+workers were stopped. Live search and weights remain unchanged.
