@@ -189,3 +189,14 @@ installing the acceleration extra. Ordinary deployment needs no compiler.
 `ALPHABOXES_PURE_NUMPY=1` disables this kernel as well as the optional search and
 endgame kernels. Existing sampling actors retain their imported implementation
 until a controlled restart; the matches in this campaign use Python/NumPy.
+
+The component run resumed from iteration 13 (624 games, 84,952 positions) to load
+the compiled encoder. Only its matching parent received SIGINT; its private Ray
+cluster cleaned up through the driver. The data-only run continued. The restored
+driver RNG and optimizer are retained, while sampler RNG streams restart.
+Uncommitted sampling is discarded. An additional 457.39 seconds of wall time,
+plus a 30-second startup allowance, is charged against the original eight-hour
+budget; the resumed training-clock cap is 28,312 seconds, including saved elapsed
+time. [Restart and configuration receipt](data/large-model-20261012/component-cython-restart.json).
+Subsequent metrics identify the component feature backend. The complete current
+suite passes 185 tests, including compiled playout parity and mutable-game replays.

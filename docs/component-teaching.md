@@ -98,3 +98,20 @@ Frozen NumPy hashes are `b59323dab2dc57583fb12c045012048279706238b369262058f8c00
 Screens are launched in update order on the pre-recorded independent opening
 ranges. Their fixed work budgets allow independent jobs to share available CPU
 capacity; every selected model still needs fresh confirmation.
+
+## Match screens: all rejected
+
+The completed screens at 1,024 simulations produced:
+
+| Teaching updates | Wins–draws–losses | Score | Paired 95% interval | Mean box margin |
+| --- | --- | --- | --- | --- |
+| 25 | 3–0–9 | 25% | 8.33–41.67% | −10.50 |
+| 100 | 5–0–7 | 41.67% | 16.67–66.67% | −5.33 |
+| 300 | 5–0–7 | 41.67% | 25–50% | +3.67 |
+
+All retained nonexact decisions completed 1,024 simulations. Full legal replays,
+scores and paired openings passed validation. None scores above 50%, so no
+snapshot advances to confirmation and none replaces the served agent.
+[Raw matches and validated summaries](data/large-model-20261012/critic-screen-summary.json).
+The next hypothesis tests [game-rollout values](rollout-values.md), independently
+of these taught weights.

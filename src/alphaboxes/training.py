@@ -18,6 +18,7 @@ from ray.rllib.core.learner.learner_group import LearnerGroup
 from ray.rllib.core.rl_module.multi_rl_module import MultiRLModuleSpec
 from ray.rllib.policy.sample_batch import DEFAULT_POLICY_ID, MultiAgentBatch, SampleBatch
 
+from alphaboxes import components
 from alphaboxes.checkpoint import load_agent, save_agent
 from alphaboxes.curriculum import StartPositionArchive
 from alphaboxes.game import board
@@ -394,6 +395,11 @@ def train(
                     "sizes": [list(size) for size in config.sizes],
                     "simulations": config.search.simulations,
                     "structure": config.structure,
+                    "component_feature_backend": "cython"
+                    if config.structure and components.compiled_features is not None
+                    else "python"
+                    if config.structure
+                    else "disabled",
                     "selfplay_device": config.selfplay_device,
                     "selfplay_batch_size": config.selfplay_batch_size,
                     "selfplay_cuda_graphs": config.selfplay_cuda_graphs,
