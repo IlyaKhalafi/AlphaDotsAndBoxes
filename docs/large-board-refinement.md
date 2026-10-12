@@ -55,7 +55,18 @@ positions, not strength measurements.
 
 ## Results
 
-Initial screens are running. No larger-board improvement is claimed yet.
+The branching screen completed with 7 wins, no draws and 5 losses: 58.33%
+score, paired-bootstrap 95% interval 33.33–83.33%, mean box margin +5.33.
+Every one of its 2,424 nonexact decisions completed 512 simulations. Candidate
+mean time was 1.036 seconds and maximum 4.064 seconds; reference mean was 0.995
+seconds and maximum 5.329 seconds. These trajectories differ, so elapsed times
+are not a controlled speed comparison. All 2,568 post-opening moves replay
+legally to the recorded scores.
+
+[Full branching screen](data/large-search-20261012/branch-screen.json) and
+[validated summary](data/large-search-20261012/screen-summary.json).
+
+Other screens are running. No larger-board improvement is claimed yet.
 
 ## Exact endgame refinement
 

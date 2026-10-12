@@ -1,0 +1,71 @@
+{
+  "validation": "Full legal replays, final scores and seat-swapped openings checked",
+  "timing": "Only moves with more than 12 remaining edges enter search-work statistics",
+  "source_sha256": "f291a64ad62ddd1ee64da7b36979fa18170f887e20b040876af4055fa95e6c3a",
+  "reports": [
+    {
+      "receipt": "branch-screen.json",
+      "receipt_sha256": "060f27bd0bf6252859ecd8d9e580b5f135ac129a109120a721b71b13930dd0fa",
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 12,
+          "wins": 7,
+          "draws": 0,
+          "losses": 5,
+          "score": 0.5833333333333334,
+          "paired_bootstrap_95pct": [
+            0.3333333333333333,
+            0.8333333333333334
+          ],
+          "mean_box_margin": 5.333333333333333,
+          "players": {
+            "candidate": {
+              "max_seconds": 4.064008894958533,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1254,
+              "mean_seconds": 1.0361757738705304,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 512.0,
+              "simulation_counts": {
+                "512": 1254
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 5.329493909957819,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1170,
+              "mean_seconds": 0.9949705102690893,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 512.0,
+              "simulation_counts": {
+                "512": 1170
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
