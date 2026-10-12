@@ -130,6 +130,134 @@
           }
         }
       ]
+    },
+    {
+      "receipt": "endgame-screen.json",
+      "receipt_sha256": "056cf326a38482b9a50e89a49a55ffce80d0a77be2aff1f162281321de09831f",
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 12,
+          "wins": 6,
+          "draws": 0,
+          "losses": 6,
+          "score": 0.5,
+          "paired_bootstrap_95pct": [
+            0.5,
+            0.5
+          ],
+          "mean_box_margin": 3.8333333333333335,
+          "players": {
+            "candidate": {
+              "max_seconds": 5.569781841011718,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1227,
+              "mean_seconds": 0.9794169663716891,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 512.0,
+              "simulation_counts": {
+                "0": 56,
+                "1": 20,
+                "2": 5,
+                "3": 4,
+                "4": 4,
+                "5": 4,
+                "6": 4,
+                "7": 4,
+                "8": 4,
+                "9": 3,
+                "10": 2,
+                "11": 2,
+                "12": 2,
+                "13": 3,
+                "14": 2,
+                "15": 2,
+                "16": 2,
+                "17": 2,
+                "18": 2,
+                "19": 2,
+                "20": 2,
+                "21": 2,
+                "22": 2,
+                "23": 2,
+                "24": 1,
+                "25": 1,
+                "26": 1,
+                "27": 1,
+                "28": 1,
+                "29": 1,
+                "30": 2,
+                "31": 1,
+                "44": 1,
+                "102": 1,
+                "166": 1,
+                "223": 2,
+                "224": 1,
+                "225": 1,
+                "226": 1,
+                "227": 1,
+                "228": 1,
+                "229": 1,
+                "230": 1,
+                "231": 1,
+                "232": 1,
+                "233": 1,
+                "234": 1,
+                "235": 1,
+                "236": 1,
+                "237": 1,
+                "238": 1,
+                "239": 1,
+                "240": 1,
+                "241": 1,
+                "242": 1,
+                "243": 1,
+                "244": 1,
+                "245": 1,
+                "246": 1,
+                "266": 1,
+                "321": 1,
+                "324": 1,
+                "376": 1,
+                "428": 1,
+                "512": 1048
+              },
+              "structural_solve_hits": 5933,
+              "proven_nodes": 15705,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 5.377437470015138,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1197,
+              "mean_seconds": 0.9408217536499677,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 512.0,
+              "simulation_counts": {
+                "512": 1197
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
     }
   ]
 }

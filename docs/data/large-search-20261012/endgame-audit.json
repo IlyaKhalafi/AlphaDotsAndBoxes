@@ -1,0 +1,661 @@
+{
+  "source_sha256": {
+    "inspect_endgames.py": "95a8c5c7dcc2bbb3e8480da39b66abdddec6e0621300a199705b5d9ab201dc02",
+    "endgame.py": "f018dcf04a7dd7077e92d9f1cb589d6786b7b7d5f7ce6d1073c1bf9fe9ccbe41"
+  },
+  "solve_seconds": 0.05,
+  "min_remaining": 13,
+  "max_remaining": 100,
+  "reports": [
+    {
+      "receipt": "branch-screen.json",
+      "receipt_sha256": "060f27bd0bf6252859ecd8d9e580b5f135ac129a109120a721b71b13930dd0fa",
+      "counts": {
+        "candidate": {
+          "eligible": 138,
+          "solved": 87,
+          "timeouts": 51,
+          "suboptimal": 6,
+          "lost_wins": 0,
+          "lost_box_margin": 32
+        },
+        "reference": {
+          "eligible": 63,
+          "solved": 61,
+          "timeouts": 2,
+          "suboptimal": 8,
+          "lost_wins": 0,
+          "lost_box_margin": 56
+        }
+      },
+      "errors": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 0,
+          "move": 195,
+          "side": "candidate",
+          "remaining_edges": 19,
+          "action": 2,
+          "optimal_actions": [
+            12
+          ],
+          "optimal_value": 0.44,
+          "actual_value": 0.4,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 0,
+          "move": 197,
+          "side": "reference",
+          "remaining_edges": 17,
+          "action": 110,
+          "optimal_actions": [
+            78,
+            79,
+            185,
+            196
+          ],
+          "optimal_value": -0.4,
+          "actual_value": -0.44,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 2,
+          "move": 177,
+          "side": "reference",
+          "remaining_edges": 37,
+          "action": 179,
+          "optimal_actions": [
+            72,
+            73
+          ],
+          "optimal_value": 0.38,
+          "actual_value": 0.34,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 2,
+          "move": 187,
+          "side": "reference",
+          "remaining_edges": 27,
+          "action": 21,
+          "optimal_actions": [
+            122,
+            133
+          ],
+          "optimal_value": 0.34,
+          "actual_value": 0.26,
+          "box_margin_regret": 8
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 4,
+          "move": 198,
+          "side": "reference",
+          "remaining_edges": 16,
+          "action": 69,
+          "optimal_actions": [
+            11,
+            12,
+            112,
+            123
+          ],
+          "optimal_value": 0.38,
+          "actual_value": 0.34,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 5,
+          "move": 198,
+          "side": "candidate",
+          "remaining_edges": 16,
+          "action": 202,
+          "optimal_actions": [
+            64,
+            65,
+            170,
+            181
+          ],
+          "optimal_value": 0.48,
+          "actual_value": 0.44,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 6,
+          "move": 172,
+          "side": "reference",
+          "remaining_edges": 42,
+          "action": 183,
+          "optimal_actions": [
+            14,
+            16,
+            34,
+            35,
+            48,
+            49,
+            58,
+            59,
+            91,
+            94,
+            115,
+            116,
+            126,
+            127,
+            137,
+            148,
+            152,
+            174,
+            200,
+            201,
+            202,
+            211,
+            212,
+            213
+          ],
+          "optimal_value": -0.18,
+          "actual_value": -0.26,
+          "box_margin_regret": 8
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 6,
+          "move": 187,
+          "side": "candidate",
+          "remaining_edges": 27,
+          "action": 96,
+          "optimal_actions": [
+            86,
+            216
+          ],
+          "optimal_value": 0.26,
+          "actual_value": 0.18,
+          "box_margin_regret": 8
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 7,
+          "move": 160,
+          "side": "reference",
+          "remaining_edges": 54,
+          "action": 47,
+          "optimal_actions": [
+            12,
+            13,
+            14,
+            16,
+            28,
+            29,
+            34,
+            35,
+            48,
+            49,
+            58,
+            59,
+            91,
+            94,
+            113,
+            115,
+            116,
+            124,
+            126,
+            127,
+            130,
+            137,
+            141,
+            148,
+            152,
+            174,
+            200,
+            201,
+            202,
+            211,
+            212,
+            213
+          ],
+          "optimal_value": -0.24,
+          "actual_value": -0.4,
+          "box_margin_regret": 16
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 7,
+          "move": 179,
+          "side": "candidate",
+          "remaining_edges": 35,
+          "action": 215,
+          "optimal_actions": [
+            95,
+            216
+          ],
+          "optimal_value": 0.4,
+          "actual_value": 0.32,
+          "box_margin_regret": 8
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 7,
+          "move": 182,
+          "side": "reference",
+          "remaining_edges": 32,
+          "action": 126,
+          "optimal_actions": [
+            12,
+            13,
+            28,
+            29,
+            34,
+            35,
+            113,
+            124,
+            130,
+            137,
+            141,
+            148
+          ],
+          "optimal_value": -0.32,
+          "actual_value": -0.36,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 7,
+          "move": 185,
+          "side": "candidate",
+          "remaining_edges": 29,
+          "action": 116,
+          "optimal_actions": [
+            16,
+            115
+          ],
+          "optimal_value": 0.36,
+          "actual_value": 0.32,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 8,
+          "move": 195,
+          "side": "reference",
+          "remaining_edges": 19,
+          "action": 207,
+          "optimal_actions": [
+            88
+          ],
+          "optimal_value": 0.48,
+          "actual_value": 0.4,
+          "box_margin_regret": 8
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 9,
+          "move": 198,
+          "side": "candidate",
+          "remaining_edges": 16,
+          "action": 50,
+          "optimal_actions": [
+            88,
+            89,
+            196,
+            207
+          ],
+          "optimal_value": -0.54,
+          "actual_value": -0.58,
+          "box_margin_regret": 4
+        }
+      ],
+      "solver_nodes": 70452
+    },
+    {
+      "receipt": "mass-screen.json",
+      "receipt_sha256": "6f79fa26b962f2125e67ed78c70d51da09861f9983fec44175d362d3ab339e93",
+      "counts": {
+        "candidate": {
+          "eligible": 163,
+          "solved": 114,
+          "timeouts": 49,
+          "suboptimal": 7,
+          "lost_wins": 0,
+          "lost_box_margin": 32
+        },
+        "reference": {
+          "eligible": 153,
+          "solved": 109,
+          "timeouts": 44,
+          "suboptimal": 5,
+          "lost_wins": 0,
+          "lost_box_margin": 32
+        }
+      },
+      "errors": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 1,
+          "move": 196,
+          "side": "reference",
+          "remaining_edges": 18,
+          "action": 2,
+          "optimal_actions": [
+            113
+          ],
+          "optimal_value": 0.64,
+          "actual_value": 0.6,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 3,
+          "move": 170,
+          "side": "reference",
+          "remaining_edges": 44,
+          "action": 52,
+          "optimal_actions": [
+            87,
+            88,
+            195,
+            206
+          ],
+          "optimal_value": -0.24,
+          "actual_value": -0.32,
+          "box_margin_regret": 8
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 3,
+          "move": 178,
+          "side": "reference",
+          "remaining_edges": 36,
+          "action": 189,
+          "optimal_actions": [
+            87,
+            88,
+            195,
+            206
+          ],
+          "optimal_value": -0.24,
+          "actual_value": -0.28,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 3,
+          "move": 181,
+          "side": "candidate",
+          "remaining_edges": 33,
+          "action": 177,
+          "optimal_actions": [
+            70,
+            178
+          ],
+          "optimal_value": 0.28,
+          "actual_value": 0.24,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 3,
+          "move": 184,
+          "side": "reference",
+          "remaining_edges": 30,
+          "action": 66,
+          "optimal_actions": [
+            87,
+            88,
+            195,
+            206
+          ],
+          "optimal_value": -0.24,
+          "actual_value": -0.28,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 3,
+          "move": 189,
+          "side": "candidate",
+          "remaining_edges": 25,
+          "action": 74,
+          "optimal_actions": [
+            181,
+            192
+          ],
+          "optimal_value": 0.28,
+          "actual_value": 0.24,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 3,
+          "move": 193,
+          "side": "candidate",
+          "remaining_edges": 21,
+          "action": 88,
+          "optimal_actions": [
+            195,
+            206
+          ],
+          "optimal_value": 0.24,
+          "actual_value": 0.2,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 4,
+          "move": 197,
+          "side": "candidate",
+          "remaining_edges": 17,
+          "action": 217,
+          "optimal_actions": [
+            97
+          ],
+          "optimal_value": 0.28,
+          "actual_value": 0.24,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 6,
+          "move": 177,
+          "side": "candidate",
+          "remaining_edges": 37,
+          "action": 58,
+          "optimal_actions": [
+            163,
+            174
+          ],
+          "optimal_value": 0.26,
+          "actual_value": 0.22,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 6,
+          "move": 189,
+          "side": "candidate",
+          "remaining_edges": 25,
+          "action": 216,
+          "optimal_actions": [
+            97,
+            215
+          ],
+          "optimal_value": 0.22,
+          "actual_value": 0.18,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 10,
+          "move": 193,
+          "side": "reference",
+          "remaining_edges": 21,
+          "action": 218,
+          "optimal_actions": [
+            98
+          ],
+          "optimal_value": 0.46,
+          "actual_value": 0.34,
+          "box_margin_regret": 12
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 11,
+          "move": 195,
+          "side": "candidate",
+          "remaining_edges": 19,
+          "action": 137,
+          "optimal_actions": [
+            138
+          ],
+          "optimal_value": 0.62,
+          "actual_value": 0.54,
+          "box_margin_regret": 8
+        }
+      ],
+      "solver_nodes": 108117
+    },
+    {
+      "receipt": "endgame-screen.json",
+      "receipt_sha256": "056cf326a38482b9a50e89a49a55ffce80d0a77be2aff1f162281321de09831f",
+      "counts": {
+        "candidate": {
+          "eligible": 71,
+          "solved": 55,
+          "timeouts": 16,
+          "suboptimal": 0,
+          "lost_wins": 0,
+          "lost_box_margin": 0
+        },
+        "reference": {
+          "eligible": 44,
+          "solved": 41,
+          "timeouts": 3,
+          "suboptimal": 2,
+          "lost_wins": 0,
+          "lost_box_margin": 8
+        }
+      },
+      "errors": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 3,
+          "move": 197,
+          "side": "reference",
+          "remaining_edges": 17,
+          "action": 117,
+          "optimal_actions": [
+            17
+          ],
+          "optimal_value": -0.28,
+          "actual_value": -0.32,
+          "box_margin_regret": 4
+        },
+        {
+          "board": [
+            10,
+            10
+          ],
+          "game": 10,
+          "move": 180,
+          "side": "reference",
+          "remaining_edges": 34,
+          "action": 190,
+          "optimal_actions": [
+            45,
+            46,
+            149,
+            160
+          ],
+          "optimal_value": -0.26,
+          "actual_value": -0.3,
+          "box_margin_regret": 4
+        }
+      ],
+      "solver_nodes": 26994
+    }
+  ]
+}

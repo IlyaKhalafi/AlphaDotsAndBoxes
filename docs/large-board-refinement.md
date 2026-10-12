@@ -66,7 +66,7 @@ legally to the recorded scores.
 [Full branching screen](data/large-search-20261012/branch-screen.json) and
 [validated summary](data/large-search-20261012/screen-summary.json).
 
-Other screens are running. No larger-board improvement is claimed yet.
+No larger-board improvement is claimed from these screens alone.
 
 The policy-mass screen completed with 8 wins, no draws and 4 losses: 66.67%
 score, paired-bootstrap 95% interval 50.00–83.33%, mean box margin +7.67.
@@ -114,3 +114,38 @@ After the first-play screens, a separate endgame arm will use constant reduction
 ceiling, seed 4801, and no timers. Exact solutions can finish before that ceiling;
 both actual simulations and solve hits must be reported. Any further combination
 with a first-play rule requires its own fresh screen before confirmation.
+
+The endgame arm completed with 6 wins and 6 losses, mean margin +3.83 boxes.
+Each opening pair scored exactly 50%, making the empirical paired-bootstrap
+interval degenerate at 50%; this does not establish statistical equivalence.
+The candidate recorded 5,933 structural solve hits and 15,705 propagated proof
+nodes on positions with more than 12 remaining edges, completing fewer than
+512 simulations on 179 of 1,227 such decisions. All reference decisions in that
+range completed 512 simulations. Exact game knowledge is additional work, so
+this is a comparison at the same simulation ceiling, not identical computation.
+
+[Full endgame screen](data/large-search-20261012/endgame-screen.json).
+
+## Decision audit and next isolated screen
+
+An offline audit uses up to 50 ms per structural solve on recorded positions
+with 13–100 remaining edges. It checks full legal replays first and excludes
+positions whose exact solve times out. On the policy-mass screen, 114 candidate
+and 109 reference positions were solved; seven and five choices respectively
+lost optimal box margin. None of these solved decisions changed a forced win
+into a draw/loss. The endgame arm had no suboptimal choices in 55 solved
+candidate positions; its reference had two in 41 solved positions, again with
+no lost forced wins. Timeouts and different trajectories limit comparisons.
+These observations suggest earlier decisions are the more useful next target.
+
+[Full audit, including action-level regrets](data/large-search-20261012/endgame-audit.json).
+
+A separate screen changes only the parent-value source of the policy-mass rule:
+use the backed-up parent mean once it has visits, falling back to the network
+value before the first visit. This is closer to the first-play equation used by
+Lc0. The screen uses 12 paired-seat 10×10 games, 512 full simulations, seed 5201,
+two CPU workers, and the released constant-0.33 reference. Oracle, proof, noise,
+reuse and move timers remain off. Six active confirmation/control workers plus
+this screen keep match work at eight cores. It does not alter the already
+running raw-parent confirmation. If it advances, its own fresh confirmation
+and older-reference control use seeds 5301 and 5401.
