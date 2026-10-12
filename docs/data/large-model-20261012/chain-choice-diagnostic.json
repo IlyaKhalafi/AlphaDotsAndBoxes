@@ -1,0 +1,50 @@
+{
+  "interpretation": "Outside retained choices are diagnostic, not quantified score regrets.",
+  "source_sha256": "3725c54f04db943c39337852df0d44688d838babb3bbd3236cce42f6ca36eb73",
+  "reports": [
+    {
+      "receipt": "chain-pruning-screen.json",
+      "receipt_sha256": "2aeefe91ff817c8aa05c851a562d9ec9bc965035d879eb48864d1f234dac45e1",
+      "choices": {
+        "candidate": {
+          "decisions": 1402,
+          "restricted_positions": 497,
+          "retained_choices": 562,
+          "outside_retained_choices": 0,
+          "capture_or_handout_positions": 65,
+          "noncapture_choices": 46
+        },
+        "reference": {
+          "decisions": 1166,
+          "restricted_positions": 331,
+          "retained_choices": 373,
+          "outside_retained_choices": 54,
+          "capture_or_handout_positions": 42,
+          "noncapture_choices": 27
+        }
+      }
+    },
+    {
+      "receipt": "data-control-00015-screen.json",
+      "receipt_sha256": "88d4f2fc8402240abb0164cec0bcbbc014d280d2ec5c8bdf5e065da8906ce333",
+      "choices": {
+        "candidate": {
+          "decisions": 1460,
+          "restricted_positions": 603,
+          "retained_choices": 671,
+          "outside_retained_choices": 51,
+          "capture_or_handout_positions": 68,
+          "noncapture_choices": 55
+        },
+        "reference": {
+          "decisions": 1108,
+          "restricted_positions": 314,
+          "retained_choices": 349,
+          "outside_retained_choices": 51,
+          "capture_or_handout_positions": 35,
+          "noncapture_choices": 29
+        }
+      }
+    }
+  ]
+}

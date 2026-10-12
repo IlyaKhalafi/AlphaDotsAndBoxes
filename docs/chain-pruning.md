@@ -46,3 +46,17 @@ The 40-game confirmation started with the unchanged settings and fresh seed
 replayed by the [summary](data/large-model-20261012/later-screen-summary.json),
 and the [complete histories](data/large-model-20261012/chain-pruning-screen.json)
 retain per-move work and timing. The full regression suite passed 189 tests.
+
+A [choice diagnostic](data/large-model-20261012/chain-choice-diagnostic.json)
+replays the screen's 2,568 decisions. The reduction applied at 497 candidate
+positions and 331 reference positions. The reference chose outside the
+retained set 54 times; the candidate never did. Among the candidate's 65
+capture-or-handout positions, it selected a noncapture 46 times. This shows
+the new search actually exercises control-preserving options. It does not
+quantify the score regret of individual reference decisions.
+
+The [deadline probe](data/large-model-20261012/chain-deadline-probe.json) checks
+36 supervised NumPy decisions across opening, middle, late and exact-endgame
+positions on 4×4, 5×5 and 10×10 boards. All finished below two seconds
+(maximum 1.774 seconds), without a fallback. This checks responsiveness;
+the fixed-work strength screen does not establish strength under that deadline.
