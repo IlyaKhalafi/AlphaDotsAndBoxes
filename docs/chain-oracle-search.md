@@ -30,3 +30,16 @@ Promotion requires score above 50% and paired bootstrap lower bound above 50%.
 The separate zero-first-play control uses 20 games, seed 311001, and requires
 at least 50% score. Smaller-board and actual web-setting checks are required
 before release. No strength improvement is assumed from exact endgame labels.
+
+## Screen: rejected
+
+The complete screen scores 5 wins and 7 losses (41.67%, paired interval
+8.33–75%), with mean margin +1.83 boxes. The oracle supplies 6,792 completed
+exact values above the common 12-edge root-aid threshold; 121 of those root
+decisions need zero simulations. Correct endgame values do not establish
+an overall strength improvement on these games. The candidate fails the
+screening gate, does not advance to confirmation and is not deployed.
+
+[Complete histories](data/large-model-20261012/chain-oracle-screen.json) and
+[legal replay validation](data/large-model-20261012/chain-oracle-screen-summary.json)
+retain work and timing. Other experiments keep their separate opening seeds.
