@@ -82,6 +82,86 @@ def build_dataset(checkpoint: Path, sources: list[Path], output: Path, seed: int
     snapshots = [path.read_bytes() for path in sources]
     receipts = [json.loads(snapshot) for snapshot in snapshots]
     exact, anchors = collect_positions(receipts, seed)
+    provenance = {
+        "seed": seed,
+        "sources": [
+            {"name": path.name, "sha256": hashlib.sha256(snapshot).hexdigest()}
+            for path, snapshot in zip(sources, snapshots, strict=True)
+        ],
+        "source_seeds": sorted({receipt["seed"] for receipt in receipts}),
+    }
+    return _write_dataset(checkpoint, exact, anchors, output, oracle_target, provenance)
+
+
+def build_component_dataset(
+    checkpoint: Path,
+    replay_path: Path,
+    output: Path,
+    seed: int = 41071,
+    positions: int = 2048,
+) -> dict:
+    """Label reachable chain/loop positions and anchor trusted self-play replay.
+
+    Replay is a trusted local training checkpoint, containing serialized states.
+    This dataset does not use evaluation histories or human moves.
+    """
+    import io
+
+    import torch
+
+    from alphaboxes.curriculum import sample_endgame
+    from alphaboxes.endgame import DegreeTwoSolver
+
+    if positions < 1 or output.exists():
+        raise ValueError("Use a positive position count and a new dataset path.")
+    snapshot = replay_path.read_bytes()
+    replay = torch.load(io.BytesIO(snapshot), map_location="cpu", weights_only=False)
+    sizes = replay["config"]["sizes"]
+    rng = np.random.default_rng(seed)
+    solver = DegreeTwoSolver()
+    exact = {}
+    for _ in range(positions * 20):
+        if len(exact) == positions:
+            break
+        size = sizes[int(rng.integers(len(sizes)))]
+        state = sample_endgame(tuple(size), rng)
+        for _ in range(int(rng.integers(7))):
+            if state.terminal:
+                break
+            _, actions = solver.solve(state)
+            state = state.play(int(rng.choice(actions)))
+        if not state.terminal:
+            exact[state_key(state)] = state
+    if len(exact) != positions:
+        raise ValueError("Could not generate enough distinct exact positions.")
+    pool = {
+        state_key(example.state): example.state
+        for example in replay["replay"]
+        if len(example.state.legal_actions) > 18 and state_key(example.state) not in exact
+    }
+    anchors = list(pool.values())
+    anchors = [anchors[int(i)] for i in rng.permutation(len(anchors))[:positions]]
+    provenance = {
+        "seed": seed,
+        "sources": [{"name": replay_path.name, "sha256": hashlib.sha256(snapshot).hexdigest()}],
+        "source_seeds": [replay["config"]["seed"]],
+        "source_iteration": replay["iteration"],
+        "generator": "Legally reached closed components, followed by 0..6 optimal moves",
+        "sizes": sizes,
+    }
+
+    def target(state):
+        margin, actions = solver.solve(state)
+        policy = np.zeros(state.board.num_edges, dtype=np.float32)
+        policy[list(actions)] = 1 / len(actions)
+        return policy, float(np.sign(margin))
+
+    return _write_dataset(checkpoint, list(exact.values()), anchors, output, target, provenance)
+
+
+def _write_dataset(checkpoint, exact, anchors, output, target, provenance):
+    if not exact or not anchors or output.exists():
+        raise ValueError("Provide exact and anchor states and a new dataset path.")
     states = exact + anchors
     evaluator, model_metadata = load_evaluator(checkpoint)
     count = len(states)
@@ -101,21 +181,16 @@ def build_dataset(checkpoint: Path, sources: list[Path], output: Path, seed: int
         anchor_policy[i, : len(policy)] = policy
         anchor_value[i] = value
         if i < len(exact):
-            policy, value = oracle_target(state)
+            policy, value = target(state)
             oracle_policy[i, : len(policy)] = policy
             oracle_value[i] = value
     metadata = {
         "format_version": 1,
-        "seed": seed,
+        **provenance,
         "checkpoint_sha256": model_metadata["checkpoint_sha256"],
         "source_checkpoint_sha256": model_metadata.get(
             "source_checkpoint_sha256", model_metadata["checkpoint_sha256"]
         ),
-        "sources": [
-            {"name": path.name, "sha256": hashlib.sha256(snapshot).hexdigest()}
-            for path, snapshot in zip(sources, snapshots, strict=True)
-        ],
-        "source_seeds": sorted({receipt["seed"] for receipt in receipts}),
         "exact_positions": len(exact),
         "anchor_positions": len(anchors),
         "oracle_outcomes": {
@@ -227,15 +302,6 @@ def fine_tune(
         learning_rate=3e-5,
     )
     owns_ray = not ray.is_initialized()
-    if owns_ray:
-        ray.init(
-            address="local",
-            num_cpus=2,
-            num_gpus=1 if device == "cuda" else 0,
-            include_dashboard=False,
-            object_store_memory=256 * 1024**2,
-            log_to_driver=False,
-        )
     try:
         learner = build_learner(config)
     except Exception:
