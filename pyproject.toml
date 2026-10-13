@@ -28,7 +28,7 @@ adb = "alphaboxes.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-alphaboxes = ["web/static/*", "*.pyx"]
+alphaboxes = ["web/static/*", "*.pyx", "*.cpp", "*.hpp"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
