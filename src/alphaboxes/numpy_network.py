@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from alphaboxes.game import State
-from alphaboxes.graph import dimensions, encode, neighbor_indices
+from alphaboxes.graph import dimensions, encode
 from alphaboxes.search import CachedEvaluator
 
 
@@ -35,12 +35,38 @@ def weight_shapes(width: int, depth: int, structure: bool = False) -> dict[str, 
     return shapes
 
 
-def silu(x: np.ndarray) -> np.ndarray:
+def silu(x: np.ndarray, *, inplace: bool = False) -> np.ndarray:
     denominator = -x
     np.clip(denominator, -80, 80, out=denominator)
     np.exp(denominator, out=denominator)
     denominator += np.float32(1)
-    return x / denominator
+    return np.divide(x, denominator, out=x if inplace else None)
+
+
+def grid_messages(h: np.ndarray, rows: int, cols: int, out: np.ndarray) -> None:
+    """Sum ordered neighbors into a C-contiguous output using rectangular views."""
+    if not out.flags.c_contiguous:
+        raise ValueError("Grid message output must be C-contiguous.")
+    horizontal_count = (rows + 1) * cols
+    edge_count = horizontal_count + rows * (cols + 1)
+    horizontal = h[:horizontal_count].reshape(rows + 1, cols, -1)
+    vertical = h[horizontal_count:edge_count].reshape(rows, cols + 1, -1)
+    boxes = h[edge_count:].reshape(rows, cols, -1)
+    box_messages = out[edge_count:].reshape(rows, cols, -1)
+    np.add(horizontal[:-1], horizontal[1:], out=box_messages)
+    box_messages += vertical[:, :-1]
+    box_messages += vertical[:, 1:]
+    horizontal_messages = out[:horizontal_count].reshape(rows + 1, cols, -1)
+    horizontal_messages[0] = boxes[0]
+    horizontal_messages[-1] = boxes[-1]
+    np.add(boxes[:-1], boxes[1:], out=horizontal_messages[1:-1])
+    vertical_messages = out[horizontal_count:edge_count].reshape(rows, cols + 1, -1)
+    vertical_messages[:, 0] = boxes[:, 0]
+    vertical_messages[:, -1] = boxes[:, -1]
+    np.add(boxes[:, :-1], boxes[:, 1:], out=vertical_messages[:, 1:-1])
+    # Edge nodes also have zero sentinel neighbors in the gather path. Keep
+    # their signed-zero behavior, including interior edges with two neighbors.
+    np.add(out[:edge_count], np.float32(0), out=out[:edge_count])
 
 
 class NumpyNetwork:
@@ -67,7 +93,11 @@ class NumpyNetwork:
         return result
 
     def forward(
-        self, obs: dict[str, np.ndarray], *, neighbors: np.ndarray | None = None
+        self,
+        obs: dict[str, np.ndarray],
+        *,
+        neighbors: np.ndarray | None = None,
+        board_shape: tuple[int, int] | None = None,
     ) -> tuple[np.ndarray, float]:
         """Return masked logits and value for one graph, including optional padding."""
         x, context = obs["x"], obs["context"]
@@ -75,40 +105,57 @@ class NumpyNetwork:
         if x.shape[-1] != features or context.shape != (contexts,):
             raise ValueError("Observation features do not match the checkpoint encoding.")
         mask = obs["node_mask"][:, None]
+        full = bool(np.all(mask == 1))
         broadcast = np.broadcast_to(context, (len(x), len(context)))
-        h = silu(self.linear(np.concatenate((x, broadcast), axis=-1), "encoder.0")) * mask
-        if neighbors is not None:
+        h = silu(self.linear(np.concatenate((x, broadcast), axis=-1), "encoder.0"), inplace=True)
+        if not full:
+            h *= mask
+        if board_shape is not None:
+            if neighbors is not None:
+                raise ValueError("Choose grid messages or neighbor indices, not both.")
+            rows, cols = board_shape
+            if min(rows, cols) < 1 or len(x) != 3 * rows * cols + rows + cols or not full:
+                raise ValueError("Grid messages require an unpadded board observation.")
+            messages = np.empty(h.shape, dtype=np.float32)
+        elif neighbors is not None:
             if neighbors.shape != (len(x), 4):
                 raise ValueError("Sparse neighbor shape does not match the observation.")
             padded = np.zeros((len(x) + 1, self.width), dtype=np.float32)
         for index in range(self.depth):
             prefix = f"blocks.{index}"
-            if neighbors is None:
+            if board_shape is not None:
+                grid_messages(h, *board_shape, messages)
+            elif neighbors is None:
                 messages = obs["adjacency"] @ h
             else:
                 padded[:-1] = h
                 messages = padded[neighbors[:, 0]] + padded[neighbors[:, 1]]
                 messages += padded[neighbors[:, 2]]
                 messages += padded[neighbors[:, 3]]
-            aggregate = (np.float32(1) + self.weights[f"{prefix}.epsilon"]) * h + messages
-            residual = h + self.linear(
-                silu(self.linear(aggregate, f"{prefix}.mlp.0")), f"{prefix}.mlp.2"
+            aggregate = (np.float32(1) + self.weights[f"{prefix}.epsilon"]) * h
+            aggregate += messages
+            residual = self.linear(
+                silu(self.linear(aggregate, f"{prefix}.mlp.0"), inplace=True), f"{prefix}.mlp.2"
             )
-            centered = residual - residual.mean(axis=-1, keepdims=True)
+            residual += h
+            residual -= residual.mean(axis=-1, keepdims=True)
+            centered = residual
             denominator = np.mean(centered * centered, axis=-1, keepdims=True) + np.float32(1e-5)
             np.sqrt(denominator, out=denominator)
             centered /= denominator
             centered *= self.weights[f"{prefix}.norm.weight"]
             centered += self.weights[f"{prefix}.norm.bias"]
-            centered *= mask
+            if not full:
+                centered *= mask
             h = centered
         mean = h.sum(axis=0) / max(mask.sum(), np.float32(1))
-        maximum = np.where(mask != 0, h, np.float32(-1e9)).max(axis=0)
+        maximum = h.max(axis=0) if full else np.where(mask != 0, h, np.float32(-1e9)).max(axis=0)
         readout = np.concatenate((mean, maximum, context))
-        if neighbors is None:
+        if neighbors is None and board_shape is None:
             shared = np.broadcast_to(readout, (len(x), len(readout)))
             logits = self.linear(
-                silu(self.linear(np.concatenate((h, shared), axis=-1), "policy.0")), "policy.2"
+                silu(self.linear(np.concatenate((h, shared), axis=-1), "policy.0"), inplace=True),
+                "policy.2",
             ).ravel()
             logits = np.where(obs["action_mask"] != 0, logits, np.float32(-1e9))
         else:
@@ -119,8 +166,10 @@ class NumpyNetwork:
             shared = readout @ weight[:, self.width :].T + self.weights["policy.0.bias"]
             hidden = h[actions] @ weight[:, : self.width].T + shared
             logits = np.full(len(x), np.float32(-1e9), dtype=np.float32)
-            logits[actions] = self.linear(silu(hidden), "policy.2").ravel()
-        value = np.tanh(self.linear(silu(self.linear(readout, "value.0")), "value.2"))[0]
+            logits[actions] = self.linear(silu(hidden, inplace=True), "policy.2").ravel()
+        value = np.tanh(
+            self.linear(silu(self.linear(readout, "value.0"), inplace=True), "value.2")
+        )[0]
         return logits, float(value)
 
 
@@ -133,7 +182,7 @@ class NumpyEvaluator(CachedEvaluator):
         sparse = state.board.num_nodes >= 256
         logits, value = self.network.forward(
             encode(state, structure=self.network.structure, include_adjacency=not sparse),
-            neighbors=neighbor_indices(state.board.rows, state.board.cols) if sparse else None,
+            board_shape=(state.board.rows, state.board.cols) if sparse else None,
         )
         logits = logits[: state.board.num_edges]
         probabilities = np.exp(logits - logits.max())
