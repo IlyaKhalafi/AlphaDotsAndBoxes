@@ -106,3 +106,8 @@ The wide interval still includes no improvement. The frozen settings enter
 the specified 40-game fresh confirmation and 20-game zero-first-play control,
 using six and two CPU workers respectively. Training has ended; these matches
 do not reserve GPU memory.
+
+Fresh confirmation completes **35–5**, with paired interval **77.5–97.5%**;
+the zero-first-play control completes **18–2**. The deeper-search profile passes
+its pre-recorded large-board gates. See [the completed report](deeper-large-board-search.md)
+for cost, unchanged-weight provenance, complete histories and optional deployment.

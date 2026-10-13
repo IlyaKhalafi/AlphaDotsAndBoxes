@@ -41,3 +41,17 @@ Both sides read the same immutable retained NumPy snapshot, SHA-256
 `21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0`.
 The screen starts with six CPU workers and exactly the settings above.
 The hard filter remains disabled, including throughout internal search.
+
+## Completed results: rejected
+
+The initial screen finishes 8–4 (66.67%, paired interval 50–83.33%, mean
+margin +21.5 boxes). Fresh confirmation finishes **21 wins, one draw and
+18 losses**: 53.75% score, paired interval **37.5–68.75%**, mean margin +0.05.
+The interval fails the pre-recorded strictly-above-50% lower-bound gate.
+The separate zero-first-play control finishes 10–10 (50%, interval 30–70%,
+mean margin −1). No smaller-board release tests are needed for this rejected arm.
+
+The [validated summary](data/large-model-20261012/completed-search-summary.json)
+includes all three complete receipts. The soft preference remains disabled in
+the released profile. A favorable small screen did not establish a durable
+improvement on fresh openings.

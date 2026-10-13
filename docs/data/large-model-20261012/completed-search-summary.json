@@ -1,0 +1,417 @@
+{
+  "validation": "Full legal replays, final scores and seat-swapped openings checked",
+  "timing": "Only moves with more than 12 remaining edges enter search-work statistics",
+  "source_sha256": "e78754080ff027f85c180b4f16192e5aa57dfb594778fad81d28ac6849c51ac2",
+  "reports": [
+    {
+      "receipt": "deeper-search-confirm.json",
+      "receipt_sha256": "6cb4361527d2a96ea227ec879531b7ec79ac09201ce44ca4cc5e534686121842",
+      "status": "completed",
+      "planned_games_per_board": 40,
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 40,
+          "wins": 35,
+          "draws": 0,
+          "losses": 5,
+          "score": 0.875,
+          "paired_bootstrap_95pct": [
+            0.775,
+            0.975
+          ],
+          "mean_box_margin": 31.85,
+          "players": {
+            "candidate": {
+              "max_seconds": 54.56443740893155,
+              "deadline_fallbacks": 0,
+              "neural_moves": 4740,
+              "mean_seconds": 18.99004806833131,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 8192.0,
+              "simulation_counts": {
+                "8192": 4740
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 20,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 6.027993172989227,
+              "deadline_fallbacks": 0,
+              "neural_moves": 3340,
+              "mean_seconds": 1.6679145705140987,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 3340
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 20,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "deeper-search-zero-control.json",
+      "receipt_sha256": "9944217de705bbfd19f38419ac9cc710a7de565b5eabc848cd5c4f60c01f23a8",
+      "status": "completed",
+      "planned_games_per_board": 20,
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 20,
+          "wins": 18,
+          "draws": 0,
+          "losses": 2,
+          "score": 0.9,
+          "paired_bootstrap_95pct": [
+            0.75,
+            1.0
+          ],
+          "mean_box_margin": 39.4,
+          "players": {
+            "candidate": {
+              "max_seconds": 51.82289148599375,
+              "deadline_fallbacks": 0,
+              "neural_moves": 2432,
+              "mean_seconds": 17.742022627331465,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 8192.0,
+              "simulation_counts": {
+                "8192": 2432
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 10,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 7.396685492014512,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1608,
+              "mean_seconds": 3.6176479911916446,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 1608
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 10,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "root-safety-screen.json",
+      "receipt_sha256": "ee22a7ad055947b4c30302a4e6a1465997e208ee2fc65dbdd2240cae0acd9f59",
+      "status": "completed",
+      "planned_games_per_board": 12,
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 12,
+          "wins": 8,
+          "draws": 0,
+          "losses": 4,
+          "score": 0.6666666666666666,
+          "paired_bootstrap_95pct": [
+            0.5,
+            0.8333333333333334
+          ],
+          "mean_box_margin": 21.5,
+          "players": {
+            "candidate": {
+              "max_seconds": 5.642859327956103,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1330,
+              "mean_seconds": 1.3254015132370824,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 1330
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 5.348224158049561,
+              "deadline_fallbacks": 0,
+              "neural_moves": 1094,
+              "mean_seconds": 1.5348656616481005,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 1094
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 6,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "root-safety-confirm.json",
+      "receipt_sha256": "79a38a74a576b3bd95f9fe5ca5ad59660c0397d4a205073c122b11d5e3a86a15",
+      "status": "completed",
+      "planned_games_per_board": 40,
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 40,
+          "wins": 21,
+          "draws": 1,
+          "losses": 18,
+          "score": 0.5375,
+          "paired_bootstrap_95pct": [
+            0.375,
+            0.6875
+          ],
+          "mean_box_margin": 0.05,
+          "players": {
+            "candidate": {
+              "max_seconds": 5.859486693050712,
+              "deadline_fallbacks": 0,
+              "neural_moves": 4051,
+              "mean_seconds": 1.397255728140467,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 4051
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 20,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 6.011354131042026,
+              "deadline_fallbacks": 0,
+              "neural_moves": 4029,
+              "mean_seconds": 1.4342400776430966,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 4029
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 20,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "root-safety-zero-control.json",
+      "receipt_sha256": "b53cb041d55a8fc2875b92b828817770a4d2bbf1a2617b04a04f61f15c073415",
+      "status": "completed",
+      "planned_games_per_board": 20,
+      "candidate_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+      "reference_engine": "mcts",
+      "candidate_engine": "mcts",
+      "results": [
+        {
+          "board": [
+            10,
+            10
+          ],
+          "games": 20,
+          "wins": 10,
+          "draws": 0,
+          "losses": 10,
+          "score": 0.5,
+          "paired_bootstrap_95pct": [
+            0.3,
+            0.7
+          ],
+          "mean_box_margin": -1.0,
+          "players": {
+            "candidate": {
+              "max_seconds": 5.984556547948159,
+              "deadline_fallbacks": 0,
+              "neural_moves": 2003,
+              "mean_seconds": 1.7171526505909762,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 2003
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 10,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            },
+            "reference": {
+              "max_seconds": 7.259897953015752,
+              "deadline_fallbacks": 0,
+              "neural_moves": 2037,
+              "mean_seconds": 2.8946368961355424,
+              "median_depth": null,
+              "depth_counts": {},
+              "median_nodes": null,
+              "median_simulations": 1024.0,
+              "simulation_counts": {
+                "1024": 2037
+              },
+              "structural_solve_hits": 0,
+              "proven_nodes": 0,
+              "inherited_visits": 0,
+              "decisions_with_reused_visits": 0,
+              "rollout_episodes": 0,
+              "rollout_moves": 0,
+              "rollout_oracle_finishes": 0,
+              "forced_capture_positions": 0,
+              "forced_capture_moves": 0,
+              "forced_capture_terminal_finishes": 0,
+              "opening_positions": 10,
+              "opening_depth_counts": {},
+              "opening_median_nodes": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

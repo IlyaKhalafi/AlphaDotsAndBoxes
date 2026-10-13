@@ -1,0 +1,98 @@
+{
+  "status": "passed",
+  "training_modules_imported": [],
+  "decisions": [
+    {
+      "board": [
+        4,
+        4
+      ],
+      "seconds": 1.763419784954749,
+      "analysis": {
+        "action": 9,
+        "value": -0.008676875410091184,
+        "seconds": 1.7563929880270734,
+        "method": "graph_search",
+        "engine": "mcts",
+        "time_limit": 1.75,
+        "requested_time_limit": 2.0,
+        "response_deadline": 1.9,
+        "thinking_seconds": 1.756364151951857,
+        "simulations": 1460,
+        "timed_out": false,
+        "fpu_reduction": 0.33,
+        "extended": false,
+        "full_budget_completed": false
+      }
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "seconds": 1.7621136880479753,
+      "analysis": {
+        "action": 45,
+        "value": -0.002365266102911537,
+        "seconds": 1.757169249933213,
+        "method": "graph_search",
+        "engine": "mcts",
+        "time_limit": 1.75,
+        "requested_time_limit": 2.0,
+        "response_deadline": 1.9,
+        "thinking_seconds": 1.7571438050363213,
+        "simulations": 917,
+        "timed_out": false,
+        "fpu_reduction": 0.33,
+        "extended": false,
+        "full_budget_completed": false
+      }
+    },
+    {
+      "board": [
+        10,
+        10
+      ],
+      "seconds": 53.37205447303131,
+      "analysis": {
+        "action": 43,
+        "value": -0.0007754290485806337,
+        "seconds": 53.36404221993871,
+        "method": "graph_search",
+        "engine": "mcts",
+        "time_limit": 59.898648061067796,
+        "requested_time_limit": 2.0,
+        "response_deadline": 60,
+        "thinking_seconds": 53.36400535609573,
+        "simulations": 8192,
+        "timed_out": false,
+        "fpu_reduction": 0.33,
+        "extended": true,
+        "full_budget_completed": true
+      }
+    },
+    {
+      "board": [
+        5,
+        5
+      ],
+      "seconds": 1.7649546170141548,
+      "analysis": {
+        "action": 45,
+        "value": 1.0882857294845246e-05,
+        "seconds": 1.7602127540158108,
+        "method": "graph_search",
+        "engine": "mcts",
+        "time_limit": 1.75,
+        "requested_time_limit": 2.0,
+        "response_deadline": 1.9,
+        "thinking_seconds": 1.7601846540346742,
+        "simulations": 1639,
+        "timed_out": false,
+        "fpu_reduction": 0.33,
+        "extended": false,
+        "full_budget_completed": false
+      }
+    }
+  ]
+}
