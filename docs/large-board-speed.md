@@ -262,3 +262,8 @@ includes individual timing samples, source fingerprints and search settings.
 The final complete suite passes **306 tests**, and Ruff and whitespace checks
 pass. The runtime remains a clean NumPy installation with the original trained
 weights and the extended Deep option enabled.
+
+Further [C++ runtime acceleration](compiled-runtime.md) preserves the same
+model and search traces while reducing the first two full-budget 10×10 decisions
+by 24–25% in the next paired comparison. It is optional; ordinary installation
+continues to use NumPy.

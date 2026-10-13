@@ -1,0 +1,1 @@
+{"compiler":"13.3.0","cython":"3.3.0","numpy":"2.5.1","python_abi":"cpython-312-x86_64-linux-gnu","extension_sha256":"ef98f5d6e898415ea26fcf256c5a22b3d2a0011ff3521a490bd585cc1441fba7","fused_multiply_add_instructions":false,"flags":["-O3","-fno-fast-math","-ffp-contract=off","-fno-math-errno","-std=c++17"],"runtime_cpu_dispatch":["default","avx2","avx512f"]}

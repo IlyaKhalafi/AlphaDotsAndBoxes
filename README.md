@@ -59,6 +59,8 @@ budget, averaging about 19 seconds per decision in those tests. Small boards
 keep the short deadline. See [the large-board results](docs/deeper-large-board-search.md)
 for the comparison and limits.
 
+For an optional speed boost, see the [setup and measurements](docs/compiled-runtime.md).
+
 The included model has trained on boards through 5×5. The UI also solves small
 endgames exactly when time allows. Launching `adb serve` without a
 checkpoint selects a clearly labeled tactical opponent.
