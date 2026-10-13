@@ -6,7 +6,7 @@ import os
 from collections import OrderedDict
 from collections.abc import Callable
 from dataclasses import dataclass
-from math import isfinite
+from math import isfinite, sqrt
 from time import monotonic
 from typing import TYPE_CHECKING, Protocol
 
@@ -373,9 +373,9 @@ class MCTS:
         reduction = self.config.fpu_reduction
         if self.config.fpu_mode == "policy_mass":
             visited_mass = sum(child.prior for child in children if child.visits)
-            reduction *= np.sqrt(visited_mass)
+            reduction *= sqrt(visited_mass)
         elif self.config.fpu_mode == "branching":
-            reduction *= min(1.0, np.sqrt(54 / len(node.children)))
+            reduction *= min(1.0, sqrt(54 / len(node.children)))
         parent_value = (
             node.value if self.config.fpu_parent == "mean" and node.visits else node.evaluation
         )
@@ -531,7 +531,7 @@ class MCTS:
                     continue
                 node, path = root, [root]
                 while node.children:
-                    scale = self.config.cpuct * np.sqrt(node.visits + 1)
+                    scale = self.config.cpuct * sqrt(node.visits + 1)
                     if node is root and halving:
                         child = halving[id(root)].select()
                     else:
