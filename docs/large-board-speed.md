@@ -139,3 +139,17 @@ the cold first move remains expensive. Tests compare full policies and values
 through repeated real searches under forced eviction, verify fewer predictions
 with a larger cache, and verify clearing. API tests confirm that only the long
 worker gets the larger cache and both workers retain their original deadlines.
+
+The [live continuation check](data/large-model-20261012/prediction-cache-live-probe.json)
+completes 8,192 simulations in each of three fresh 10×10 moves: **54.43,
+19.81 and 18.46 seconds**. These figures include HTTP time while full-game
+benchmarking and tests run concurrently. The expensive cold opening remains
+unresolved. Ordinary 4×4 and 5×5 requests still finish below two seconds.
+The clean installed sources match the released files, and no training frameworks
+are imported. The final complete suite passes **284 tests**.
+
+Search-time feature encoding also avoids building dense adjacency just to count
+adjacent boxes with one free side. Cached two-box incidence indices now provide
+those features with linear memory. Dense adjacency remains available for training
+observations. Bit-for-bit feature checks cover padding and a 20×30 board; the
+37 relevant graph, network and API tests pass after this change.

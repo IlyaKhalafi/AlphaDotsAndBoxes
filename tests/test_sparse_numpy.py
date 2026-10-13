@@ -22,6 +22,24 @@ def test_sparse_incidence_matches_dense_with_padding(shape):
     assert not indices.flags.writeable
 
 
+def test_sparse_features_do_not_materialize_dense_geometry(monkeypatch):
+    state = State.new(20, 30)
+    rng = np.random.default_rng(19)
+    for _ in range(80):
+        state = state.play(int(rng.choice(state.legal_actions)))
+    expected = encode(state, state.board.num_nodes + 7)
+
+    def fail(*args):
+        raise AssertionError("Sparse encoding attempted dense geometry.")
+
+    monkeypatch.setattr("alphaboxes.graph.adjacency", fail)
+    monkeypatch.setattr("alphaboxes.graph.encoding_geometry", fail)
+    actual = encode(state, state.board.num_nodes + 7, include_adjacency=False)
+    assert "adjacency" not in actual
+    for name, value in actual.items():
+        np.testing.assert_array_equal(value, expected[name])
+
+
 @pytest.mark.parametrize("structure", [False, True])
 @pytest.mark.parametrize("shape", [(1, 2), (3, 5), (5, 5), (10, 10), (12, 12)])
 def test_sparse_network_matches_dense_on_legal_positions_and_padding(shape, structure):

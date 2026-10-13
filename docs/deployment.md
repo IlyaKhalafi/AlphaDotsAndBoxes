@@ -84,6 +84,8 @@ models/larger.npz --extended-search`. On graph-engine boards with at least
 100 boxes, the UI labels Deep **up to 60 s** and sends `extended: true`.
 This requests 8,192 simulations with a 60-second response deadline, including
 queueing. Ordinary requests keep the short deadline and use a separate worker.
+The long worker retains up to 32,768 exact network predictions to reuse searched
+continuations; the ordinary worker retains 4,096. Cold openings can still be slow.
 Extended requests on smaller boards or the alpha–beta engine receive 422.
 Replays report actual simulation counts and `full_budget_completed`; a
 time-limited partial search is not the complete fixed-work benchmark.

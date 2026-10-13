@@ -67,7 +67,7 @@ def encode(
         raise ValueError("Observation capacity is smaller than this board.")
     free = np.asarray(state.edges, dtype=np.int8) < 0
     owners = np.asarray(state.owners, dtype=np.int8)
-    box_edges, incidence, degree = encoding_geometry(geometry.rows, geometry.cols)
+    box_edges, edge_boxes, degree = encoding_indices(geometry.rows, geometry.cols)
     remaining = free[box_edges].sum(axis=-1)
     ours, theirs = owners == state.player, owners == 1 - state.player
     features, _ = dimensions(structure)
@@ -76,7 +76,9 @@ def encode(
     x[:e, 2], x[e:n, 3], x[e:n, 4] = ~free, ours, theirs
     x[e + np.arange(geometry.num_boxes), 5 + remaining] = 1
     x[:e, 10] = degree
-    x[:e, 11] = incidence @ (remaining == 1).astype(np.float32) / 2
+    critical = np.zeros(geometry.num_boxes + 1, dtype=np.float32)
+    critical[:-1] = remaining == 1
+    x[:e, 11] = critical[edge_boxes].sum(axis=1) / 2
     action_mask, node_mask = np.zeros((2, capacity), dtype=np.float32)
     action_mask[:e], node_mask[:n] = free, 1
     context = np.array(
@@ -108,13 +110,25 @@ def encode(
 
 
 @lru_cache(maxsize=128)
-def encoding_geometry(rows: int, cols: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Reuse static box indices and incidence features across search predictions."""
+def encoding_indices(rows: int, cols: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Encode local incidence features without allocating a dense graph."""
     geometry = board(rows, cols)
     boxes = np.asarray(geometry.boxes)
-    incidence = adjacency(rows, cols)[: geometry.num_edges, geometry.num_edges :]
-    degree = incidence.sum(axis=1) / 2
+    edge_boxes = np.full((geometry.num_edges, 2), geometry.num_boxes, dtype=np.intp)
+    for edge, neighbors in enumerate(geometry.edge_boxes):
+        edge_boxes[edge, : len(neighbors)] = neighbors
+    degree = (edge_boxes < geometry.num_boxes).sum(axis=1).astype(np.float32) / 2
+    edge_boxes.flags.writeable = False
     boxes.flags.writeable = degree.flags.writeable = False
+    return boxes, edge_boxes, degree
+
+
+@lru_cache(maxsize=128)
+def encoding_geometry(rows: int, cols: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Reuse static dense geometry for training batches."""
+    boxes, _, degree = encoding_indices(rows, cols)
+    geometry = board(rows, cols)
+    incidence = adjacency(rows, cols)[: geometry.num_edges, geometry.num_edges :]
     return boxes, incidence, degree
 
 
