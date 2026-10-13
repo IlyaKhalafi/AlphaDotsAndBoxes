@@ -1,0 +1,87 @@
+{
+  "status": "passed",
+  "source_commit": "1bd21bc",
+  "python": "3.12.3",
+  "numpy": "2.5.3",
+  "installed_source_matches_workspace": true,
+  "source_sha256": {
+    "search.py": "11e2d7cfd9331577af6ed264fba670e53f9af0bb6ad2f78f6ceded8b67940560",
+    "timed_search.py": "4831f15f2b68e202dd3d6bbd9e04b8a9197a51c744959a6bdf5fa54565763ab6",
+    "cli.py": "0a3d40953f47ac9ed25e47922b05673061fd1ab18b2e1d61ae9e1e5cf0aa8391",
+    "numpy_network.py": "cae9da249fcd970dd240e640401554a423f09e282da39e2582bcb9d227c9962e",
+    "web/app.py": "19dbdced963509e4f7f9bf7b280524b16219e84dee9eb4c24cb104354568f52d",
+    "web/static/app.js": "6afd848d59d036d3704e121b94ace70c2bc6cc157f09fabe56cd71e6634edc83",
+    "web/static/index.html": "764190ab1b18ba7620a228984e5c2cc86ea2850365d1cc9c670f4dce4eafe437",
+    "web/static/style.css": "e10b8138d67c67c8bae78fc0c7cc31633ddbf730c992a3651458dd10f82e8c0f"
+  },
+  "health": {
+    "status": "ok",
+    "agent": "graph",
+    "inference": "numpy",
+    "training": {
+      "games_total": 320,
+      "initialization": {
+        "checkpoint_sha256": "4aa5558673f9a10061724301cff13ad240e97271c4aa11f350b19540a45ac930",
+        "training_games": 3200,
+        "training_positions": 128614
+      },
+      "iteration": 10,
+      "positions_total": 13934,
+      "seed": 44,
+      "simulations": 256,
+      "sizes": [
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          5
+        ]
+      ],
+      "source_checkpoint_sha256": "b5938749e87971df5901aff0d9ce8d114641f41ad7b2503769bba4d461f63afa",
+      "training_exact_threshold": 12,
+      "checkpoint_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0"
+    },
+    "exact_endgame_edges": 12,
+    "search_engines": [
+      "mcts",
+      "alpha_beta"
+    ],
+    "search": {
+      "fpu_reduction": 0.33,
+      "max_internal_seconds": 1.75,
+      "response_deadline": 1.9,
+      "extended_large_boards": true,
+      "extended_response_deadline": 60
+    }
+  },
+  "browser_checks": [
+    "desktop and mobile layout",
+    "extended label on 10x10 graph search",
+    "ordinary label on small boards and alpha-beta",
+    "hint and undo",
+    "keyboard moves",
+    "agent-versus-agent playback with delay and pause",
+    "rectangular custom board"
+  ],
+  "assets_sha256": {
+    "gameplay.gif": "b60468f3c4d1720eca861052b4c2b44f16a9ea35c1897d4631574b3d83d03d1d",
+    "desktop-large.png": "a6b19c3cbdb33012799725e6fe4448e141eeeb2dff9aadc8f9610d0e99f75a95",
+    "desktop-played.png": "20214e139389e496e669bc8b6913b3af294be014809d9e28f45874b7a80b136f",
+    "mobile.png": "0e86a58a98d3817380866a6d81d08b493071d068a11fdd2525dac6eb0b90576f"
+  },
+  "tests_passed": 260
+}

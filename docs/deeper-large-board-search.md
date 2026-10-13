@@ -60,3 +60,11 @@ benchmark. Boards larger than 10×10 have not received this strength evaluation.
 The [actual NumPy-only API probe](data/large-model-20261012/extended-web-probe.json)
 checks full-budget completion on 10×10, ordinary 4×4/5×5 responsiveness, and
 absence of imported training frameworks.
+
+The clean installed package matches the committed search and web sources;
+the [release receipt](data/large-model-20261012/extended-release.json) records
+their fingerprints and the port-9003 health settings. All 260 tests pass.
+Browser checks cover the large-board thinking label, switching back to ordinary
+thinking, mobile layout, keyboard moves, hints, undo, rectangular boards, and
+agent-versus-agent pause and delay. The README GIF contains 27 frames from a
+real game on the updated service. No weights or architecture diagram changed.

@@ -41,7 +41,7 @@ and an agent-versus-agent watch mode. Select **Agent vs Agent** under Players to
 watch both sides, adjust **Move delay**, and pause or resume. Board dimensions
 count **boxes**, not dots.
 
-Choose Quick, Standard, or Deep thinking. NumPy play uses a supervised
+Choose Quick, Standard, or Deep thinking. By default, NumPy play uses a supervised
 **1.9-second decision deadline**, including on 10×10 boards. Improved search
 scored **66.25% on 4×4 and 82.5% on 5×5** against the previous agent in fresh
 matches. See [the results and timing checks](docs/two-second-search.md).

@@ -54,6 +54,7 @@ def main():
             assert "60 s" not in page.locator('#budget option[value="2"]').inner_text()
             page.locator("#engine").select_option("mcts")
             assert "60 s" in page.locator('#budget option[value="2"]').inner_text()
+            page.locator("#budget").select_option("2")
             page.screenshot(path=str(args.output / "desktop-large.png"), full_page=True)
             page.locator(".custom-size summary").click()
         page.locator('[data-size="3"]').click()
