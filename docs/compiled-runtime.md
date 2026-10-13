@@ -97,6 +97,9 @@ requests remain capped and take 1.766–1.768 seconds, completing 1,046, 1,354 a
 1,715 simulations in the measured moves. These live checks have no concurrent
 owned training or benchmark job; other shared-machine workloads remain present.
 
+See the [3×3–10×10 timing comparison](board-size-latency.md) for measurements
+on every square board size, including a fixed search budget and live UI timings.
+
 To repeat the comparison against a trusted checkout of `94dd4ae`:
 
 ```bash
