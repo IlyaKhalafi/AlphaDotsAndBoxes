@@ -79,10 +79,17 @@ measurements, not evidence of retained playing strength.
 
 The selected student is frozen at SHA-256
 `91a6e8a7a3b5540294e63fcc2a456882cf7fd3651e1e66f7227095c8fa1d5c85`.
-Its 12-game full-budget screen is running against the retained model. The
-evaluation follow-through validates completed histories, then runs the
-predeclared fresh confirmation and smaller-board regression only if the earlier
-gates pass. It cannot replace live weights. The [training receipt](data/large-model-20261012/student-48x6-training-receipt.json),
+Its completed 12-game full-budget screen finishes **5 wins and 7 losses**
+(41.67%, paired-bootstrap interval 16.67–66.67%, mean box margin −12.83).
+It fails the predeclared screen; confirmation and smaller-board promotion
+checks are not run. The retained model stays live. The student's mean neural
+decision is 12.61 seconds versus 17.12 for the reference, but positions differ
+between the players, so this is not a paired latency estimate. Both complete
+8,192 simulations on every neural decision. The
+[screen](data/large-model-20261012/student-48x6-screen.json),
+[summary](data/large-model-20261012/student-48x6-screen-summary.json), and
+[gate receipt](data/large-model-20261012/student-48x6-gates.json) record the
+rejection. The [training receipt](data/large-model-20261012/student-48x6-training-receipt.json),
 configuration, portable frozen targets, experimental weights, per-update metrics
 and [evaluation source fingerprint](data/large-model-20261012/speed-source-snapshot.json)
 preserve this stage for reproduction.
@@ -161,6 +168,7 @@ are present, although coverage alone does not establish adequate imitation.
 On a fresh empty 10×10 board the teacher value is 0.05106 and the student value
 0.01472, a difference of 0.03634; the policy KL is 0.00970. Value errors can alter
 search allocation, so faster inference and small average imitation losses still
-require the ongoing full-game comparison. No model promotion follows from this
+require a full-game comparison. The completed screen above rejects this student;
+no model promotion follows from this
 diagnostic. Benchmark CPU priority is lowered to favor interactive serving;
 weights, opening seeds and fixed simulation counts are unchanged.

@@ -1,0 +1,76 @@
+{
+  "decision": "rejected_screen",
+  "results": [
+    {
+      "board": [
+        10,
+        10
+      ],
+      "games": 12,
+      "wins": 5,
+      "draws": 0,
+      "losses": 7,
+      "score": 0.4166666666666667,
+      "paired_bootstrap_95pct": [
+        0.16666666666666666,
+        0.6666666666666666
+      ],
+      "mean_box_margin": -12.833333333333334,
+      "players": {
+        "candidate": {
+          "max_seconds": 28.339930195943452,
+          "deadline_fallbacks": 0,
+          "neural_moves": 1118,
+          "mean_seconds": 12.611920015652242,
+          "median_depth": null,
+          "depth_counts": {},
+          "median_nodes": null,
+          "median_simulations": 8192.0,
+          "simulation_counts": {
+            "8192": 1118
+          },
+          "structural_solve_hits": 0,
+          "proven_nodes": 0,
+          "inherited_visits": 0,
+          "decisions_with_reused_visits": 0,
+          "rollout_episodes": 0,
+          "rollout_moves": 0,
+          "rollout_oracle_finishes": 0,
+          "forced_capture_positions": 0,
+          "forced_capture_moves": 0,
+          "forced_capture_terminal_finishes": 0,
+          "opening_positions": 6,
+          "opening_depth_counts": {},
+          "opening_median_nodes": null
+        },
+        "reference": {
+          "max_seconds": 42.910957187996246,
+          "deadline_fallbacks": 0,
+          "neural_moves": 1306,
+          "mean_seconds": 17.116635357073683,
+          "median_depth": null,
+          "depth_counts": {},
+          "median_nodes": null,
+          "median_simulations": 8192.0,
+          "simulation_counts": {
+            "8192": 1306
+          },
+          "structural_solve_hits": 0,
+          "proven_nodes": 0,
+          "inherited_visits": 0,
+          "decisions_with_reused_visits": 0,
+          "rollout_episodes": 0,
+          "rollout_moves": 0,
+          "rollout_oracle_finishes": 0,
+          "forced_capture_positions": 0,
+          "forced_capture_moves": 0,
+          "forced_capture_terminal_finishes": 0,
+          "opening_positions": 6,
+          "opening_depth_counts": {},
+          "opening_median_nodes": null
+        }
+      }
+    }
+  ],
+  "live_weights_replaced": false
+}
