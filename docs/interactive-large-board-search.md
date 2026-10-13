@@ -1,15 +1,15 @@
-# Keep interactive Deep search short
+# Speed up large-board search
 
 2026-10-13: a live fresh 10×10 Deep browser request takes 47.68 seconds;
 a separate API request takes 56.69 seconds. Both complete 8,192 simulations.
 The longer search's confirmed strength gain does not make this latency suitable
 for ordinary play.
 
-Restore **Deep · 2 s** on every board. Keep the longer, optional graph-search
-profile under a separate **Analysis · up to 60 s** choice on eligible boards.
-It must never be selected automatically when changing board sizes. Switching
-to a smaller board or alpha–beta resets Analysis to Deep. Ordinary Deep retains
-the previously tested 1.75-second internal cap and 1.9-second worker deadline.
+The proposed UI time-limit reduction was withdrawn before deployment. Keep
+the confirmed deeper-search profile and optimize its actual work instead.
+Profile the cached search, reduce NumPy inference and traversal overhead,
+then consider a distilled network with fresh strength tests. Faster moves
+obtained only by cutting the search budget are not the desired solution.
 
 ## Next isolated speed experiment
 
