@@ -44,6 +44,7 @@ class SearchRequest(Revision):
     simulations: int = Field(default=128, ge=8, le=512)
     time_limit: float | None = Field(default=None, ge=0.05, le=2, allow_inf_nan=False)
     engine: Literal["mcts", "alpha_beta"] = "mcts"
+    extended: bool = False
 
 
 @dataclass
@@ -81,24 +82,29 @@ class Session:
         self.revision += 1
 
 
-def create_app(checkpoint: Path | None = None) -> FastAPI:
+def create_app(checkpoint: Path | None = None, *, extended_search: bool = False) -> FastAPI:
     evaluator, metadata = load_evaluator(checkpoint) if checkpoint else (None, {})
     sessions: dict[str, Session] = {}
     sessions_lock = threading.Lock()
     search_lock = threading.Lock()
     bounded = None
+    extended_bounded = None
     rng = np.random.default_rng(2026)
 
     @asynccontextmanager
     async def lifespan(app):
-        nonlocal bounded
-        if evaluator is not None and checkpoint.suffix == ".npz":
-            bounded = BoundedSearch(evaluator)
+        nonlocal bounded, extended_bounded
         try:
+            if evaluator is not None and checkpoint.suffix == ".npz":
+                bounded = BoundedSearch(evaluator)
+                if extended_search:
+                    extended_bounded = BoundedSearch(evaluator, timeout=60, response_ceiling=61)
             yield
         finally:
             if bounded is not None:
                 bounded.close()
+            if extended_bounded is not None:
+                extended_bounded.close()
 
     app = FastAPI(title="Alpha Dots & Boxes", docs_url=None, redoc_url=None, lifespan=lifespan)
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
@@ -127,41 +133,57 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
     def search(session: Session, request: SearchRequest) -> tuple[int, float | None, dict]:
         if session.state.terminal:
             raise HTTPException(409, "The game has finished.")
+        if request.extended and (
+            extended_bounded is None
+            or session.state.board.num_boxes < 100
+            or request.engine != "mcts"
+        ):
+            raise HTTPException(422, "Extended thinking is unavailable for this board.")
         if evaluator is not None and checkpoint.suffix == ".npz":
             if bounded is None:
                 raise HTTPException(503, "The agent is starting. Try again shortly.")
             started = time.monotonic()
             limit = min(request.time_limit or 0.5, 1.75)
+            worker = extended_bounded if request.extended else bounded
             config = (
                 EngineConfig(time_limit=limit)
                 if request.engine == "alpha_beta"
                 else SearchConfig(
-                    simulations=8192 if request.time_limit else request.simulations,
-                    time_limit=limit,
+                    simulations=8192
+                    if request.time_limit or request.extended
+                    else request.simulations,
+                    time_limit=None if request.extended else limit,
                     exact_threshold=12,
                     fpu_reduction=FPU_REDUCTION,
+                    sparse_selection=request.extended,
                 )
             )
-            policy, value = bounded.policy(session.state, config=config)
-            if bounded.timed_out:
+            policy, value = worker.policy(session.state, config=config)
+            if worker.timed_out:
                 value = None
             action = int(policy.argmax())
             details = {
                 "method": "deadline_fallback"
-                if bounded.timed_out
+                if worker.timed_out
                 else "exact_endgame"
                 if len(session.state.legal_actions) <= 12
                 else "alpha_beta"
                 if request.engine == "alpha_beta"
                 else "graph_search",
                 "engine": request.engine,
-                "time_limit": bounded.internal_seconds or limit,
+                "time_limit": worker.internal_seconds or limit,
                 "requested_time_limit": request.time_limit,
-                "response_deadline": bounded.timeout,
+                "response_deadline": worker.timeout,
                 "thinking_seconds": time.monotonic() - started,
-                "simulations": bounded.completed_simulations,
-                "timed_out": bounded.timed_out,
+                "simulations": worker.completed_simulations,
+                "timed_out": worker.timed_out,
                 "fpu_reduction": FPU_REDUCTION if request.engine == "mcts" else None,
+                "extended": request.extended,
+                "full_budget_completed": request.extended
+                and not worker.timed_out
+                and (
+                    worker.completed_simulations == 8192 or len(session.state.legal_actions) <= 12
+                ),
             }
             if request.engine == "alpha_beta":
                 details.update(
@@ -235,6 +257,8 @@ def create_app(checkpoint: Path | None = None) -> FastAPI:
                 "fpu_reduction": FPU_REDUCTION,
                 "max_internal_seconds": 1.75,
                 "response_deadline": 1.9 if checkpoint and checkpoint.suffix == ".npz" else None,
+                "extended_large_boards": extended_bounded is not None,
+                "extended_response_deadline": 60 if extended_bounded is not None else None,
             },
         }
 

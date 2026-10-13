@@ -63,9 +63,11 @@ class BoundedSearch:
     Wall-clock measurements remain necessary under OS scheduling contention.
     """
 
-    def __init__(self, evaluator, config=None, timeout: float = 1.9):
-        if not np.isfinite(timeout) or not 0 < timeout < 2:
-            raise ValueError("Response timeout must be positive and below two seconds.")
+    def __init__(self, evaluator, config=None, timeout: float = 1.9, *, response_ceiling=2.0):
+        if not np.isfinite(response_ceiling) or response_ceiling <= 0:
+            raise ValueError("Response ceiling must be finite and positive.")
+        if not np.isfinite(timeout) or not 0 < timeout < response_ceiling:
+            raise ValueError("Response timeout must be positive and below its ceiling.")
         self.evaluator = evaluator
         self.config = config or SearchConfig(simulations=8192, time_limit=1.75, exact_threshold=12)
         self.timeout = timeout

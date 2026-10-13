@@ -46,8 +46,18 @@ Choose Quick, Standard, or Deep thinking. NumPy play uses a supervised
 scored **66.25% on 4×4 and 82.5% on 5×5** against the previous agent in fresh
 matches. See [the results and timing checks](docs/two-second-search.md).
 An experimental alpha–beta engine is also available.
-A [10×10 transfer test](docs/ten-by-ten-search.md) finished evenly; larger-board
-strength remains unproven.
+
+For stronger 10×10 play, enable longer thinking:
+
+```bash
+adb serve --checkpoint models/larger.npz --extended-search
+```
+
+On large boards, **Deep · up to 60 s** gives the agent more time. It won
+**35 of 40 fresh 10×10 games** against the same model with a smaller search
+budget, averaging about 19 seconds per decision in those tests. Small boards
+keep the short deadline. See [the large-board results](docs/deeper-large-board-search.md)
+for the comparison and limits.
 
 The included model has trained on boards through 5×5. The UI also solves small
 endgames exactly when time allows. Launching `adb serve` without a

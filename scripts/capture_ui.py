@@ -40,10 +40,27 @@ def main():
         )
         assert page.locator(".edge-control[role=button]").count() == 60
         assert page.locator(".board-dot").count() == 36
+        health = page.request.get(args.url + "/api/health").json()
+        if health["search"].get("extended_large_boards"):
+            page.locator(".custom-size summary").click()
+            page.locator("#rows").fill("10")
+            page.locator("#cols").fill("10")
+            page.locator("#new-game").click()
+            page.wait_for_function(
+                "document.getElementById('board-label').textContent.startsWith('10 × 10')"
+            )
+            assert "60 s" in page.locator('#budget option[value="2"]').inner_text()
+            page.locator("#engine").select_option("alpha_beta")
+            assert "60 s" not in page.locator('#budget option[value="2"]').inner_text()
+            page.locator("#engine").select_option("mcts")
+            assert "60 s" in page.locator('#budget option[value="2"]').inner_text()
+            page.screenshot(path=str(args.output / "desktop-large.png"), full_page=True)
+            page.locator(".custom-size summary").click()
         page.locator('[data-size="3"]').click()
         page.wait_for_function(
             "document.getElementById('board-label').textContent.startsWith('3 × 3 boxes')"
         )
+        assert "60 s" not in page.locator('#budget option[value="2"]').inner_text()
         # Verify hint, a real human move, the agent response, and undo.
         page.locator("#budget").select_option("0.15")
         page.locator("#hint").click()

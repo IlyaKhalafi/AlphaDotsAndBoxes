@@ -53,3 +53,18 @@ def test_queue_wait_is_bounded_and_normal_result_preserves_statistics():
 def test_invalid_deadlines(timeout):
     with pytest.raises(ValueError):
         BoundedSearch(Evaluator(), timeout=timeout)
+
+
+def test_explicit_extended_ceiling_preserves_worker_statistics():
+    with BoundedSearch(
+        Evaluator(), SearchConfig(simulations=8), timeout=2.1, response_ceiling=3
+    ) as search:
+        policy, _ = search.policy(State.new(2, 2))
+        assert not search.timed_out and search.completed_simulations == 8
+        assert policy.sum() == pytest.approx(1)
+
+
+@pytest.mark.parametrize("ceiling", [0, -1, np.inf, np.nan])
+def test_invalid_response_ceiling(ceiling):
+    with pytest.raises(ValueError, match="ceiling"):
+        BoundedSearch(Evaluator(), response_ceiling=ceiling)

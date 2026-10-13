@@ -79,6 +79,16 @@ positions and clean installations. Legacy PyTorch serving uses the older search
 path; export `.npz` weights for supervised NumPy deployment.
 
 The UI offers Quick (0.15 s), Standard (0.5 s), and Deep (up to the internal cap).
+Opt into a separate longer-search worker with `adb serve --checkpoint
+models/larger.npz --extended-search`. On graph-engine boards with at least
+100 boxes, the UI labels Deep **up to 60 s** and sends `extended: true`.
+This requests 8,192 simulations with a 60-second response deadline, including
+queueing. Ordinary requests keep the short deadline and use a separate worker.
+Extended requests on smaller boards or the alpha–beta engine receive 422.
+Replays report actual simulation counts and `full_budget_completed`; a
+time-limited partial search is not the complete fixed-work benchmark.
+See [the strength and timing report](deeper-large-board-search.md).
+
 Agent/hint requests accept `time_limit` from 0.05 to 2 seconds and `engine`
 (`mcts` or `alpha_beta`). Timed MCTS has an 8,192-traversal ceiling; requests with
 only `simulations` retain their 8–512-traversal ceiling within the deadline.

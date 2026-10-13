@@ -8,6 +8,18 @@ let game = null,
   generation = 0,
   hinted = null;
 let agentKind = "tactical";
+let extendedAvailable = false;
+function canThinkLong() {
+  return extendedAvailable && game && game.rows * game.cols >= 100 &&
+    $("engine").value === "mcts";
+}
+function usesExtendedSearch() {
+  return Boolean(canThinkLong() && Number($("budget").value) === 2);
+}
+function updateThinkingTime() {
+  $("budget").querySelector('option[value="2"]').textContent =
+    canThinkLong() ? "Deep · up to 60 s" : "Deep · 2 s";
+}
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function api(path, data, method = "POST") {
   const response = await fetch(path, {
@@ -232,6 +244,7 @@ function render() {
       $("status").textContent = "Endgame solved.";
   }
   drawBoard();
+  updateThinkingTime();
 }
 async function startGame(demo = $("mode").value === "watch") {
   const token = ++generation;
@@ -280,6 +293,7 @@ async function agentTurns(token) {
       const next = await api(`/api/games/${gameId}/agent`, {
         time_limit: Number($("budget").value),
         engine: $("engine").value,
+        extended: usesExtendedSearch(),
         revision: game.revision,
       });
       if (token !== generation) return;
@@ -347,6 +361,7 @@ $("hint").addEventListener("click", async () => {
     const result = await api(`/api/games/${gameId}/hint`, {
       time_limit: Number($("budget").value),
       engine: $("engine").value,
+      extended: usesExtendedSearch(),
       revision: game.revision,
     });
     if (token !== generation) return;
@@ -401,6 +416,7 @@ document.querySelectorAll("[data-size]").forEach((button) =>
   try {
     const health = await api("/api/health", undefined, "GET");
     agentKind = health.agent;
+    extendedAvailable = Boolean(health.search?.extended_large_boards);
     $("agent-description").textContent =
       agentKind === "graph" ? "Experimental agent" : "Tactical opponent";
     const sizes = health.training?.sizes
@@ -408,7 +424,7 @@ document.querySelectorAll("[data-size]").forEach((button) =>
       .join(", ");
     $("agent-description").title =
       agentKind === "graph"
-        ? `Training boards: ${sizes || "unknown"}. Larger-board strength is unproven.`
+        ? `Training boards: ${sizes || "unknown"}. ${extendedAvailable ? "Extended Deep search improved 10×10 play in paired tests." : "Larger-board strength depends on search time."}`
         : "Rule-based opponent; no checkpoint loaded.";
     await startGame();
   } catch (error) {
@@ -416,3 +432,4 @@ document.querySelectorAll("[data-size]").forEach((button) =>
     $("agent-description").textContent = "Opponent unavailable";
   }
 })();
+$("engine").addEventListener("change", updateThinkingTime);

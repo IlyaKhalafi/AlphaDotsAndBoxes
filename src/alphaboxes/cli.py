@@ -37,6 +37,11 @@ def main():
     serving.add_argument("--checkpoint", type=Path)
     serving.add_argument("--host", default="127.0.0.1")
     serving.add_argument("--port", type=int, default=8000)
+    serving.add_argument(
+        "--extended-search",
+        action="store_true",
+        help="Enable opt-in full search on large boards, with a 60-second response ceiling",
+    )
     evaluation = commands.add_parser("evaluate", help="Evaluate both seats against baselines")
     match_arguments(evaluation, "runs/evaluation.json")
     evaluation.add_argument("--policy-only", action="store_true", help="Evaluate without search")
@@ -91,7 +96,11 @@ def main():
 
         from alphaboxes.web.app import create_app
 
-        uvicorn.run(create_app(args.checkpoint), host=args.host, port=args.port)
+        uvicorn.run(
+            create_app(args.checkpoint, extended_search=args.extended_search),
+            host=args.host,
+            port=args.port,
+        )
     elif args.command == "export":
         from alphaboxes.numpy_network import export_agent
 
