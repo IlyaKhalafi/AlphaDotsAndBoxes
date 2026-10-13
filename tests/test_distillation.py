@@ -7,10 +7,57 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from alphaboxes.distillation import distill, frozen_examples, split_positions
+from alphaboxes.distillation import build_replay_dataset, distill, frozen_examples, split_positions
 from alphaboxes.game import State
 from alphaboxes.search import CachedEvaluator
 from alphaboxes.teaching import TeachingDataset
+
+
+def test_replay_targets_balance_boards_and_ignore_duplicate_and_terminal_states(tmp_path):
+    import torch
+
+    from alphaboxes.checkpoint import load_evaluator, save_agent
+    from alphaboxes.network import module_spec
+    from alphaboxes.numpy_network import export_agent
+    from alphaboxes.selfplay import Example
+    from alphaboxes.teaching import load_dataset
+
+    module = module_spec(width=16, depth=2).build()
+    teacher = tmp_path / "teacher.pt"
+    save_agent(teacher, module.state_dict(), 16, 2, {})
+    numpy_teacher = tmp_path / "teacher.npz"
+    export_agent(teacher, numpy_teacher)
+    states = []
+    for shape in [(2, 2), (3, 5)]:
+        state = State.new(*shape)
+        states.extend([state, state, state.play(0), state.play(1)])
+        while not state.terminal:
+            state = state.play(state.legal_actions[0])
+        states.append(state)
+    replay = tmp_path / "replay.pt"
+    torch.save(
+        {
+            "iteration": 3,
+            "config": {"seed": 75},
+            "replay": [Example(s, np.zeros(s.board.num_edges), 0) for s in states],
+        },
+        replay,
+    )
+    path = tmp_path / "targets.npz"
+    metadata = build_replay_dataset(numpy_teacher, replay, path, positions_per_board=2)
+    dataset = load_dataset(path)
+    assert len(dataset.states) == 4 and dataset.exact_count == 0
+    assert len({CachedEvaluator._key(s) for s in dataset.states}) == 4
+    assert [(s.board.rows, s.board.cols) for s in dataset.states] == [(2, 2)] * 2 + [(3, 5)] * 2
+    assert metadata["sources"][0]["sha256"] == hashlib.sha256(replay.read_bytes()).hexdigest()
+    assert not any(s.terminal for s in dataset.states)
+    evaluator, _ = load_evaluator(numpy_teacher)
+    for i, state in enumerate(dataset.states):
+        policy, value = evaluator(state)
+        np.testing.assert_array_equal(dataset.anchor_policy[i, : len(policy)], policy)
+        assert dataset.anchor_value[i] == pytest.approx(value)
+    with pytest.raises(ValueError, match="new dataset"):
+        build_replay_dataset(numpy_teacher, replay, path)
 
 
 def test_equivalent_positions_cannot_cross_validation_split():

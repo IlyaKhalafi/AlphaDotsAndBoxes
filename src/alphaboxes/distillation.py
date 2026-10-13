@@ -11,6 +11,86 @@ from alphaboxes.search import CachedEvaluator
 from alphaboxes.teaching import TeachingDataset, load_dataset
 
 
+def build_replay_dataset(
+    teacher: Path,
+    replay_path: Path,
+    output: Path,
+    positions_per_board: int = 800,
+    seed: int = 51001,
+) -> dict:
+    """Freeze teacher predictions on board-balanced, trusted training replay.
+
+    Reading the replay needs the training extra. The portable output contains
+    only NumPy arrays and metadata, with no oracle or evaluation-game labels.
+    """
+    import io
+
+    import torch
+
+    from alphaboxes.checkpoint import load_evaluator
+
+    if positions_per_board < 2 or output.exists():
+        raise ValueError("Use at least two positions per board and a new dataset path.")
+    snapshot = replay_path.read_bytes()
+    replay = torch.load(io.BytesIO(snapshot), map_location="cpu", weights_only=False)
+    groups = {}
+    for example in replay["replay"]:
+        state = example.state
+        if not state.terminal:
+            groups.setdefault((state.board.rows, state.board.cols), {})[
+                CachedEvaluator._key(state)
+            ] = state
+    rng = np.random.default_rng(seed)
+    states = []
+    for shape in sorted(groups):
+        pool = list(groups[shape].values())
+        if len(pool) < 2:
+            raise ValueError("Each replay board needs at least two distinct positions.")
+        states.extend(pool[int(i)] for i in rng.permutation(len(pool))[:positions_per_board])
+    if not states:
+        raise ValueError("Replay has no unfinished training positions.")
+    evaluator, metadata = load_evaluator(teacher)
+    count = len(states)
+    edges = np.full((count, max(s.board.num_edges for s in states)), -1, np.int8)
+    owners = np.full((count, max(s.board.num_boxes for s in states)), -1, np.int8)
+    policies = np.zeros(edges.shape, np.float32)
+    values = np.zeros(count, np.float32)
+    started = time.monotonic()
+    for i, state in enumerate(states):
+        edges[i, : state.board.num_edges] = state.edges
+        owners[i, : state.board.num_boxes] = state.owners
+        policy, values[i] = evaluator(state)
+        policies[i, : len(policy)] = policy
+    provenance = {
+        "format_version": 1,
+        "seed": seed,
+        "checkpoint_sha256": metadata["checkpoint_sha256"],
+        "source_checkpoint_sha256": metadata.get("source_checkpoint_sha256"),
+        "sources": [{"name": replay_path.name, "sha256": hashlib.sha256(snapshot).hexdigest()}],
+        "source_iteration": replay["iteration"],
+        "source_seeds": [replay["config"]["seed"]],
+        "positions_per_board": positions_per_board,
+        "exact_positions": 0,
+        "anchor_positions": count,
+        "targets": "Frozen teacher policy/value on distinct self-play training positions",
+        "generation_seconds": time.monotonic() - started,
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(
+        output,
+        sizes=np.array([(s.board.rows, s.board.cols) for s in states]),
+        players=np.array([s.player for s in states]),
+        edges=edges,
+        owners=owners,
+        anchor_policy=policies,
+        anchor_value=values,
+        oracle_policy=np.zeros_like(policies),
+        oracle_value=np.zeros_like(values),
+        metadata=np.array(json.dumps(provenance)),
+    )
+    return provenance
+
+
 def split_positions(dataset: TeachingDataset, seed: int, fraction: float = 0.1):
     """Keep identical evaluator keys together within each board size.
 
