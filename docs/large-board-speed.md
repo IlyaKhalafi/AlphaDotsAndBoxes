@@ -153,3 +153,14 @@ adjacent boxes with one free side. Cached two-box incidence indices now provide
 those features with linear memory. Dense adjacency remains available for training
 observations. Bit-for-bit feature checks cover padding and a 20×30 board; the
 37 relevant graph, network and API tests pass after this change.
+
+An additional [coverage diagnostic](data/large-model-20261012/student-48x6-coverage.json)
+finds 145 of the student's 800 training positions on 10×10 have more than 75%
+of edges free; 385 are middle positions and 270 are late. Thus opening positions
+are present, although coverage alone does not establish adequate imitation.
+On a fresh empty 10×10 board the teacher value is 0.05106 and the student value
+0.01472, a difference of 0.03634; the policy KL is 0.00970. Value errors can alter
+search allocation, so faster inference and small average imitation losses still
+require the ongoing full-game comparison. No model promotion follows from this
+diagnostic. Benchmark CPU priority is lowered to favor interactive serving;
+weights, opening seeds and fixed simulation counts are unchanged.
