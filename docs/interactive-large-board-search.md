@@ -29,3 +29,11 @@ strength result. A screen score above 50% advances unchanged settings to
 40 fresh games, seed 402001. Require score above 50%, paired-bootstrap lower
 bound above 50%, and every candidate response below two seconds. Keep the
 cached selector experimental until these gates and deployment checks pass.
+
+The short-budget screen completes 6 wins, one draw and 5 losses (54.17%, paired
+interval 29.17–79.17%). Its longest candidate response is 1.904 seconds and
+14 moves use the deadline fallback. This does not establish improved strength.
+The subsequent UI time-limit reduction was withdrawn; further confirmation of
+this short-budget arm is deferred while full-budget code and model optimization
+continue. No favorable partial result or new timed-search strength is claimed.
+See [the full-budget speed work](large-board-speed.md).

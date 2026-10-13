@@ -1,0 +1,12 @@
+{
+  "status": "trained_not_promoted",
+  "updates": 1500,
+  "elapsed_seconds": 599.3308705500094,
+  "gpu_peak_mb": 1397.9716796875,
+  "teacher_sha256": "21d8df7a60ba770e45a35d8405e009417904e250813fb3134403fb7707ae87b0",
+  "student_sha256": "91a6e8a7a3b5540294e63fcc2a456882cf7fd3651e1e66f7227095c8fa1d5c85",
+  "dataset_sha256": "db18464d18e754962a78ebafc99b7703777cdc11ac3d5a9416c6a7b9e54c64cf",
+  "source_commit": "b86b4e68de5bc3df37605e812dfddbcc8204b5d8",
+  "match_status": "12 paired 10x10 games running, both sides 8192 simulations, seed 511001",
+  "live_weights_replaced": false
+}
