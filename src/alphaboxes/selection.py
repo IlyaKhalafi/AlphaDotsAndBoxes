@@ -1,7 +1,5 @@
 """Exact PUCT selection without rescoring every unvisited sibling."""
 
-from collections import defaultdict
-from dataclasses import dataclass
 from math import isfinite
 from typing import TYPE_CHECKING
 
@@ -9,20 +7,8 @@ if TYPE_CHECKING:
     from alphaboxes.search import Node
 
 
-@dataclass(slots=True)
-class PriorGroup:
-    prior: float
-    children: list[tuple[int, "Node"]]
-    cursor: int = 0
-
-    def first_unvisited(self):
-        while self.cursor < len(self.children) and self.children[self.cursor][1].visits:
-            self.cursor += 1
-        return self.children[self.cursor] if self.cursor < len(self.children) else None
-
-
 class ChildSelection:
-    """Cache prior groups; rank visited children and leading unvisited groups.
+    """Rank visited children and leading unvisited priors without group objects.
 
     Unvisited children share one value and denominator, so their priority is
     monotonic in their prior. Equal floating-point scores still use original
@@ -33,13 +19,10 @@ class ChildSelection:
     def __init__(self, children: dict[int, "Node"]):
         self.children = children
         self.size = len(children)
-        groups = defaultdict(list)
-        self.visited = {}
-        for index, child in enumerate(children.values()):
-            groups[child.prior].append((index, child))
-            if child.visits:
-                self.visited[index] = child
-        self.groups = [PriorGroup(prior, groups[prior]) for prior in sorted(groups, reverse=True)]
+        ordered = list(enumerate(children.values()))
+        self.visited = {index: child for index, child in ordered if child.visits}
+        self.ranked = sorted(ordered, key=lambda item: item[1].prior, reverse=True)
+        self.group_ends = {child.prior: rank + 1 for rank, (_, child) in enumerate(self.ranked)}
         self.cursor = 0
 
     def select(self, player: int, scale: float, unvisited_value: float):
@@ -51,24 +34,34 @@ class ChildSelection:
 
         best, best_score, best_index = None, float("-inf"), self.size
         for index, child in self.visited.items():
-            priority = score(child)
+            visits = child.visits
+            if visits:
+                value = child.value_sum / visits
+                if child.player != player:
+                    value = -value
+            else:
+                value = unvisited_value
+            priority = value + scale * child.prior / (1 + visits)
             if not isfinite(priority):
                 return max(self.children.values(), key=score)
             if priority > best_score or (priority == best_score and index < best_index):
                 best, best_score, best_index = child, priority, index
-        for group_index in range(self.cursor, len(self.groups)):
-            group = self.groups[group_index]
-            candidate = group.first_unvisited()
-            if candidate is None:
-                if group_index == self.cursor:
+        rank = self.cursor
+        while rank < self.size:
+            index, child = self.ranked[rank]
+            if child.visits:
+                if rank == self.cursor:
                     self.cursor += 1
+                rank += 1
                 continue
-            index, child = candidate
-            priority = unvisited_value + scale * group.prior
+            priority = unvisited_value + scale * child.prior
             if priority < best_score:
                 break
             if priority > best_score or (priority == best_score and index < best_index):
                 best, best_score, best_index = child, priority, index
+            # Equal priors are stable-sorted in original dictionary order.
+            # Later unvisited entries in this run cannot beat its first one.
+            rank = self.group_ends[child.prior]
         if best is None:
             raise ValueError("Selection requires nonempty children.")
         # A cancelled simulation may leave this child unvisited; its score

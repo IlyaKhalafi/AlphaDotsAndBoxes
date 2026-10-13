@@ -14,6 +14,7 @@ def test_cached_selection_preserves_search_and_reused_noisy_root(
     shape, reduction, explore, monkeypatch
 ):
     monkeypatch.setattr("alphaboxes.search.choose_child", None)
+
     def evaluator(state):
         policy = np.linspace(1, 3, state.board.num_edges, dtype=np.float64)
         policy /= policy.sum()
@@ -62,14 +63,21 @@ def test_rounded_prior_ties_keep_original_dictionary_order():
         actual.value_sum += 0.42
 
 
-def test_cached_selection_tracks_backups_with_mixed_players_and_zero_visits():
+@pytest.mark.parametrize("priors", ["random", "uniform", "groups"])
+def test_cached_selection_tracks_backups_with_mixed_players_and_zero_visits(priors):
     rng = np.random.default_rng(920)
     state = State.new(5, 5)
     node = Node(state, evaluation=-0.2, player=1)
     node.children = {
         index: Node(
             state,
-            prior=float(rng.random()),
+            prior=(
+                float(rng.random())
+                if priors == "random"
+                else 1.0
+                if priors == "uniform"
+                else float(rng.integers(5)) / 4
+            ),
             visits=int(rng.integers(4)),
             value_sum=float(rng.uniform(-1, 1)),
             player=int(rng.integers(2)),
