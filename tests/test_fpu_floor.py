@@ -15,9 +15,7 @@ def test_bounded_first_play_explores_beyond_a_known_losing_branch(sparse):
     node.children.update({i: Node(state, player=0, prior=0) for i in range(2, 16)})
     scale = 1.5 * np.sqrt(101)
     ordinary = MCTS(None, SearchConfig(fpu_reduction=0.33, sparse_selection=sparse))
-    bounded = MCTS(
-        None, SearchConfig(fpu_reduction=0.33, fpu_floor=-1, sparse_selection=sparse)
-    )
+    bounded = MCTS(None, SearchConfig(fpu_reduction=0.33, fpu_floor=-1, sparse_selection=sparse))
     assert ordinary._select(node, scale) is losing
     assert bounded._select(node, scale) is unseen
     node.evaluation = 0.25
