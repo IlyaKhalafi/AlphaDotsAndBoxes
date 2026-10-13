@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from alphaboxes.checkpoint import load_evaluator
 from alphaboxes.engine import AlphaBeta, EngineConfig
 from alphaboxes.game import State
+from alphaboxes.numpy_network import NumpyEvaluator
 from alphaboxes.opponents import tactical_action
 from alphaboxes.search import MCTS, SearchConfig
 from alphaboxes.timed_search import BoundedSearch
@@ -98,7 +99,10 @@ def create_app(checkpoint: Path | None = None, *, extended_search: bool = False)
             if evaluator is not None and checkpoint.suffix == ".npz":
                 bounded = BoundedSearch(evaluator)
                 if extended_search:
-                    extended_bounded = BoundedSearch(evaluator, timeout=60, response_ceiling=61)
+                    extended_evaluator = NumpyEvaluator(evaluator.network, cache_size=32768)
+                    extended_bounded = BoundedSearch(
+                        extended_evaluator, timeout=60, response_ceiling=61
+                    )
             yield
         finally:
             if bounded is not None:
@@ -259,6 +263,7 @@ def create_app(checkpoint: Path | None = None, *, extended_search: bool = False)
                 "response_deadline": 1.9 if checkpoint and checkpoint.suffix == ".npz" else None,
                 "extended_large_boards": extended_bounded is not None,
                 "extended_response_deadline": 60 if extended_bounded is not None else None,
+                "extended_cache_entries": 32768 if extended_bounded is not None else None,
             },
         }
 

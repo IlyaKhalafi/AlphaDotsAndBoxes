@@ -113,3 +113,29 @@ Deep budget are unchanged. The full suite passes 277 tests, and another
 42 relevant tests pass after replacing NumPy scalar square roots with native
 Python scalar arithmetic. The scalar change preserves complete visit/value
 traces in constant, policy-mass and branching selection tests.
+
+## Reuse more exact network predictions
+
+The long-search worker now retains 32,768 complete policy/value predictions
+instead of 4,096. Ordinary requests retain their existing 4,096-entry cache.
+This is different from the rejected local-node cache: it uses the existing
+validated whole-position key and returns the exact previously computed network
+output. It does not share visits or change the search strategy. Memory remains
+bounded by the entry ceiling; on a 10×10 board, policy-array storage at capacity
+is approximately 27.5 MiB, in addition to dictionary and key overhead.
+
+In a [three-move continuation probe](data/large-model-20261012/prediction-cache-probe.json),
+both cache sizes complete 8,192 simulations on every move and return identical
+actions and values. On the second move, uncached neural predictions fall from
+7,109 to 1,947; on the third, from 7,124 to 1,944. Corresponding measured decision
+times fall from 41.85 to 17.86 seconds and from 36.98 to 18.21 seconds. The cold
+first decisions take 41.49 and 35.79 seconds; they run sequentially and differ
+in concurrent load, so do not attribute that entire cold difference to cache
+capacity. The useful result is retaining predictions across continuations.
+
+These are consecutive searched moves, not a complete human-match latency
+distribution. A human choosing a different continuation can reduce reuse, and
+the cold first move remains expensive. Tests compare full policies and values
+through repeated real searches under forced eviction, verify fewer predictions
+with a larger cache, and verify clearing. API tests confirm that only the long
+worker gets the larger cache and both workers retain their original deadlines.

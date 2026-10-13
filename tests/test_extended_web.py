@@ -5,6 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from alphaboxes.game import State
+from alphaboxes.numpy_network import NumpyEvaluator
 from alphaboxes.web.app import create_app
 
 
@@ -12,6 +13,7 @@ class Worker:
     instances = []
 
     def __init__(self, evaluator, config=None, timeout=1.9, **kwargs):
+        self.evaluator = evaluator
         self.timeout = timeout
         self.calls = []
         self.closed = False
@@ -32,7 +34,9 @@ class Worker:
 
 def setup_workers(monkeypatch):
     Worker.instances = []
-    monkeypatch.setattr("alphaboxes.web.app.load_evaluator", lambda path: (object(), {}))
+    monkeypatch.setattr(
+        "alphaboxes.web.app.load_evaluator", lambda path: (NumpyEvaluator(object()), {})
+    )
     monkeypatch.setattr("alphaboxes.web.app.BoundedSearch", Worker)
 
 
@@ -56,6 +60,7 @@ def test_extended_uses_separate_worker_only_on_large_graph_boards(monkeypatch):
         health = client.get("/api/health").json()["search"]
         assert health["response_deadline"] == 1.9 and health["extended_large_boards"]
         assert health["extended_response_deadline"] == 60
+        assert health["extended_cache_entries"] == 32768
         small = client.post("/api/games", json={"rows": 5, "cols": 5, "demo": True}).json()
         path = f"/api/games/{small['id']}/agent"
         assert client.post(path, json={"revision": 0, "extended": True}).status_code == 422
@@ -71,6 +76,9 @@ def test_extended_uses_separate_worker_only_on_large_graph_boards(monkeypatch):
         assert result["analysis"]["response_deadline"] == 60
         assert result["analysis"]["extended"] and result["analysis"]["full_budget_completed"]
         fast, extended = Worker.instances
+        assert fast.evaluator.cache_size == 4096
+        assert extended.evaluator.cache_size == 32768
+        assert fast.evaluator.network is extended.evaluator.network
         assert not fast.calls
         config = extended.calls[-1]
         assert config.simulations == 8192 and config.time_limit is None
