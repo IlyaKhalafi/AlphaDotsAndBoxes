@@ -172,3 +172,93 @@ require a full-game comparison. The completed screen above rejects this student;
 no model promotion follows from this
 diagnostic. Benchmark CPU priority is lowered to favor interactive serving;
 weights, opening seeds and fixed simulation counts are unchanged.
+
+## Further runtime optimization
+
+The next release keeps the same checkpoint and budgets. For large unpadded
+boards, message passing now uses rectangular array views: horizontal edges,
+vertical edges, and boxes. This removes four whole-graph indexed gathers per
+layer while preserving the ordered sums. A zero addition on edge messages also
+preserves signed-zero behavior. Padded observations retain the gather path;
+small-board inference retains dense aggregation. Activations and residuals
+reuse arrays owned by the current call, and all-one padding masks skip redundant
+work. Weights and observations remain unmodified; message buffers are local to
+each call.
+
+Search selection now stores one stable sorted child table and integer end
+offsets for equal-prior runs. This avoids separate lists and objects for each
+prior, retains the shortcut across equal priors, and scores visited children
+without a property or function call. Rounded-score ties still choose original
+dictionary order, and cancelled simulations retain their unvisited scores.
+Delaying table construction alone was discarded after profiling showed most
+tables were used again; avoiding the group objects gives a more useful saving.
+
+The comparison uses retained checkpoint `21d8df7a…`, reference source at
+`6725ebb`, and optimized runtime at `46a8eb0`. NumPy 2.5.3 runs with one BLAS
+thread and no compiled search extension. The
+[full-budget receipt](data/large-model-20261012/grid-runtime-full-budget.json)
+alternates player order across two repeats, starting from the same six-move
+10×10 position with seed 61001. Each repeat includes three consecutive moves
+with a 32,768-entry prediction cache; every decision completes 8,192 simulations.
+Every policy, value, chosen action, and fingerprint of the complete visited
+tree matches exactly.
+
+| 10×10 decision | Reference median | Optimized median | Reduction |
+| --- | --- | --- | --- |
+| Cold first move | 38.51 s | 30.49 s | 20.8% |
+| Second move | 29.33 s | 25.20 s | 14.1% |
+| Third move | 15.07 s | 11.81 s | 21.7% |
+
+Alternating inference probes retain 60 samples after five warmups, including
+empty, six-move, and middle positions. Opening medians are:
+
+| Board | Reference inference | Optimized inference | Reduction |
+| --- | --- | --- | --- |
+| 5×5 | 1.622 ms | 1.527 ms | 5.9% |
+| 10×10 | 5.167 ms | 4.352 ms | 15.8% |
+| 12×12 | 7.376 ms | 6.032 ms | 18.2% |
+
+All these probes return identical logits and values. Additional
+[board checks](data/large-model-20261012/grid-runtime-board-checks.json) cover
+5×5 and 12×12 search at 512 simulations, again with exact visited-tree parity.
+Their fixed-work comparisons enable the cached selector on both sides; ordinary
+small-board UI requests keep their existing selection setting and time budget.
+These are measurements on a shared machine, with two search repeats and a small
+set of positions. They establish a useful code speedup, not a latency guarantee
+or a new playing-strength claim. The cold large-board decision remains too slow
+for a two-second response.
+
+A [selector-only comparison](data/large-model-20261012/grid-selector-isolation.json)
+uses identical optimized network evaluators on both sides, 512 simulations,
+and the same three-move sequence. Second-move medians fall from 0.285 to 0.182
+seconds; third-move medians from 0.289 to 0.180 seconds. These small-budget
+cache-heavy measurements isolate table overhead; their percentage gain does not
+describe a cold 8,192-simulation decision.
+
+The [live API receipt](data/large-model-20261012/grid-runtime-live-probe.json)
+checks the installed package on port 9003, confirms matching runtime sources and
+unchanged checkpoint bytes, and verifies that PyTorch, Ray and Gymnasium are
+absent. Ordinary 5×5 Deep requests take 1.764–1.770 seconds and complete
+940, 1,182 and 1,463 simulations in the three measured moves. Faster inference
+allows more search within the existing time cap; it does not shorten that cap.
+The receipt distinguishes ordinary timed API requests from extended Deep.
+On a fresh empty 10×10 board, the extended Deep HTTP requests take **40.34,
+14.92 and 14.93 seconds**, completing all 8,192 simulations with no deadline
+fallbacks. CPU tests run concurrently. This empty-board result differs from the
+six-move opening used by the paired reference comparison above.
+
+Reproduce a reference comparison from a trusted checkout of `6725ebb`:
+
+```bash
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 ALPHABOXES_PURE_NUMPY=1 \
+PYTHONPATH=src python scripts/benchmark_runtime.py \
+  --reference-source /path/to/reference/src --simulations 8192 \
+  --sizes 10x10 --search-repeats 2 --inference-repeats 60 \
+  --output runtime-comparison.json
+```
+
+The script aborts if inference or any visited search trace differs; its output
+includes individual timing samples, source fingerprints and search settings.
+The final complete suite passes **306 tests**, and Ruff and whitespace checks
+pass. The runtime remains a clean NumPy installation with the original trained
+weights and the extended Deep option enabled.
