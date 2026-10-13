@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from alphaboxes.game import State
-from alphaboxes.graph import dimensions, encode
+from alphaboxes.graph import dimensions, encode, neighbor_indices
 from alphaboxes.search import CachedEvaluator
 
 
@@ -36,7 +36,11 @@ def weight_shapes(width: int, depth: int, structure: bool = False) -> dict[str, 
 
 
 def silu(x: np.ndarray) -> np.ndarray:
-    return x / (np.float32(1) + np.exp(np.clip(-x, -80, 80)))
+    denominator = -x
+    np.clip(denominator, -80, 80, out=denominator)
+    np.exp(denominator, out=denominator)
+    denominator += np.float32(1)
+    return x / denominator
 
 
 class NumpyNetwork:
@@ -58,9 +62,13 @@ class NumpyNetwork:
         self.structure = structure
 
     def linear(self, x: np.ndarray, name: str) -> np.ndarray:
-        return x @ self.weights[f"{name}.weight"].T + self.weights[f"{name}.bias"]
+        result = x @ self.weights[f"{name}.weight"].T
+        result += self.weights[f"{name}.bias"]
+        return result
 
-    def forward(self, obs: dict[str, np.ndarray]) -> tuple[np.ndarray, float]:
+    def forward(
+        self, obs: dict[str, np.ndarray], *, neighbors: np.ndarray | None = None
+    ) -> tuple[np.ndarray, float]:
         """Return masked logits and value for one graph, including optional padding."""
         x, context = obs["x"], obs["context"]
         features, contexts = dimensions(self.structure)
@@ -69,29 +77,49 @@ class NumpyNetwork:
         mask = obs["node_mask"][:, None]
         broadcast = np.broadcast_to(context, (len(x), len(context)))
         h = silu(self.linear(np.concatenate((x, broadcast), axis=-1), "encoder.0")) * mask
+        if neighbors is not None:
+            if neighbors.shape != (len(x), 4):
+                raise ValueError("Sparse neighbor shape does not match the observation.")
+            padded = np.zeros((len(x) + 1, self.width), dtype=np.float32)
         for index in range(self.depth):
             prefix = f"blocks.{index}"
-            messages = obs["adjacency"] @ h
+            if neighbors is None:
+                messages = obs["adjacency"] @ h
+            else:
+                padded[:-1] = h
+                messages = padded[neighbors[:, 0]] + padded[neighbors[:, 1]]
+                messages += padded[neighbors[:, 2]]
+                messages += padded[neighbors[:, 3]]
             aggregate = (np.float32(1) + self.weights[f"{prefix}.epsilon"]) * h + messages
             residual = h + self.linear(
                 silu(self.linear(aggregate, f"{prefix}.mlp.0")), f"{prefix}.mlp.2"
             )
             centered = residual - residual.mean(axis=-1, keepdims=True)
-            normalized = centered / np.sqrt(
-                np.mean(centered * centered, axis=-1, keepdims=True) + np.float32(1e-5)
-            )
-            h = (
-                normalized * self.weights[f"{prefix}.norm.weight"]
-                + self.weights[f"{prefix}.norm.bias"]
-            ) * mask
+            denominator = np.mean(centered * centered, axis=-1, keepdims=True) + np.float32(1e-5)
+            np.sqrt(denominator, out=denominator)
+            centered /= denominator
+            centered *= self.weights[f"{prefix}.norm.weight"]
+            centered += self.weights[f"{prefix}.norm.bias"]
+            centered *= mask
+            h = centered
         mean = h.sum(axis=0) / max(mask.sum(), np.float32(1))
         maximum = np.where(mask != 0, h, np.float32(-1e9)).max(axis=0)
         readout = np.concatenate((mean, maximum, context))
-        shared = np.broadcast_to(readout, (len(x), len(readout)))
-        logits = self.linear(
-            silu(self.linear(np.concatenate((h, shared), axis=-1), "policy.0")), "policy.2"
-        ).ravel()
-        logits = np.where(obs["action_mask"] != 0, logits, np.float32(-1e9))
+        if neighbors is None:
+            shared = np.broadcast_to(readout, (len(x), len(readout)))
+            logits = self.linear(
+                silu(self.linear(np.concatenate((h, shared), axis=-1), "policy.0")), "policy.2"
+            ).ravel()
+            logits = np.where(obs["action_mask"] != 0, logits, np.float32(-1e9))
+        else:
+            # The global readout is identical for every node. Project it once,
+            # and evaluate the policy head only at legal edge nodes.
+            actions = np.flatnonzero(obs["action_mask"])
+            weight = self.weights["policy.0.weight"]
+            shared = readout @ weight[:, self.width :].T + self.weights["policy.0.bias"]
+            hidden = h[actions] @ weight[:, : self.width].T + shared
+            logits = np.full(len(x), np.float32(-1e9), dtype=np.float32)
+            logits[actions] = self.linear(silu(hidden), "policy.2").ravel()
         value = np.tanh(self.linear(silu(self.linear(readout, "value.0")), "value.2"))[0]
         return logits, float(value)
 
@@ -102,7 +130,11 @@ class NumpyEvaluator(CachedEvaluator):
         self.network = network
 
     def _predict(self, state: State) -> tuple[np.ndarray, float]:
-        logits, value = self.network.forward(encode(state, structure=self.network.structure))
+        sparse = state.board.num_nodes >= 256
+        logits, value = self.network.forward(
+            encode(state, structure=self.network.structure, include_adjacency=not sparse),
+            neighbors=neighbor_indices(state.board.rows, state.board.cols) if sparse else None,
+        )
         logits = logits[: state.board.num_edges]
         probabilities = np.exp(logits - logits.max())
         probabilities /= probabilities.sum()

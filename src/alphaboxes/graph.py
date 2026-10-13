@@ -37,8 +37,27 @@ def adjacency(rows: int, cols: int) -> np.ndarray:
     return result
 
 
+@lru_cache(maxsize=128)
+def neighbor_indices(rows: int, cols: int, capacity: int | None = None) -> np.ndarray:
+    """Four ordered incidence neighbors per node; capacity denotes a zero sentinel."""
+    geometry = board(rows, cols)
+    capacity = geometry.num_nodes if capacity is None else capacity
+    if capacity < geometry.num_nodes:
+        raise ValueError("Observation capacity is smaller than this board.")
+    result = np.full((capacity, 4), capacity, dtype=np.intp)
+    for edge, boxes in enumerate(geometry.edge_boxes):
+        result[edge, : len(boxes)] = np.asarray(boxes) + geometry.num_edges
+    result[geometry.num_edges : geometry.num_nodes] = geometry.boxes
+    result.flags.writeable = False
+    return result
+
+
 def encode(
-    state: State, capacity: int | None = None, *, structure: bool = False
+    state: State,
+    capacity: int | None = None,
+    *,
+    structure: bool = False,
+    include_adjacency: bool = True,
 ) -> dict[str, np.ndarray]:
     """Encode a search leaf without batch grouping or advanced-indexing copies."""
     geometry = state.board
@@ -58,11 +77,6 @@ def encode(
     x[e + np.arange(geometry.num_boxes), 5 + remaining] = 1
     x[:e, 10] = degree
     x[:e, 11] = incidence @ (remaining == 1).astype(np.float32) / 2
-    adj = adjacency(geometry.rows, geometry.cols)
-    if capacity > n:
-        padded = np.zeros((capacity, capacity), dtype=np.float32)
-        padded[:n, :n] = adj
-        adj = padded
     action_mask, node_mask = np.zeros((2, capacity), dtype=np.float32)
     action_mask[:e], node_mask[:n] = free, 1
     context = np.array(
@@ -77,13 +91,20 @@ def encode(
         nodes, extra = structural_features(state)
         x[e:n, FEATURES:] = nodes
         context = np.concatenate((context, extra))
-    return {
+    result = {
         "x": x,
-        "adjacency": adj,
         "action_mask": action_mask,
         "node_mask": node_mask,
         "context": context,
     }
+    if include_adjacency:
+        adj = adjacency(geometry.rows, geometry.cols)
+        if capacity > n:
+            padded = np.zeros((capacity, capacity), dtype=np.float32)
+            padded[:n, :n] = adj
+            adj = padded
+        result["adjacency"] = adj
+    return result
 
 
 @lru_cache(maxsize=128)
