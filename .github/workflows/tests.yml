@@ -3,6 +3,11 @@ on:
   push:
   pull_request:
 
+env:
+  OPENBLAS_NUM_THREADS: "1"
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+
 jobs:
   deployment:
     runs-on: ubuntu-latest
@@ -21,6 +26,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python: ["3.11", "3.12"]
     steps:
@@ -46,4 +52,4 @@ jobs:
           cache: pip
       - run: python -m pip install -e '.[accelerate]' pytest
       - run: python scripts/build_acceleration.py
-      - run: pytest -q tests/test_acceleration.py tests/test_game.py -k 'not graph_and_padding'
+      - run: pytest -q tests/test_acceleration.py tests/test_game.py tests/test_native_kernels.py tests/test_cpp_numpy_network.py -k 'not graph_and_padding'
