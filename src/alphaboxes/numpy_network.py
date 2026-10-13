@@ -3,6 +3,7 @@
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -10,6 +11,16 @@ import numpy as np
 from alphaboxes.game import State
 from alphaboxes.graph import dimensions, encode
 from alphaboxes.search import CachedEvaluator
+
+try:
+    if os.environ.get("ALPHABOXES_PURE_NUMPY") == "1":
+        raise ImportError
+    from alphaboxes import _kernels
+
+    if getattr(_kernels, "API_VERSION", None) != 1:
+        raise ImportError("Unsupported compiled kernel interface.")
+except ImportError:
+    _kernels = None
 
 
 def weight_shapes(width: int, depth: int, structure: bool = False) -> dict[str, tuple[int, ...]]:
@@ -71,7 +82,13 @@ def grid_messages(h: np.ndarray, rows: int, cols: int, out: np.ndarray) -> None:
 
 class NumpyNetwork:
     def __init__(
-        self, weights: dict[str, np.ndarray], width: int, depth: int, structure: bool = False
+        self,
+        weights: dict[str, np.ndarray],
+        width: int,
+        depth: int,
+        structure: bool = False,
+        *,
+        native: bool | None = None,
     ):
         if width < 8 or depth < 1:
             raise ValueError("Network requires width >= 8 and depth >= 1.")
@@ -86,11 +103,32 @@ class NumpyNetwork:
         self.weights = weights
         self.width, self.depth = width, depth
         self.structure = structure
+        if native and _kernels is None:
+            raise RuntimeError("C++ kernels are unavailable; build optional acceleration first.")
+        self.native = _kernels is not None if native is None else native
 
     def linear(self, x: np.ndarray, name: str) -> np.ndarray:
         result = x @ self.weights[f"{name}.weight"].T
         result += self.weights[f"{name}.bias"]
         return result
+
+    @staticmethod
+    def _activate(values: np.ndarray, bias: np.ndarray, kernels) -> np.ndarray:
+        if not values.size:
+            return values
+        if kernels is None:
+            values += bias
+            return silu(values, inplace=True)
+        matrix = values.reshape(-1, values.shape[-1])
+        denominator = np.empty_like(matrix)
+        kernels.activation_prepare(matrix, bias, denominator)
+        np.exp(denominator, out=denominator)
+        kernels.activation_finish(matrix, denominator)
+        return values
+
+    def _linear_activation(self, x: np.ndarray, name: str, kernels) -> np.ndarray:
+        values = x @ self.weights[f"{name}.weight"].T
+        return self._activate(values, self.weights[f"{name}.bias"], kernels)
 
     def forward(
         self,
@@ -105,9 +143,15 @@ class NumpyNetwork:
         if x.shape[-1] != features or context.shape != (contexts,):
             raise ValueError("Observation features do not match the checkpoint encoding.")
         mask = obs["node_mask"][:, None]
+        kernels = (
+            _kernels
+            if self.native and x.dtype == np.float32 and context.dtype == np.float32
+            else None
+        )
+        node_mask = np.ascontiguousarray(obs["node_mask"], dtype=np.float32)
         full = bool(np.all(mask == 1))
         broadcast = np.broadcast_to(context, (len(x), len(context)))
-        h = silu(self.linear(np.concatenate((x, broadcast), axis=-1), "encoder.0"), inplace=True)
+        h = self._linear_activation(np.concatenate((x, broadcast), axis=-1), "encoder.0", kernels)
         if not full:
             h *= mask
         if board_shape is not None:
@@ -123,7 +167,10 @@ class NumpyNetwork:
             padded = np.zeros((len(x) + 1, self.width), dtype=np.float32)
         for index in range(self.depth):
             prefix = f"blocks.{index}"
-            if board_shape is not None:
+            if board_shape is not None and kernels is not None:
+                kernels.aggregate(h, messages, *board_shape, self.weights[f"{prefix}.epsilon"])
+                aggregate = messages
+            elif board_shape is not None:
                 grid_messages(h, *board_shape, messages)
             elif neighbors is None:
                 messages = obs["adjacency"] @ h
@@ -132,11 +179,23 @@ class NumpyNetwork:
                 messages = padded[neighbors[:, 0]] + padded[neighbors[:, 1]]
                 messages += padded[neighbors[:, 2]]
                 messages += padded[neighbors[:, 3]]
-            aggregate = (np.float32(1) + self.weights[f"{prefix}.epsilon"]) * h
-            aggregate += messages
-            residual = self.linear(
-                silu(self.linear(aggregate, f"{prefix}.mlp.0"), inplace=True), f"{prefix}.mlp.2"
-            )
+            if board_shape is None or kernels is None:
+                aggregate = (np.float32(1) + self.weights[f"{prefix}.epsilon"]) * h
+                aggregate += messages
+            hidden = self._linear_activation(aggregate, f"{prefix}.mlp.0", kernels)
+            if kernels is not None:
+                residual = hidden @ self.weights[f"{prefix}.mlp.2.weight"].T
+                kernels.normalize(
+                    residual,
+                    self.weights[f"{prefix}.mlp.2.bias"],
+                    h,
+                    self.weights[f"{prefix}.norm.weight"],
+                    self.weights[f"{prefix}.norm.bias"],
+                    node_mask,
+                )
+                h = residual
+                continue
+            residual = self.linear(hidden, f"{prefix}.mlp.2")
             residual += h
             residual -= residual.mean(axis=-1, keepdims=True)
             centered = residual
@@ -154,7 +213,7 @@ class NumpyNetwork:
         if neighbors is None and board_shape is None:
             shared = np.broadcast_to(readout, (len(x), len(readout)))
             logits = self.linear(
-                silu(self.linear(np.concatenate((h, shared), axis=-1), "policy.0"), inplace=True),
+                self._linear_activation(np.concatenate((h, shared), axis=-1), "policy.0", kernels),
                 "policy.2",
             ).ravel()
             logits = np.where(obs["action_mask"] != 0, logits, np.float32(-1e9))
@@ -164,11 +223,11 @@ class NumpyNetwork:
             actions = np.flatnonzero(obs["action_mask"])
             weight = self.weights["policy.0.weight"]
             shared = readout @ weight[:, self.width :].T + self.weights["policy.0.bias"]
-            hidden = h[actions] @ weight[:, : self.width].T + shared
+            hidden = self._activate(h[actions] @ weight[:, : self.width].T, shared, kernels)
             logits = np.full(len(x), np.float32(-1e9), dtype=np.float32)
-            logits[actions] = self.linear(silu(hidden, inplace=True), "policy.2").ravel()
+            logits[actions] = self.linear(hidden, "policy.2").ravel()
         value = np.tanh(
-            self.linear(silu(self.linear(readout, "value.0"), inplace=True), "value.2")
+            self.linear(self._linear_activation(readout, "value.0", kernels), "value.2")
         )[0]
         return logits, float(value)
 

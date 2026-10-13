@@ -254,6 +254,7 @@ def create_app(checkpoint: Path | None = None, *, extended_search: bool = False)
             else "torch"
             if evaluator
             else None,
+            "native_kernels": bool(getattr(getattr(evaluator, "network", None), "native", False)),
             "training": metadata,
             "exact_endgame_edges": 12 if evaluator else 0,
             "search_engines": ["mcts", "alpha_beta"],

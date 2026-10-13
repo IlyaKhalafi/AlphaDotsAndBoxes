@@ -193,6 +193,12 @@ def main():
         },
         "seed": args.seed,
         "player_order": ["reference", "candidate"],
+        "candidate_native_kernels": bool(getattr(networks[1], "native", False)),
+        "native_source_sha256": {
+            name: hashlib.sha256((Path("src/alphaboxes") / name).read_bytes()).hexdigest()
+            for name in ("_kernels.pyx", "_kernels_core.cpp", "_kernels_core.hpp")
+            if (Path("src/alphaboxes") / name).exists()
+        },
         "search_config": {
             "simulations": args.simulations,
             "cpuct": 1.5,
